@@ -1,0 +1,66 @@
+#! /bin/sh
+# $Id: distrib,v 8.25 2011/06/26 13:21:52 zy Exp $ (Berkeley) $Date: 2011/06/26 13:21:52 $
+
+# Build include files.
+f=../cl/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../cl/*.c > $f
+chmod 444 $f
+
+f=../common/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../clib/*.c ../common/*.c > $f
+chmod 444 $f
+
+f=../include/ex_def.h
+echo "Building $f"
+rm -f $f
+awk -f ../ex/ex.awk ../ex/ex_cmd.c > $f
+chmod 444 $f
+
+f=../ex/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../ex/*.c > $f
+chmod 444 $f
+
+if [ -d ../ip ]; then
+	f=../ip/extern.h
+	echo "Building $f"
+	rm -f $f
+	sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../ip/*.c > $f
+	chmod 444 $f
+fi
+
+f=../include/options_def.h
+echo "Building $f"
+rm -f $f
+awk -f ../common/options.awk ../common/options.c > $f
+chmod 444 $f
+
+f=../perl_api/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../perl_api/*.xs ../perl_api/*.c > $f
+chmod 444 $f
+
+f=../tcl_api/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../tcl_api/*.c > $f
+chmod 444 $f
+
+f=../vi/extern.h
+echo "Building $f"
+rm -f $f
+sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../vi/*.c > $f
+chmod 444 $f
+
+# Build tags files.
+echo "Building tags files"
+rm -f tags
+ctags -w -d ../cl/*.[ch] ../common/*.[ch] ../ex/*.[ch] ../perl_api/*.[ch] \
+    ../tcl_api/*.[ch] ../vi/*.[ch]
+chmod 444 tags
