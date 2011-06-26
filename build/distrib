@@ -14,7 +14,7 @@ rm -f $f
 sed -n "s/^ \* PUBLIC: \(.*\)/\1/p" ../clib/*.c ../common/*.c > $f
 chmod 444 $f
 
-f=../include/ex_def.h
+f=../ex/ex_def.h
 echo "Building $f"
 rm -f $f
 awk -f ../ex/ex.awk ../ex/ex_cmd.c > $f
@@ -34,7 +34,7 @@ if [ -d ../ip ]; then
 	chmod 444 $f
 fi
 
-f=../include/options_def.h
+f=../common/options_def.h
 echo "Building $f"
 rm -f $f
 awk -f ../common/options.awk ../common/options.c > $f
