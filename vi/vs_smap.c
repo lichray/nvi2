@@ -773,6 +773,13 @@ vs_deleteln(SCR *sp, int cnt)
 	size_t oldy, oldx;
 
 	gp = sp->gp;
+
+	/* If the screen is vertically split, we can't scroll it. */
+	if (IS_VSPLIT(sp)) {
+		F_SET(sp, SC_SCR_REDRAW);
+		return (0);
+	}
+		
 	if (IS_ONELINE(sp))
 		(void)gp->scr_clrtoeol(sp);
 	else {
@@ -999,6 +1006,13 @@ vs_insertln(SCR *sp, int cnt)
 	size_t oldy, oldx;
 
 	gp = sp->gp;
+
+	/* If the screen is vertically split, we can't scroll it. */
+	if (IS_VSPLIT(sp)) {
+		F_SET(sp, SC_SCR_REDRAW);
+		return (0);
+	}
+
 	if (IS_ONELINE(sp)) {
 		(void)gp->scr_move(sp, LASTLINE(sp), 0);
 		(void)gp->scr_clrtoeol(sp);

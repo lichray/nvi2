@@ -56,7 +56,8 @@ struct _scr {
 	size_t	 t_rows;		/* 1-N: cur number of text rows. */
 	size_t	 t_maxrows;		/* 1-N: max number of text rows. */
 	size_t	 t_minrows;		/* 1-N: min number of text rows. */
-	size_t	 woff;			/* 0-N: screen offset in frame. */
+	size_t	 coff;			/* 0-N: screen col offset in display. */
+	size_t	 roff;			/* 0-N: screen row offset in display. */
 
 					/* Cursor's: */
 	recno_t	 lno;			/* 1-N: file line. */
@@ -109,6 +110,8 @@ struct _scr {
 
 #define	RE_WSTART	"[[:<:]]"	/* Ex/vi: not-in-word search pattern. */
 #define	RE_WSTOP	"[[:>:]]"
+#define RE_WSTART_LEN	(sizeof(RE_WSTART)/sizeof(CHAR_T)-1)
+#define RE_WSTOP_LEN	(sizeof(RE_WSTOP)/sizeof(CHAR_T)-1)
 					/* Ex/vi: flags to search routines. */
 #define	SEARCH_CSCOPE	0x0001		/* Search for a cscope pattern. */
 #define	SEARCH_EOL	0x0002		/* Offset past EOL is okay. */

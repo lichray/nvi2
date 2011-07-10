@@ -340,8 +340,8 @@ v_pagedown(SCR *sp, VICMD *vp)
 	 * any screen but the "next" one anyway.  We do it the historical
 	 * way as there's no good reason to change it.
 	 *
-	 * If the screen has been split, use the smaller of the current
-	 * window size and the window option value.
+	 * If the screen has been split horizontally, use the smaller of
+	 * the current window size and the window option value.
 	 *
 	 * It possible for this calculation to be less than 1; move at
 	 * least one line.
@@ -391,8 +391,8 @@ v_pageup(SCR *sp, VICMD *vp)
 	 * but the first screen.  We do it the historical way as there's
 	 * no good reason to change it.
 	 *
-	 * If the screen has been split, use the smaller of the current
-	 * window size and the window option value.
+	 * If the screen has been split horizontally, use the smaller of
+	 * the current window size and the window option value.
 	 *
 	 * It possible for this calculation to be less than 1; move at
 	 * least one line.
