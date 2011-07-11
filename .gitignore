@@ -3,4 +3,5 @@
 *~
 *.orig
 extern.h
+*_def.h
 tags
