@@ -149,6 +149,8 @@ struct _gs {
 	/* Screen interface functions. */
 					/* Add a string to the screen. */
 	int	(*scr_addstr) __P((SCR *, const char *, size_t));
+					/* Add a string to the screen. */
+	int	(*scr_waddstr) __P((SCR *, const CHAR_T *, size_t));
 					/* Toggle a screen attribute. */
 	int	(*scr_attr) __P((SCR *, scr_attr_t, int));
 					/* Terminal baud rate. */
@@ -157,12 +159,16 @@ struct _gs {
 	int	(*scr_bell) __P((SCR *));
 					/* Display a busy message. */
 	void	(*scr_busy) __P((SCR *, const char *, busy_t));
+					/* Prepare child. */
+	int	(*scr_child) __P((SCR *));
 					/* Clear to the end of the line. */
 	int	(*scr_clrtoeol) __P((SCR *));
 					/* Return the cursor location. */
 	int	(*scr_cursor) __P((SCR *, size_t *, size_t *));
 					/* Delete a line. */
 	int	(*scr_deleteln) __P((SCR *));
+					/* Discard a screen. */
+	int	(*scr_discard) __P((SCR *, SCR **));
 					/* Get a keyboard event. */
 	int	(*scr_event) __P((SCR *, EVENT *, u_int32_t, int));
 					/* Ex: screen adjustment routine. */
@@ -183,8 +189,12 @@ struct _gs {
 	int	(*scr_refresh) __P((SCR *, int));
 					/* Rename the file. */
 	int	(*scr_rename) __P((SCR *, char *, int));
+					/* Reply to an event. */
+	int	(*scr_reply) __P((SCR *, int, char *));
 					/* Set the screen type. */
 	int	(*scr_screen) __P((SCR *, u_int32_t));
+					/* Split the screen. */
+	int	(*scr_split) __P((SCR *, SCR *));
 					/* Suspend the editor. */
 	int	(*scr_suspend) __P((SCR *, int *));
 					/* Print usage message. */
