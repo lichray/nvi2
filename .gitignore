@@ -2,4 +2,5 @@
 *.swp
 *~
 *.orig
+extern.h
 tags
