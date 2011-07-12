@@ -634,7 +634,7 @@ newmap:	evp = &gp->i_event[gp->i_next];
 	 */
 	if (istimeout || F_ISSET(&evp->e_ch, CH_NOMAP) ||
 	    !LF_ISSET(EC_MAPCOMMAND | EC_MAPINPUT) ||
-	    evp->e_c < MAX_BIT_SEQ && !bit_test(gp->seqb, evp->e_c))
+	    (evp->e_c < MAX_BIT_SEQ && !bit_test(gp->seqb, evp->e_c)))
 		goto nomap;
 
 	/* Search the map. */
@@ -852,7 +852,7 @@ v_event_grow(
 	gp = sp->gp;
 	new_nelem = gp->i_nelem + add;
 	olen = gp->i_nelem * sizeof(gp->i_event[0]);
-	BINC_RET(sp, gp->i_event, olen, new_nelem * sizeof(gp->i_event[0]));
+	BINC_RET(sp, EVENT, gp->i_event, olen, new_nelem * sizeof(gp->i_event[0]));
 	gp->i_nelem = olen / sizeof(gp->i_event[0]);
 	return (0);
 }

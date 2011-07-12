@@ -1068,8 +1068,7 @@ file_backup(
 	 *
 	 * Shell and file name expand the option's value.
 	 */
-	argv_init(sp, &cmd);
-	ex_cinit(&cmd, 0, 0, 0, 0, 0, NULL);
+	ex_cinit(sp, &cmd, 0, 0, 0, 0, 0);
 	if (bname[0] == 'N') {
 		version = 1;
 		++bname;
