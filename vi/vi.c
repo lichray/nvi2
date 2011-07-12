@@ -345,9 +345,9 @@ gc_event:
 		 * command, since the tag may be moving to the same file.
 		 */
 		if ((F_ISSET(vp, V_ABS) ||
-		    F_ISSET(vp, V_ABS_L) && sp->lno != abs.lno ||
-		    F_ISSET(vp, V_ABS_C) &&
-		    (sp->lno != abs.lno || sp->cno != abs.cno)) &&
+		    (F_ISSET(vp, V_ABS_L) && sp->lno != abs.lno) ||
+		    (F_ISSET(vp, V_ABS_C) &&
+		    (sp->lno != abs.lno || sp->cno != abs.cno))) &&
 		    mark_set(sp, ABSMARK1, &abs, 1))
 			goto err;
 
@@ -403,6 +403,7 @@ intr:			CLR_INTERRUPT(sp);
 		if (F_ISSET(gp, G_SRESTART) || F_ISSET(sp, SC_EX)) {
 			*spp = sp;
 			v_dtoh(sp);
+			gp->scr_discard(sp, NULL);
 			break;
 		}
 	}
@@ -786,7 +787,7 @@ v_motion(
 		vp->m_stop.lno = sp->lno + motion.count - 1;
 		if (db_get(sp, vp->m_stop.lno, 0, NULL, &len)) {
 			if (vp->m_stop.lno != 1 ||
-			   vp->key != 'c' && vp->key != '!') {
+			   (vp->key != 'c' && vp->key != '!')) {
 				v_emsg(sp, NULL, VIM_EMPTY);
 				return (1);
 			}
@@ -858,7 +859,7 @@ v_motion(
 		 */
 		if (!db_exist(sp, vp->m_stop.lno)) {
 			if (vp->m_stop.lno != 1 ||
-			   vp->key != 'c' && vp->key != '!') {
+			   (vp->key != 'c' && vp->key != '!')) {
 				v_emsg(sp, NULL, VIM_EMPTY);
 				return (1);
 			}
@@ -902,8 +903,8 @@ v_motion(
 		 * Motions are from the from MARK to the to MARK (inclusive).
 		 */
 		if (motion.m_start.lno > motion.m_stop.lno ||
-		    motion.m_start.lno == motion.m_stop.lno &&
-		    motion.m_start.cno > motion.m_stop.cno) {
+		    (motion.m_start.lno == motion.m_stop.lno &&
+		    motion.m_start.cno > motion.m_stop.cno)) {
 			vp->m_start = motion.m_stop;
 			vp->m_stop = motion.m_start;
 		} else {
@@ -969,7 +970,7 @@ v_init(SCR *sp)
 		sp->t_maxrows = sp->rows - 1;
 	} else
 		sp->t_maxrows = 1;
-	sp->woff = 0;
+	sp->roff = sp->coff = 0;
 
 	/* Create a screen map. */
 	CALLOC_RET(sp, HMAP, SMAP *, SIZE_HMAP(sp), sizeof(SMAP));
@@ -1015,11 +1016,15 @@ v_dtoh(SCR *sp)
 		}
 		CIRCLEQ_REMOVE(&gp->dq, tsp, q);
 		CIRCLEQ_INSERT_TAIL(&gp->hq, tsp, q);
+		/* XXXX Change if hidden screens per window */
+		tsp->gp = 0;
+		gp->scr_discard(tsp, NULL);
 	}
 
 	/* Move current screen back to the display queue. */
 	CIRCLEQ_REMOVE(&gp->hq, sp, q);
 	CIRCLEQ_INSERT_TAIL(&gp->dq, sp, q);
+	sp->gp = gp;
 
 	if (hidden > 1)
 		msgq(sp, M_INFO,
