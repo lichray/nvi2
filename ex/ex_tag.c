@@ -46,6 +46,10 @@ static char	*binary_search __P((char *, char *, char *));
 static int	 compare __P((char *, char *, char *));
 static void	 ctag_file __P((SCR *, TAGF *, char *, char **, size_t *));
 static int	 ctag_search __P((SCR *, CHAR_T *, size_t, char *));
+#ifdef GTAGS
+static int	 getentry __P((char *, char **, char **, char **));
+static TAGQ	*gtag_slist __P((SCR *, char *, int));
+#endif
 static int	 ctag_sfile __P((SCR *, TAGF *, TAGQ *, char *));
 static TAGQ	*ctag_slist __P((SCR *, CHAR_T *));
 static char	*linear_search __P((char *, char *, char *, long));
@@ -305,7 +309,6 @@ ex_tag_Nswitch(SCR *sp, TAG *tp, int force)
 		/* Copy file state. */
 		new->ep = sp->ep;
 		++new->ep->refcnt;
-		CIRCLEQ_INSERT_HEAD(&new->ep->scrq, new, eq);
 
 		new->frp = tp->frp;
 		new->frp->flags = sp->frp->flags;
@@ -747,7 +750,7 @@ tagq_push(SCR *sp, TAGQ *tqp, int new_screen, int force)
 	FREF *frp;
 	TAG *rtp;
 	TAGQ *rtqp;
-	db_recno_t lno;
+	recno_t lno;
 	size_t cno;
 	int istmp;
 	char *np;
@@ -781,7 +784,7 @@ tagq_push(SCR *sp, TAGQ *tqp, int new_screen, int force)
 	lno = sp->lno;
 	cno = sp->cno;
 	istmp = frp == NULL ||
-	    F_ISSET(frp, FR_TMPFILE) && !new_screen;
+	    (F_ISSET(frp, FR_TMPFILE) && !new_screen);
 
 	/* Try to switch to the tag. */
 	if (new_screen) {
@@ -970,13 +973,12 @@ ctag_search(SCR *sp, CHAR_T *search, size_t slen, char *tag)
 		m.lno = 1;
 		m.cno = 0;
 		if (f_search(sp, &m, &m,
-		    search, slen, NULL, 
-		    SEARCH_FIRST | SEARCH_TAG | SEARCH_PARSE)) {
+		    search, slen, NULL, SEARCH_FILE | SEARCH_TAG)) {
 			INT2CHAR(sp, search, slen, np, nlen);
 			if ((p = strrchr(np, '(')) != NULL) {
 				slen = p - np;
 				if (f_search(sp, &m, &m, search, slen,
-				    NULL, SEARCH_FIRST | SEARCH_TAG))
+				    NULL, SEARCH_FILE | SEARCH_TAG))
 					goto notfound;
 			} else {
 notfound:			tag_msg(sp, TAG_SEARCH, tag);
