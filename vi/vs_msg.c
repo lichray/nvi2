@@ -622,7 +622,7 @@ vs_ex_resolve(SCR *sp, int *continuep)
 		vip->linecount = vip->lcontinue = vip->totalcount = 0;
 
 		/* Redraw. */
-		(void)v_erepaint(sp, &ev);
+		(void)vs_repaint(sp, &ev);
 	} else
 		/* Reset the count of overwriting lines. */
 		vip->linecount = vip->lcontinue = vip->totalcount = 0;

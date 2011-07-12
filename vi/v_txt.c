@@ -515,7 +515,7 @@ next:	if (v_event_get(sp, evp, 0, ec_flags))
 		 */
 		goto k_escape;
 	case E_REPAINT:
-		if (v_erepaint(sp, &ev))
+		if (vs_repaint(sp, &ev))
 			return (1);
 		goto next;
 	case E_WRESIZE:
