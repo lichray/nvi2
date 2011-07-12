@@ -294,7 +294,6 @@ vs_vsplit(SCR *sp, SCR *new)
 static void
 vs_insert(SCR *sp, GS *gp)
 {
-	GS *gp;
 	SCR *tsp;
 
 	gp = sp->gp;
@@ -461,8 +460,8 @@ vs_join(SCR *sp, SCR **listp, jdir_t *jdirp)
 
 	/* Check preceding vertical. */
 	for (lp = listp, tlen = sp->rows,
-	    tsp = gp->dp.cqh_first;
-	    tsp != (void *)&gp->dp; tsp = tsp->q.cqe_next) {
+	    tsp = gp->dq.cqh_first;
+	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next) {
 		if (sp == tsp)
 			continue;
 		/* Test if precedes the screen vertically. */
@@ -496,8 +495,8 @@ vs_join(SCR *sp, SCR **listp, jdir_t *jdirp)
 
 	/* Check following vertical. */
 	for (lp = listp, tlen = sp->rows,
-	    tsp = gp->dp.cqh_first;
-	    tsp != (void *)&gp->dp; tsp = tsp->q.cqe_next) {
+	    tsp = gp->dq.cqh_first;
+	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next) {
 		if (sp == tsp)
 			continue;
 		/* Test if follows the screen vertically. */
@@ -531,8 +530,8 @@ vs_join(SCR *sp, SCR **listp, jdir_t *jdirp)
 
 	/* Check preceding horizontal. */
 	for (first = 0, lp = listp, tlen = sp->cols,
-	    tsp = gp->dp.cqh_first;
-	    tsp != (void *)&gp->dp; tsp = tsp->q.cqe_next) {
+	    tsp = gp->dq.cqh_first;
+	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next) {
 		if (sp == tsp)
 			continue;
 		/* Test if precedes the screen horizontally. */
@@ -567,8 +566,8 @@ vs_join(SCR *sp, SCR **listp, jdir_t *jdirp)
 
 	/* Check following horizontal. */
 	for (first = 0, lp = listp, tlen = sp->cols,
-	    tsp = gp->dp.cqh_first;
-	    tsp != (void *)&gp->dp; tsp = tsp->q.cqe_next) {
+	    tsp = gp->dq.cqh_first;
+	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next) {
 		if (sp == tsp)
 			continue;
 		/* Test if precedes the screen horizontally. */
@@ -650,7 +649,7 @@ vs_fg(SCR *sp, SCR **nspp, CHAR_T *name, int newscreen)
 		}
 	} else {
 		/* Move the old screen to the background queue. */
-		CIRCLEQ_REMOVE(&gp->dp, sp, q);
+		CIRCLEQ_REMOVE(&gp->dq, sp, q);
 		CIRCLEQ_INSERT_TAIL(&gp->hq, sp, q);
 	}
 	return (0);
@@ -680,7 +679,7 @@ vs_bg(SCR *sp)
 	}
 
 	/* Move the old screen to the background queue. */
-	CIRCLEQ_REMOVE(&gp->dp, sp, q);
+	CIRCLEQ_REMOVE(&gp->dq, sp, q);
 	CIRCLEQ_INSERT_TAIL(&gp->hq, sp, q);
 
 	/* Toss the screen map. */
@@ -772,7 +771,7 @@ vs_swap(SCR *sp, SCR **nspp, char *name)
 	 * code will move the old one to the background queue.
 	 */
 	CIRCLEQ_REMOVE(&gp->hq, nsp, q);
-	CIRCLEQ_INSERT_AFTER(&gp->dp, sp, nsp, q);
+	CIRCLEQ_INSERT_AFTER(&gp->dq, sp, nsp, q);
 
 	/*
 	 * Don't change the screen's cursor information other than to
@@ -824,22 +823,22 @@ vs_resize(SCR *sp, long int count, adj_t adj)
 
 	/* Find first overlapping screen */
 	for (next = sp->q.cqe_next; 
-	     next != (void *)&gp->dp && 
+	     next != (void *)&gp->dq && 
 	     (next->coff >= sp->coff + sp->cols || 
 	      next->coff + next->cols <= sp->coff); 
 	     next = next->q.cqe_next);
 	/* See if we can use it */
-	if (next != (void *)&gp->dp && 
+	if (next != (void *)&gp->dq && 
 	    (sp->coff != next->coff || sp->cols != next->cols))
-		next = (void *)&gp->dp;
+		next = (void *)&gp->dq;
 	for (prev = sp->q.cqe_prev; 
-	     prev != (void *)&gp->dp && 
+	     prev != (void *)&gp->dq && 
 	     (prev->coff >= sp->coff + sp->cols || 
 	      prev->coff + prev->cols <= sp->coff); 
 	     prev = prev->q.cqe_prev);
-	if (prev != (void *)&gp->dp && 
+	if (prev != (void *)&gp->dq && 
 	    (sp->coff != prev->coff || sp->cols != prev->cols))
-		prev = (void *)&gp->dp;
+		prev = (void *)&gp->dq;
 
 	g_off = s_off = 0;
 	if (adj == A_DECREASE) {
@@ -848,21 +847,21 @@ vs_resize(SCR *sp, long int count, adj_t adj)
 		s = sp;
 		if (s->t_maxrows < MINIMUM_SCREEN_ROWS + count)
 			goto toosmall;
-		if ((g = prev) == (void *)&gp->dp) {
-			if ((g = next) == (void *)&gp->dp)
+		if ((g = prev) == (void *)&gp->dq) {
+			if ((g = next) == (void *)&gp->dq)
 				goto toobig;
 			g_off = -count;
 		} else
 			s_off = count;
 	} else {
 		g = sp;
-		if ((s = next) != (void *)&gp->dp &&
+		if ((s = next) != (void *)&gp->dq &&
 		    s->t_maxrows >= MINIMUM_SCREEN_ROWS + count)
 				s_off = count;
 		else
 			s = NULL;
 		if (s == NULL) {
-			if ((s = prev) == (void *)&gp->dp) {
+			if ((s = prev) == (void *)&gp->dq) {
 toobig:				msgq(sp, M_BERR, adj == A_DECREASE ?
 				    "227|The screen cannot shrink" :
 				    "228|The screen cannot grow");

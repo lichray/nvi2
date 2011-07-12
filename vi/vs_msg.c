@@ -641,7 +641,6 @@ vs_resolve(SCR *sp, SCR *csp, int forcewait)
 {
 	EVENT ev;
 	GS *gp;
-	WIN *wp;
 	MSGS *mp;
 	VI_PRIVATE *vip;
 	size_t oldy, oldx;
@@ -655,7 +654,6 @@ vs_resolve(SCR *sp, SCR *csp, int forcewait)
 	 * not, csp is the current screen, used for final cursor positioning.
 	 */
 	gp = sp->gp;
-	wp = sp->wp;
 	vip = VIP(sp);
 	if (csp == NULL)
 		csp = sp;
