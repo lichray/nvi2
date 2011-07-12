@@ -61,16 +61,16 @@
  */
 #define	GET_SPACE_GOTO(sp, type, bp, blen, nlen) {			\
 	CHECK_TYPE(type *, bp)						\
-	WIN *L__wp = (sp) == NULL ? NULL : (sp)->wp;			\
-	if (L__wp == NULL || F_ISSET(L__wp, W_TMP_INUSE)) {		\
+	GS *L__gp = (sp) == NULL ? NULL : (sp)->gp;			\
+	if (L__gp == NULL || F_ISSET(L__gp, G_TMP_INUSE)) {		\
 		bp = NULL;						\
 		blen = 0;						\
 		BINC_GOTO(sp, type, bp, blen, nlen); 			\
 	} else {							\
-		BINC_GOTOC(sp, L__wp->tmp_bp, L__wp->tmp_blen, nlen);	\
-		bp = (type *) L__wp->tmp_bp;				\
-		blen = L__wp->tmp_blen;					\
-		F_SET(L__wp, W_TMP_INUSE);				\
+		BINC_GOTOC(sp, L__gp->tmp_bp, L__gp->tmp_blen, nlen);	\
+		bp = (type *) L__gp->tmp_bp;				\
+		blen = L__gp->tmp_blen;					\
+		F_SET(L__gp, G_TMP_INUSE);				\
 	}								\
 }
 #define	GET_SPACE_GOTOC(sp, bp, blen, nlen)				\
@@ -79,16 +79,16 @@
 	GET_SPACE_GOTO(sp, CHAR_T, bp, blen, (nlen) * sizeof(CHAR_T))
 #define	GET_SPACE_RET(sp, type, bp, blen, nlen) {			\
 	CHECK_TYPE(type *, bp)						\
-	WIN *L__wp = (sp) == NULL ? NULL : (sp)->wp;			\
-	if (L__wp == NULL || F_ISSET(L__wp, W_TMP_INUSE)) {		\
+	GS *L__gp = (sp) == NULL ? NULL : (sp)->gp;			\
+	if (L__gp == NULL || F_ISSET(L__gp, G_TMP_INUSE)) {		\
 		bp = NULL;						\
 		blen = 0;						\
 		BINC_RET(sp, type, bp, blen, nlen);			\
 	} else {							\
-		BINC_RETC(sp, L__wp->tmp_bp, L__wp->tmp_blen, nlen);	\
-		bp = (type *) L__wp->tmp_bp;				\
-		blen = L__wp->tmp_blen;					\
-		F_SET(L__wp, W_TMP_INUSE);				\
+		BINC_RETC(sp, L__gp->tmp_bp, L__gp->tmp_blen, nlen);	\
+		bp = (type *) L__gp->tmp_bp;				\
+		blen = L__gp->tmp_blen;					\
+		F_SET(L__gp, G_TMP_INUSE);				\
 	}								\
 }
 #define	GET_SPACE_RETC(sp, bp, blen, nlen)				\
@@ -102,13 +102,13 @@
  */
 #define	ADD_SPACE_GOTO(sp, type, bp, blen, nlen) {			\
 	CHECK_TYPE(type *, bp)						\
-	WIN *L__wp = (sp) == NULL ? NULL : (sp)->wp;			\
-	if (L__wp == NULL || bp == (type *)L__wp->tmp_bp) {		\
-		F_CLR(L__wp, W_TMP_INUSE);				\
-		BINC_GOTOC(sp, L__wp->tmp_bp, L__wp->tmp_blen, nlen);	\
-		bp = (type *) L__wp->tmp_bp;				\
-		blen = L__wp->tmp_blen;					\
-		F_SET(L__wp, W_TMP_INUSE);				\
+	GS *L__gp = (sp) == NULL ? NULL : (sp)->gp;			\
+	if (L__gp == NULL || bp == (type *)L__gp->tmp_bp) {		\
+		F_CLR(L__gp, G_TMP_INUSE);				\
+		BINC_GOTOC(sp, L__gp->tmp_bp, L__gp->tmp_blen, nlen);	\
+		bp = (type *) L__gp->tmp_bp;				\
+		blen = L__gp->tmp_blen;					\
+		F_SET(L__gp, G_TMP_INUSE);				\
 	} else								\
 		BINC_GOTO(sp, type, bp, blen, nlen);			\
 }
@@ -116,13 +116,13 @@
 	ADD_SPACE_GOTO(sp, CHAR_T, bp, blen, (nlen) * sizeof(CHAR_T))
 #define	ADD_SPACE_RET(sp, type, bp, blen, nlen) {			\
 	CHECK_TYPE(type *, bp)						\
-	WIN *L__wp = (sp) == NULL ? NULL : (sp)->wp;			\
-	if (L__wp == NULL || bp == (type *)L__wp->tmp_bp) {		\
-		F_CLR(L__wp, W_TMP_INUSE);				\
-		BINC_RETC(sp, L__wp->tmp_bp, L__wp->tmp_blen, nlen);	\
-		bp = (type *) L__wp->tmp_bp;				\
-		blen = L__wp->tmp_blen;					\
-		F_SET(L__wp, W_TMP_INUSE);				\
+	GS *L__gp = (sp) == NULL ? NULL : (sp)->gp;			\
+	if (L__gp == NULL || bp == (type *)L__gp->tmp_bp) {		\
+		F_CLR(L__gp, G_TMP_INUSE);				\
+		BINC_RETC(sp, L__gp->tmp_bp, L__gp->tmp_blen, nlen);	\
+		bp = (type *) L__gp->tmp_bp;				\
+		blen = L__gp->tmp_blen;					\
+		F_SET(L__gp, G_TMP_INUSE);				\
 	} else								\
 		BINC_RET(sp, type, bp, blen, nlen);			\
 }
@@ -131,9 +131,9 @@
 
 /* Free a GET_SPACE returned buffer. */
 #define	FREE_SPACE(sp, bp, blen) {					\
-	WIN *L__wp = (sp) == NULL ? NULL : (sp)->wp;			\
-	if (L__wp != NULL && bp == L__wp->tmp_bp)			\
-		F_CLR(L__wp, W_TMP_INUSE);				\
+	GS *L__gp = (sp) == NULL ? NULL : (sp)->gp;			\
+	if (L__gp != NULL && bp == L__gp->tmp_bp)			\
+		F_CLR(L__gp, G_TMP_INUSE);				\
 	else								\
 		free(bp);						\
 }
