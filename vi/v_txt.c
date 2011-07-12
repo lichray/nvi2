@@ -574,7 +574,7 @@ next:	if (v_event_get(sp, evp, 0, ec_flags))
 
 	/* Abbreviation overflow check.  See comment in txt_abbrev(). */
 #define	MAX_ABBREVIATION_EXPANSION	256
-	if (F_ISSET(evp->e_flags, CH_ABBREVIATED)) {
+	if (F_ISSET(&evp->e_ch, CH_ABBREVIATED)) {
 		if (++abcnt > MAX_ABBREVIATION_EXPANSION) {
 			if (v_event_flush(sp, CH_ABBREVIATED))
 				msgq(sp, M_ERR,
@@ -1556,7 +1556,7 @@ txt_abbrev(SCR *sp, TEXT *tp, CHAR_T *pushcp, int isinfoline, int *didsubp, int 
 	 */
 search:	if (isinfoline)
 		if (off == tp->ai || off == tp->offset)
-			if (ex_is_abbrev(sp, p, len)) {
+			if (ex_is_abbrev(p, len)) {
 				*turnoffp = 1;
 				return (0);
 			} else
@@ -1658,7 +1658,7 @@ txt_unmap(SCR *sp, TEXT *tp, u_int32_t *ec_flagsp)
 	 * if the user erases the line and starts another command, we go ahead
 	 * an turn mapping back on.
 	 */
-	if ((off == tp->ai || off == tp->offset) && ex_is_unmap(sp, p, len))
+	if ((off == tp->ai || off == tp->offset) && ex_is_unmap(p, len))
 		FL_CLR(*ec_flagsp, EC_MAPINPUT);
 	else
 		FL_SET(*ec_flagsp, EC_MAPINPUT);
@@ -1717,7 +1717,7 @@ txt_ai_resolve(SCR *sp, TEXT *tp, int *changedp)
 	 * If there are no spaces, or no tabs after spaces and less than
 	 * ts spaces, it's already minimal.
 	 */
-	if (!spaces || !tab_after_sp && spaces < ts)
+	if (!spaces || (!tab_after_sp && spaces < ts))
 		return;
 
 	/* Count up spaces/tabs needed to get to the target. */
@@ -2673,7 +2673,7 @@ txt_resolve(SCR *sp, TEXTH *tiqh, u_int32_t flags)
 	else
 		changed = 0;
 	if (db_set(sp, tp->lno, tp->lb, tp->len) ||
-	    changed && vs_change(sp, tp->lno, LINE_RESET))
+	    (changed && vs_change(sp, tp->lno, LINE_RESET)))
 		return (1);
 
 	for (lno = tp->lno; (tp = tp->q.cqe_next) != (void *)&sp->tiq; ++lno) {
@@ -2682,7 +2682,7 @@ txt_resolve(SCR *sp, TEXTH *tiqh, u_int32_t flags)
 		else
 			changed = 0;
 		if (db_append(sp, 0, lno, tp->lb, tp->len) ||
-		    changed && vs_change(sp, tp->lno, LINE_RESET))
+		    (changed && vs_change(sp, tp->lno, LINE_RESET)))
 			return (1);
 	}
 
@@ -2755,7 +2755,7 @@ txt_showmatch(SCR *sp, TEXT *tp)
 	}
 
 	/* If the match is on the screen, move to it. */
-	if (cs.cs_lno < m.lno || cs.cs_lno == m.lno && cs.cs_cno < m.cno)
+	if (cs.cs_lno < m.lno || (cs.cs_lno == m.lno && cs.cs_cno < m.cno))
 		return (0);
 	sp->lno = cs.cs_lno;
 	sp->cno = cs.cs_cno;

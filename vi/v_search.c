@@ -27,7 +27,6 @@ static const char sccsid[] = "$Id: v_search.c,v 10.30 2001/09/11 20:52:46 skimo 
 
 #include "../common/common.h"
 #include "vi.h"
-#include "../ipc/ip.h"
 
 static int v_exaddr __P((SCR *, VICMD *, dir_t));
 static int v_search __P((SCR *, VICMD *, CHAR_T *, size_t, u_int, dir_t));
@@ -340,38 +339,6 @@ v_searchw(SCR *sp, VICMD *vp)
 }
 
 /*
- * v_esearch -- <dialog box>
- *	Search command from the screen.
- *
- * PUBLIC: int v_esearch __P((SCR *, VICMD *));
- */
-int
-v_esearch(SCR *sp, VICMD *vp)
-{
-	MARK m;
-	int flags;
-
-	m.lno = sp->lno;
-	m.cno = sp->cno;
-
-	LF_INIT(SEARCH_NOOPT);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_EXT))
-		LF_SET(SEARCH_EXTEND);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_IC))
-		LF_SET(SEARCH_IC);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_ICL))
-		LF_SET(SEARCH_ICL);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_INCR))
-		LF_SET(SEARCH_INCR);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_LIT))
-		LF_SET(SEARCH_LITERAL);
-	if (FL_ISSET(vp->ev.e_flags, VI_SEARCH_WR))
-		LF_SET(SEARCH_WRAP);
-	return (v_search(sp, vp, vp->ev.e_csp, vp->ev.e_len, flags,
-	    FL_ISSET(vp->ev.e_flags, VI_SEARCH_REV) ? BACKWARD : FORWARD));
-}
-
-/*
  * v_search --
  *	The search commands.
  */
@@ -481,8 +448,8 @@ v_correct(SCR *sp, VICMD *vp, int isdelta)
 	 * because of the wrapscan option.
 	 */
 	if (vp->m_start.lno > vp->m_stop.lno ||
-	    vp->m_start.lno == vp->m_stop.lno &&
-	    vp->m_start.cno > vp->m_stop.cno) {
+	    (vp->m_start.lno == vp->m_stop.lno &&
+	    vp->m_start.cno > vp->m_stop.cno)) {
 		m = vp->m_start;
 		vp->m_start = vp->m_stop;
 		vp->m_stop = m;

@@ -547,7 +547,6 @@ v_ecl(SCR *sp)
 	/* Attach to the screen. */
 	new->ep = gp->ccl_sp->ep;
 	++new->ep->refcnt;
-	CIRCLEQ_INSERT_HEAD(&new->ep->scrq, new, eq);
 
 	new->frp = gp->ccl_sp->frp;
 	new->frp->flags = sp->frp->flags;

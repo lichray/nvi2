@@ -195,7 +195,7 @@ v_io(SCR *sp, VICMD *vp)
 static int
 io(SCR *sp, VICMD *vp, enum which cmd)
 {
-	db_recno_t ai_line, lno;
+	recno_t ai_line, lno;
 	size_t len;
 	u_int32_t flags;
 	CHAR_T *p;

@@ -97,7 +97,7 @@ v_sectionf(SCR *sp, VICMD *vp)
 	for (lno = vp->m_start.lno; !db_get(sp, ++lno, 0, &p, &len);) {
 		if (len == 0)
 			continue;
-		if (p[0] == '{' || ISMOTION(vp) && p[0] == '}') {
+		if (p[0] == '{' || (ISMOTION(vp) && p[0] == '}')) {
 			if (!--cnt) {
 				if (p[0] == '{')
 					goto adjust1;
@@ -121,7 +121,7 @@ v_sectionf(SCR *sp, VICMD *vp)
 			continue;
 		for (lp = list; *lp != '\0'; lp += 2 * sizeof(*lp))
 			if (lp[0] == p[1] &&
-			    (lp[1] == ' ' && len == 2 || lp[1] == p[2]) &&
+			    ((lp[1] == ' ' && len == 2) || lp[1] == p[2]) &&
 			    !--cnt) {
 				/*
 				 * !!!
@@ -211,7 +211,7 @@ v_sectionb(SCR *sp, VICMD *vp)
 			continue;
 		for (lp = list; *lp != '\0'; lp += 2 * sizeof(*lp))
 			if (lp[0] == p[1] &&
-			    (lp[1] == ' ' && len == 2 || lp[1] == p[2]) &&
+			    ((lp[1] == ' ' && len == 2) || lp[1] == p[2]) &&
 			    !--cnt) {
 adjust1:			vp->m_stop.lno = lno;
 				vp->m_stop.cno = 0;

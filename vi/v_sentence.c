@@ -72,7 +72,7 @@ v_sentencef(SCR *sp, VICMD *vp)
 	 * This may not handle "  .  " correctly, but it's real unclear
 	 * what correctly means in that case.
 	 */
-	if (cs.cs_flags == CS_EMP || cs.cs_flags == 0 && isblank(cs.cs_ch)) {
+	if (cs.cs_flags == CS_EMP || (cs.cs_flags == 0 && isblank(cs.cs_ch))) {
 		if (cs_fblank(sp, &cs))
 			return (1);
 		if (--cnt == 0) {
