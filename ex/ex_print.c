@@ -116,7 +116,7 @@ ex_print(SCR *sp, EXCMD *cmdp, MARK *fp, MARK *tp, u_int32_t flags)
 		 */
 		if (LF_ISSET(E_C_HASH)) {
 			if (from <= 999999) {
-				SPRINTF(buf, SIZE(buf), L("%6u  "), from);
+				SPRINTF(buf, SIZE(buf), L("%6lu  "), from);
 				p = buf;
 			} else
 				p = L("TOOBIG  ");

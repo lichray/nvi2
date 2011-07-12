@@ -292,7 +292,7 @@ log_line(
 #if defined(DEBUG) && 0
 	switch (action) {
 	case LOG_LINE_APPEND:
-		TRACE(sp, "%u: log_line: append: %lu {%u}\n",
+		TRACE(sp, "%lu: log_line: append: %lu {%u}\n",
 		    ep->l_cur, lno, len);
 		break;
 	case LOG_LINE_DELETE:
