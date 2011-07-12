@@ -92,9 +92,9 @@ v_at(SCR *sp, VICMD *vp)
 	for (tp = cbp->textq.cqh_last;
 	    tp != (void *)&cbp->textq; tp = tp->q.cqe_prev) {
 		static CHAR_T nl[] = { '\n', 0 };
-		if ((F_ISSET(cbp, CB_LMODE) ||
+		if (((F_ISSET(cbp, CB_LMODE) ||
 		    tp->q.cqe_next != (void *)&cbp->textq) &&
-		    v_event_push(sp, NULL, nl, 1, 0) ||
+		    v_event_push(sp, NULL, nl, 1, 0)) ||
 		    v_event_push(sp, NULL, tp->lb, tp->len, 0))
 			return (1);
 	}

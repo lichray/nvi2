@@ -73,7 +73,7 @@ ex_usage(SCR *sp, EXCMD *cmdp)
 		for (cp = cmds; cp->name != NULL &&
 		    memcmp(ap->bp, cp->name, ap->len); ++cp);
 		if (cp->name == NULL ||
-		    newscreen && !F_ISSET(cp, E_NEWSCREEN)) {
+		    (newscreen && !F_ISSET(cp, E_NEWSCREEN))) {
 			if (newscreen)
 				ap->bp[0] = toupper(ap->bp[0]);
 			(void)ex_printf(sp, "The %.*s command is unknown\n",

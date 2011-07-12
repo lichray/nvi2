@@ -145,7 +145,7 @@ cs_fblank(SCR *sp, VCS *csp)
 		if (cs_next(sp, csp))
 			return (1);
 		if (csp->cs_flags == CS_EOL || csp->cs_flags == CS_EMP ||
-		    csp->cs_flags == 0 && isblank(csp->cs_ch))
+		    (csp->cs_flags == 0 && isblank(csp->cs_ch)))
 			continue;
 		break;
 	}
@@ -214,7 +214,7 @@ cs_bblank(SCR *sp, VCS *csp)
 		if (cs_prev(sp, csp))
 			return (1);
 		if (csp->cs_flags == CS_EOL || csp->cs_flags == CS_EMP ||
-		    csp->cs_flags == 0 && isblank(csp->cs_ch))
+		    (csp->cs_flags == 0 && isblank(csp->cs_ch)))
 			continue;
 		break;
 	}
