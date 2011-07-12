@@ -37,10 +37,10 @@ int
 seq_set(
 	SCR *sp,
 	CHAR_T *name,
-	CHAR_T *input,
-	CHAR_T *output,
 	size_t nlen,
+	CHAR_T *input,
 	size_t ilen,
+	CHAR_T *output,
 	size_t olen,
 	seq_t stype,
 	int flags)

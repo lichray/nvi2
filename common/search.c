@@ -41,8 +41,8 @@ search_init(
 	SCR *sp,
 	dir_t dir,
 	CHAR_T *ptrn,
-	CHAR_T **epp,
 	size_t plen,
+	CHAR_T **epp,
 	u_int flags)
 {
 	recno_t lno;
@@ -150,8 +150,8 @@ f_search(
 	MARK *fm,
 	MARK *rm,
 	CHAR_T *ptrn,
-	CHAR_T **eptrn,
 	size_t plen,
+	CHAR_T **eptrn,
 	u_int flags)
 {
 	busy_t btype;
@@ -213,7 +213,7 @@ f_search(
 			}
 			cnt = INTERRUPT_CHECK;
 		}
-		if (wrapped && lno > fm->lno || db_get(sp, lno, 0, &l, &len)) {
+		if ((wrapped && lno > fm->lno) || db_get(sp, lno, 0, &l, &len)) {
 			if (wrapped) {
 				if (LF_ISSET(SEARCH_MSG))
 					search_msg(sp, S_NOTFOUND);
@@ -296,8 +296,8 @@ b_search(
 	MARK *fm,
 	MARK *rm,
 	CHAR_T *ptrn,
-	CHAR_T **eptrn,
 	size_t plen,
+	CHAR_T **eptrn,
 	u_int flags)
 {
 	busy_t btype;
@@ -347,7 +347,7 @@ b_search(
 			}
 			cnt = INTERRUPT_CHECK;
 		}
-		if (wrapped && lno < fm->lno || lno == 0) {
+		if ((wrapped && lno < fm->lno) || lno == 0) {
 			if (wrapped) {
 				if (LF_ISSET(SEARCH_MSG))
 					search_msg(sp, S_NOTFOUND);
