@@ -166,6 +166,7 @@ retry:
 	case 1:
 err1:		if (LF_ISSET(DBG_FATAL))
 err2:			db_err(sp, lno);
+alloc_err:
 err3:		if (lenp != NULL)
 			*lenp = 0;
 		if (pp != NULL)
@@ -547,6 +548,12 @@ db_last(
 		return (0);
 	default:
 		break;
+alloc_err:
+		msgq(sp, M_DBERR, "007|unable to get last line");
+		*lnop = 0;
+		return (1);
+        case 0:
+		;
 	}
 
 	memcpy(&lno, key.data, sizeof(lno));
