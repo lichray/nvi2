@@ -376,3 +376,18 @@ f_window(
 		*valp = 1;
 	return (0);
 }
+
+/*
+ * PUBLIC: int f_encoding __P((SCR *, OPTION *, char *, u_long *));
+ */
+int
+f_encoding(
+	SCR *sp,
+	OPTION *op,
+	char *str,
+	u_long *valp)
+{
+	int offset = op - sp->opts;
+
+	return conv_enc(sp, offset, str);
+}

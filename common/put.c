@@ -50,7 +50,7 @@ put(
 
 	if (cbp == NULL)
 		if (namep == NULL) {
-			cbp = sp->wp->dcbp;
+			cbp = sp->gp->dcbp;
 			if (cbp == NULL) {
 				msgq(sp, M_ERR,
 				    "053|The default buffer is empty");

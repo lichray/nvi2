@@ -599,8 +599,8 @@ opts_set(
 						break;
 
 			/* Report to subsystems. */
-			if (op->func != NULL &&
-			    op->func(sp, spo, NULL, &isset) ||
+			if ((op->func != NULL &&
+			    op->func(sp, spo, NULL, &isset)) ||
 			    ex_optchange(sp, offset, NULL, &isset) ||
 			    v_optchange(sp, offset, NULL, &isset) ||
 			    sp->gp->scr_optchange(sp, offset, NULL, &isset)) {
@@ -631,7 +631,7 @@ opts_set(
 			if (!ISDIGIT(sep[0]))
 				goto badnum;
 			if ((nret =
-			    nget_uslong(sp, &value, sep, &endp, 10)) != NUM_OK) {
+			    nget_uslong(&value, sep, &endp, 10)) != NUM_OK) {
 				INT2CHAR(sp, name, STRLEN(name) + 1, 
 					     np, nlen);
 				p2 = msg_print(sp, np, &nf);
@@ -693,8 +693,8 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 
 			/* Report to subsystems. */
 			INT2CHAR(sp, sep, STRLEN(sep) + 1, np, nlen);
-			if (op->func != NULL &&
-			    op->func(sp, spo, np, &value) ||
+			if ((op->func != NULL &&
+			    op->func(sp, spo, np, &value)) ||
 			    ex_optchange(sp, offset, np, &value) ||
 			    v_optchange(sp, offset, np, &value) ||
 			    sp->gp->scr_optchange(sp, offset, np, &value)) {
@@ -731,8 +731,8 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 				break;
 
 			/* Report to subsystems. */
-			if (op->func != NULL &&
-			    op->func(sp, spo, np, NULL) ||
+			if ((op->func != NULL &&
+			    op->func(sp, spo, np, NULL)) ||
 			    ex_optchange(sp, offset, np, NULL) ||
 			    v_optchange(sp, offset, np, NULL) ||
 			    sp->gp->scr_optchange(sp, offset, np, NULL)) {
@@ -831,7 +831,6 @@ opts_dump(
 	SCR *sp,
 	enum optdisp type)
 {
-{
 	OPTLIST const *op;
 	int base, b_num, cnt, col, colwidth, curlen, s_num;
 	int numcols, numrows, row;
@@ -886,8 +885,8 @@ opts_dump(
 				break;
 			case OPT_STR:
 				if (O_STR(sp, cnt) == O_D_STR(sp, cnt) ||
-				    O_D_STR(sp, cnt) != NULL &&
-				    !strcmp(O_STR(sp, cnt), O_D_STR(sp, cnt)))
+				    (O_D_STR(sp, cnt) != NULL &&
+				    !strcmp(O_STR(sp, cnt), O_D_STR(sp, cnt))))
 					continue;
 				break;
 			}
@@ -1100,7 +1099,7 @@ opts_search(CHAR_T *name)
 void
 opts_nomatch(
 	SCR *sp,
-	char *name)
+	CHAR_T *name)
 {
 	msgq_wstr(sp, M_ERR, name,
 	    "033|set: no %s option: 'set all' gives all option values");

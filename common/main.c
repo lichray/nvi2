@@ -631,8 +631,8 @@ attach(GS *gp)
 static void
 v_estr(
 	char *name,
-	char *msg,
-	int eno)
+	int eno,
+	char *msg)
 {
 	(void)fprintf(stderr, "%s", name);
 	if (msg != NULL)
