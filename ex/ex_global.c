@@ -134,12 +134,12 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 		/* Re-compile the RE if necessary. */
 		if (!F_ISSET(sp, SC_RE_SEARCH) &&
 		    re_compile(sp, sp->re, sp->re_len,
-		    NULL, NULL, &sp->re_c, SEARCH_CSEARCH | SEARCH_MSG))
+		    NULL, NULL, &sp->re_c, RE_C_SEARCH))
 			return (1);
 	} else {
 		/* Compile the RE. */
 		if (re_compile(sp, ptrn, t - ptrn, &sp->re,
-		    &sp->re_len, &sp->re_c, SEARCH_CSEARCH | SEARCH_MSG))
+		    &sp->re_len, &sp->re_c, RE_C_SEARCH))
 			return (1);
 
 		/*
@@ -178,7 +178,7 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 	MEMCPYW(ecp->cp + len, p, len);
 	ecp->range_lno = OOBLNO;
 	FL_SET(ecp->agv_flags, cmd == GLOBAL ? AGV_GLOBAL : AGV_V);
-	LIST_INSERT_HEAD(&sp->wp->ecq, ecp, q);
+	LIST_INSERT_HEAD(&sp->gp->ecq, ecp, q);
 
 	/*
 	 * For each line...  The semantics of global matching are that we first

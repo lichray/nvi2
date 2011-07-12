@@ -497,7 +497,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 		 * search cscope command character and a leading space
 		 * there.)
 		 */
-		(void)fprintf(csc->to_fp, "%d%s\n", search, tqp->tag + 2);
+		(void)fprintf(csc->to_fp, "%lu%s\n", search, tqp->tag + 2);
 		(void)fflush(csc->to_fp);
 
 		/* Read the output. */
@@ -967,7 +967,7 @@ cscope_search(SCR *sp, TAGQ *tqp, TAG *tp)
 		m.lno = 1;
 		m.cno = 0;
 		if (f_search(sp, &m, &m,
-		    tp->search, tp->slen, NULL, SEARCH_CSCOPE | SEARCH_FIRST)) {
+		    tp->search, tp->slen, NULL, SEARCH_CSCOPE | SEARCH_FILE)) {
 			tag_msg(sp, TAG_SEARCH, tqp->tag);
 			return (1);
 		}

@@ -453,7 +453,7 @@ loop:	ecp = gp->ecq.lh_first;
 		 * follows the 's', but we limit the choices here to "cgr" so
 		 * that we get unknown command messages for wrong combinations.
 		 */
-		if ((ecp->cmd = ex_comm_search(sp, p, namelen)) == NULL)
+		if ((ecp->cmd = ex_comm_search(p, namelen)) == NULL)
 			switch (p[0]) {
 			case 'k':
 				if (namelen == 2) {
@@ -1062,7 +1062,7 @@ end_case23:		break;
 			else if (*ecp->cp == '+')
 				FL_SET(ecp->iflags, E_C_COUNT_POS);
 			if ((nret =
-			    nget_slong(sp, &ltmp, ecp->cp, &t, 10)) != NUM_OK) {
+			    nget_slong(&ltmp, ecp->cp, &t, 10)) != NUM_OK) {
 				ex_badaddr(sp, NULL, A_NOTSET, nret);
 				goto err;
 			}
@@ -1889,7 +1889,7 @@ ex_line(SCR *sp, EXCMD *ecp, MARK *mp, int *isaddrp, int *errp)
 		 * difference.  C'est la vie.
 		 */
 		if (ecp->clen < 2 ||
-		    ecp->cp[1] != '/' && ecp->cp[1] != '?') {
+		    (ecp->cp[1] != '/' && ecp->cp[1] != '?')) {
 			msgq(sp, M_ERR, "096|\\ not followed by / or ?");
 			*errp = 1;
 			return (0);
@@ -1995,9 +1995,9 @@ search:		mp->lno = sp->lno;
 		for (;;) {
 			for (; ecp->clen > 0 && ISBLANK(ecp->cp[0]);
 			    ++ecp->cp, --ecp->clen);
-			if (ecp->clen == 0 || !ISDIGIT(ecp->cp[0]) &&
+			if (ecp->clen == 0 || (!ISDIGIT(ecp->cp[0]) &&
 			    ecp->cp[0] != '+' && ecp->cp[0] != '-' &&
-			    ecp->cp[0] != '^')
+			    ecp->cp[0] != '^'))
 				break;
 			if (!ISDIGIT(ecp->cp[0]) &&
 			    !ISDIGIT(ecp->cp[1])) {
@@ -2209,7 +2209,7 @@ ex_is_abbrev(CHAR_T *name, size_t len)
 {
 	EXCMDLIST const *cp;
 
-	return ((cp = ex_comm_search(sp, name, len)) != NULL &&
+	return ((cp = ex_comm_search(name, len)) != NULL &&
 	    (cp == &cmds[C_ABBR] || cp == &cmds[C_UNABBREVIATE]));
 }
 

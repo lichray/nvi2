@@ -91,9 +91,9 @@ ex_cd(SCR *sp, EXCMD *cmdp)
 	 */
 	if (cmdp->argc == 0 ||
 	    (ap = cmdp->argv[0])->bp[0] == '/' ||
-	    ap->len == 1 && ap->bp[0] == '.' ||
-	    ap->len >= 2 && ap->bp[0] == '.' && ap->bp[1] == '.' &&
-	    (ap->bp[2] == '/' || ap->bp[2] == '\0'))
+	    (ap->len == 1 && ap->bp[0]) == '.' ||
+	    (ap->len >= 2 && ap->bp[0] == '.' && ap->bp[1] == '.' &&
+	    (ap->bp[2] == '/' || ap->bp[2] == '\0')))
 		goto err;
 
 	/* Try the O_CDPATH option values. */

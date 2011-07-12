@@ -96,7 +96,7 @@ int
 ex_print(SCR *sp, EXCMD *cmdp, MARK *fp, MARK *tp, u_int32_t flags)
 {
 	GS *gp;
-	db_recno_t from, to;
+	recno_t from, to;
 	size_t col, len;
 	CHAR_T *p;
 	CHAR_T buf[10];
@@ -116,7 +116,7 @@ ex_print(SCR *sp, EXCMD *cmdp, MARK *fp, MARK *tp, u_int32_t flags)
 		 */
 		if (LF_ISSET(E_C_HASH)) {
 			if (from <= 999999) {
-				SPRINTF(buf, SIZE(buf), L("%6ld  "), from);
+				SPRINTF(buf, SIZE(buf), L("%6u  "), from);
 				p = buf;
 			} else
 				p = L("TOOBIG  ");

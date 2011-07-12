@@ -296,7 +296,7 @@ ex_read(SCR *sp, EXCMD *cmdp)
  * PUBLIC: int ex_readfp __P((SCR *, char *, FILE *, MARK *, recno_t *, int));
  */
 int
-ex_readfp(SCR *sp, char *name, FILE *fp, MARK *fm, db_recno_t *nlinesp, int silent)
+ex_readfp(SCR *sp, char *name, FILE *fp, MARK *fm, recno_t *nlinesp, int silent)
 {
 	EX_PRIVATE *exp;
 	GS *gp;

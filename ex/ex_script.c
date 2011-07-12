@@ -377,7 +377,7 @@ sscr_check_input(SCR *sp, fd_set *fdset, int maxfd)
 
 loop:	memcpy(&rdfd, fdset, sizeof(fd_set));
 
-	for (tsp = gp->scrq.cqh_first; 
+	for (tsp = gp->dq.cqh_first; 
 	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
 		if (F_ISSET(sp, SC_SCRIPT)) {
 			FD_SET(sp->script->sh_master, &rdfd);

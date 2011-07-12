@@ -117,8 +117,8 @@ ex_N_edit(SCR *sp, EXCMD *cmdp, FREF *frp, int attach)
 	/* Get a new screen. */
 	if (screen_init(sp->gp, sp, &new))
 		return (1);
-	if (cmdp->cmd == &cmds[C_VSPLIT] && vs_vsplit(sp, new) ||
-	    cmdp->cmd != &cmds[C_VSPLIT] && vs_split(sp, new, 0)) {
+	if ((cmdp->cmd == &cmds[C_VSPLIT] && vs_vsplit(sp, new)) ||
+	    (cmdp->cmd != &cmds[C_VSPLIT] && vs_split(sp, new, 0))) {
 		(void)screen_end(new);
 		return (1);
 	}
@@ -128,7 +128,6 @@ ex_N_edit(SCR *sp, EXCMD *cmdp, FREF *frp, int attach)
 		/* Copy file state, keep the screen and cursor the same. */
 		new->ep = sp->ep;
 		++new->ep->refcnt;
-		CIRCLEQ_INSERT_HEAD(&new->ep->scrq, new, eq);
 
 		new->frp = frp;
 		new->frp->flags = sp->frp->flags;
