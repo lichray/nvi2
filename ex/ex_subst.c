@@ -140,7 +140,7 @@ subagain:	return (ex_subagain(sp, cmdp));
 		/* Re-compile the RE if necessary. */
 		if (!F_ISSET(sp, SC_RE_SEARCH) &&
 		    re_compile(sp, sp->re, sp->re_len,
-		    NULL, NULL, &sp->re_c, SEARCH_CSEARCH | SEARCH_MSG))
+		    NULL, NULL, &sp->re_c, RE_C_SEARCH))
 			return (1);
 		flags = 0;
 	} else {
@@ -152,10 +152,10 @@ subagain:	return (ex_subagain(sp, cmdp));
 		 * ref counting the pattern string and (opaque) structure.
 		 */
 		if (re_compile(sp, ptrn, t - ptrn, &sp->re,
-		    &sp->re_len, &sp->re_c, SEARCH_CSEARCH | SEARCH_MSG))
+		    &sp->re_len, &sp->re_c, RE_C_SEARCH))
 			return (1);
 		if (re_compile(sp, ptrn, t - ptrn, &sp->subre,
-		    &sp->subre_len, &sp->subre_c, SEARCH_CSUBST | SEARCH_MSG))
+		    &sp->subre_len, &sp->subre_c, RE_C_SUBST))
 			return (1);
 		
 		flags = SUB_FIRST;
@@ -261,7 +261,7 @@ ex_subagain(SCR *sp, EXCMD *cmdp)
 	}
 	if (!F_ISSET(sp, SC_RE_SUBST) &&
 	    re_compile(sp, sp->subre, sp->subre_len,
-	    NULL, NULL, &sp->subre_c, SEARCH_CSUBST | SEARCH_MSG))
+	    NULL, NULL, &sp->subre_c, RE_C_SUBST))
 		return (1);
 	return (s(sp,
 	    cmdp, cmdp->argc ? cmdp->argv[0]->bp : NULL, &sp->subre_c, 0));
@@ -283,7 +283,7 @@ ex_subtilde(SCR *sp, EXCMD *cmdp)
 		return (1);
 	}
 	if (!F_ISSET(sp, SC_RE_SEARCH) && re_compile(sp, sp->re,
-	    sp->re_len, NULL, NULL, &sp->re_c, SEARCH_CSEARCH | SEARCH_MSG))
+	    sp->re_len, NULL, NULL, &sp->re_c, RE_C_SEARCH))
 		return (1);
 	return (s(sp,
 	    cmdp, cmdp->argc ? cmdp->argv[0]->bp : NULL, &sp->re_c, 0));
@@ -345,7 +345,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 	EVENT ev;
 	MARK from, to;
 	TEXTH tiq;
-	db_recno_t elno, lno, slno;
+	recno_t elno, lno, slno;
 	u_long ul;
 	regmatch_t match[10];
 	size_t blen, cnt, last, lbclen, lblen, len, llen;
@@ -407,7 +407,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 			if (lno != OOBLNO)
 				goto usage;
 			errno = 0;
-			nret = nget_uslong(sp, &ul, s, &s, 10);
+			nret = nget_uslong(&ul, s, &s, 10);
 			lno = ul;
 			if (*s == '\0')		/* Loop increment correction. */
 				--s;
@@ -468,7 +468,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 			goto usage;
 		}
 
-	if (*s != '\0' || !rflag && LF_ISSET(SUB_MUSTSETR)) {
+	if (*s != '\0' || (!rflag && LF_ISSET(SUB_MUSTSETR))) {
 usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 		return (1);
 	}
@@ -893,34 +893,26 @@ re_compile(SCR *sp, CHAR_T *ptrn, size_t plen, CHAR_T **ptrnp, size_t *lenp, reg
 
 	/* Set RE flags. */
 	reflags = 0;
-	if (LF_ISSET(SEARCH_EXTEND))
-		reflags |= REG_EXTENDED;
-	if (LF_ISSET(SEARCH_IC))
-		reflags |= REG_ICASE;
-	if (LF_ISSET(SEARCH_LITERAL))
-		reflags |= REG_NOSPEC;
-	if (!LF_ISSET(SEARCH_NOOPT | SEARCH_CSCOPE | SEARCH_TAG)) {
+	if (!LF_ISSET(RE_C_CSCOPE | RE_C_TAG)) {
 		if (O_ISSET(sp, O_EXTENDED))
 			reflags |= REG_EXTENDED;
 		if (O_ISSET(sp, O_IGNORECASE))
 			reflags |= REG_ICASE;
-		if (O_ISSET(sp, O_ICLOWER))
-			goto iclower;
-	}
-	if (LF_ISSET(SEARCH_ICL)) {
-iclower:	for (p = ptrn, len = plen; len > 0; ++p, --len)
-			if (isupper(*p))
-				break;
-		if (len == 0)
-			reflags |= REG_ICASE;
+		if (O_ISSET(sp, O_ICLOWER)) {
+			for (p = ptrn, len = plen; len > 0; ++p, --len)
+				if (isupper(*p))
+					break;
+			if (len == 0)
+				reflags |= REG_ICASE;
+		}
 	}
 
 	/* If we're replacing a saved value, clear the old one. */
-	if (LF_ISSET(SEARCH_CSEARCH) && F_ISSET(sp, SC_RE_SEARCH)) {
+	if (LF_ISSET(RE_C_SEARCH) && F_ISSET(sp, SC_RE_SEARCH)) {
 		regfree(&sp->re_c);
 		F_CLR(sp, SC_RE_SEARCH);
 	}
-	if (LF_ISSET(SEARCH_CSUBST) && F_ISSET(sp, SC_RE_SUBST)) {
+	if (LF_ISSET(RE_C_SUBST) && F_ISSET(sp, SC_RE_SUBST)) {
 		regfree(&sp->subre_c);
 		F_CLR(sp, SC_RE_SUBST);
 	}
@@ -932,7 +924,7 @@ iclower:	for (p = ptrn, len = plen; len > 0; ++p, --len)
 	 */
 	if (ptrnp != NULL) {
 		replaced = 0;
-		if (LF_ISSET(SEARCH_CSCOPE)) {
+		if (LF_ISSET(RE_C_CSCOPE)) {
 			if (re_cscope_conv(sp, &ptrn, &plen, &replaced))
 				return (1);
 			/*
@@ -942,10 +934,10 @@ iclower:	for (p = ptrn, len = plen; len > 0; ++p, --len)
 			 * not be right or safe.
 			 */
 			reflags |= REG_EXTENDED;
-		} else if (LF_ISSET(SEARCH_TAG)) {
+		} else if (LF_ISSET(RE_C_TAG)) {
 			if (re_tag_conv(sp, &ptrn, &plen, &replaced))
 				return (1);
-		} else if (!LF_ISSET(SEARCH_LITERAL))
+		} else
 			if (re_conv(sp, &ptrn, &plen, &replaced))
 				return (1);
 
@@ -986,14 +978,14 @@ iclower:	for (p = ptrn, len = plen; len > 0; ++p, --len)
 	 * contained a nul.  Bummer!
 	 */
 	if ((rval = regcomp(rep, ptrn, /* plen, */ reflags)) != 0) {
-		if (LF_ISSET(SEARCH_MSG))
+		if (!LF_ISSET(RE_C_SILENT))
 			re_error(sp, rval, rep); 
 		return (1);
 	}
 
-	if (LF_ISSET(SEARCH_CSEARCH))
+	if (LF_ISSET(RE_C_SEARCH))
 		F_SET(sp, SC_RE_SEARCH);
-	if (LF_ISSET(SEARCH_CSUBST))
+	if (LF_ISSET(RE_C_SUBST))
 		F_SET(sp, SC_RE_SUBST);
 
 	return (0);
