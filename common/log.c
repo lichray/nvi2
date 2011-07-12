@@ -79,7 +79,7 @@ static void	log_trace __P((SCR *, char *, recno_t, u_char *));
  * because it is passed to db_set as a string
  */
 typedef struct {
-    char    data[sizeof(u_char) /* type */ + sizeof(db_recno_t)];
+    char    data[sizeof(u_char) /* type */ + sizeof(recno_t)];
     CHAR_T  str[1];
 } log_t;
 #define CHAR_T_OFFSET ((char *)(((log_t*)0)->str) - (char *)0)
@@ -388,15 +388,13 @@ vi_log_get(
 
 	nlen = 1024;
 retry:
-	BINC_RETC(sp, e->l_lp, e->l_len, nlen);
+	BINC_RETC(sp, ep->l_lp, ep->l_len, nlen);
 
 	memset(&key, 0, sizeof(key));
 	key.data = lnop;		/* Initialize db request. */
 	key.size = sizeof(recno_t);
 	memset(&data, 0, sizeof(data));
 	data.data = ep->l_lp;
-	data.ulen = ep->l_len;
-	data.flags = DB_DBT_USERMEM;
 	switch (ep->log->get(ep->log, &key, &data, 0)) {
 	case ENOMEM:
 		nlen = data.size;
@@ -449,7 +447,7 @@ log_backward(
 #if defined(DEBUG) && 0
 		log_trace(sp, "log_backward", ep->l_cur, data.data);
 #endif
-		switch (*(p = (u_char *)data.data)) {
+		switch (*(p = (u_char *)ep->l_lp)) {
 		case LOG_CURSOR_INIT:
 			if (didop) {
 				memmove(rp, p + sizeof(u_char), sizeof(MARK));
