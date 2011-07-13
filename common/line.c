@@ -139,7 +139,14 @@ db_get(
 	}
 
 	/* Look-aside into the cache, and see if the line we want is there. */
-	if (lno == ep->c_lno) {
+	/*
+	 * Line cache will not work if different screens view the same
+	 * file with different encodings.
+	 * Multiple threads accessing the same cache can be a problem as
+	 * well.
+	 * So, line cache is (temporarily) disabled.
+	 */
+	if (0 && lno == ep->c_lno) {
 #if defined(DEBUG) && 0
 	TRACE(sp, "retrieve cached line %lu\n", (u_long)lno);
 #endif
