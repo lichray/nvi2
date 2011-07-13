@@ -497,7 +497,7 @@ mod_rpt(SCR *sp)
 				tlen += 2;
 			}
 			len = snprintf(p, MAXNUM, "%lu ",
-				(u_long)sp->rptlines[cnt]);
+			    (u_long)sp->rptlines[cnt]);
 			p += len;
 			tlen += len;
 			t = msg_cat(sp,
@@ -743,10 +743,8 @@ msg_open(
 	 * the message catalog build finds it.
 	 */
 #define	VMC	"VI_MESSAGE_CATALOG"
-	memset(&key, 0, sizeof(key));
 	key.data = &msgno;
 	key.size = sizeof(recno_t);
-	memset(&data, 0, sizeof(data));
 	msgno = 1;
 	if (db->get(db, &key, &data, 0) != 0 ||
 	    data.size != sizeof(VMC) - 1 ||
@@ -841,10 +839,8 @@ msg_cat(
 	 */
 	if (isdigit(str[0]) &&
 	    isdigit(str[1]) && isdigit(str[2]) && str[3] == '|') {
-		memset(&key, 0, sizeof(key));
 		key.data = &msgno;
 		key.size = sizeof(recno_t);
-		memset(&data, 0, sizeof(data));
 		msgno = atoi(str);
 
 		/*
