@@ -185,7 +185,7 @@ file_init(
 		if (opts_empty(sp, O_TMPDIR, 0))
 			goto err;
 		(void)snprintf(tname, sizeof(tname),
-		    "%s/vi.XXXXXX", O_STR(sp, O_TMPDIR));
+		    "%s/vi.XXXXXXXXXX", O_STR(sp, O_TMPDIR));
 		if ((fd = mkstemp(tname)) == -1) {
 			msgq(sp, M_SYSERR,
 			    "237|Unable to create temporary file");
