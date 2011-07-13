@@ -11,18 +11,10 @@ The directory layout is as follows:
     build ......... Build directory.
     catalog ....... Message catalogs; see catalog/README.
     cl ............ Vi interface to the curses(3) library.
-    clib .......... C library replacement source code.
     common ........ Code shared by ex and vi.
     docs .......... Ex/vi documentation, both current and historic.
     ex ............ Ex source code.
     include ....... Replacement include files.
-    ip ............ Library interface to vi: vi side.
-    ipc ........... Library interface to vi: application side.
-    perl_api ...... Perl scripting language support.
-    perl_scripts .. Perl scripts.
-    regex ......... POSIX 1003.2 regular expression library.
-    tcl_api ....... Tcl scripting language support.
-    tcl_scripts ... Tcl scripts.
     vi ............ Vi source code.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
