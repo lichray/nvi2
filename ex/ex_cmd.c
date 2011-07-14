@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cmd.c,v 10.25 2001/06/10 10:23:44 skimo Exp $ (Berkeley) $Date: 2001/06/10 10:23:44 $";
+static const char sccsid[] = "$Id: ex_cmd.c,v 10.26 2011/07/14 15:11:16 zy Exp $ (Berkeley) $Date: 2011/07/14 15:11:16 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -249,18 +249,6 @@ EXCMDLIST const cmds[] = {
 	    "ca1",
 	    "[line [,line]] p[rint] [count] [#l]",
 	    "display lines"},
-/* C_PERLCMD */
-	{L("perl"),	ex_perl,	E_ADDR2_ALL|E_ADDR_ZERO|
-					    E_ADDR_ZERODEF|E_SECURE,
-	    "s",
-	    "pe[rl] cmd",
-	    "run the perl interpreter with the command"},
-/* C_PERLDOCMD */
-	{L("perldo"),	ex_perl,	E_ADDR2|E_ADDR_ZERO|
-					    E_ADDR_ZERODEF|E_SECURE,
-	    "s",
-	    "perld[o] cmd",
-	    "run the perl interpreter with the command, on each line"},
 /* C_PRESERVE */
 	{L("preserve"),	ex_preserve,	0,
 	    "",
@@ -372,12 +360,6 @@ EXCMDLIST const cmds[] = {
 	    "!",
 	    "tagt[op][!]",
 	    "discard all tags"},
-/* C_TCLCMD */
-	{L("tcl"),		ex_tcl,		E_ADDR2_ALL|E_ADDR_ZERO|
-					    E_ADDR_ZERODEF|E_SECURE,
-	    "s",
-	    "tc[l] cmd",
-	    "run the tcl interpreter with the command"},
 /* C_UNDO */
 	{L("undo"),	ex_undo,	E_AUTOPRINT,
 	    "",

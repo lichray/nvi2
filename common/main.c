@@ -457,10 +457,6 @@ v_end(gp)
 	while ((sp = gp->hq.cqh_first) != (void *)&gp->hq)
 		(void)screen_end(sp);
 
-#ifdef HAVE_PERL_INTERP
-	perl_end(gp);
-#endif
-
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
 	{ FREF *frp;
 		/* Free FREF's. */
