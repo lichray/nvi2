@@ -18,7 +18,7 @@ struct _exf {
 
 					/* Underlying database state. */
 	DB	*db;			/* File db structure. */
-	char	*c_lp;			/* Cached line. */
+	CHAR_T	*c_lp;			/* Cached line. */
 	size_t	 c_len;			/* Cached line length. */
 	size_t	 c_blen;		/* Cached line buffer length. */
 	recno_t	 c_lno;			/* Cached line number. */
