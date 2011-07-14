@@ -1,3 +1,14 @@
+/*-
+ * Copyright (c) 1992, 1993, 1994
+ *	The Regents of the University of California.  All rights reserved.
+ * Copyright (c) 1992, 1993, 1994, 1995, 1996
+ *	Keith Bostic.  All rights reserved.
+ *
+ * See the LICENSE file for redistribution information.
+ *
+ *	$Id: conv.h,v 1.27 2001/08/18 21:41:41 skimo Exp $ (Berkeley) $Date: 2001/08/18 21:41:41 $
+ */
+
 #define KEY_COL(sp, ch)							\
 	(INTISWIDE(ch) ? CHAR_WIDTH(sp, ch) ? CHAR_WIDTH(sp, ch) : 	\
 					      1 : /* extra space */	\
