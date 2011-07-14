@@ -210,7 +210,7 @@ int
 default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, 
 		size_t *tolen, char **pdst, char *enc)
 {
-    int i, j, offset = 0;
+    size_t i, j, offset = 0;
     char **tostr = (char **)&cw->bp1;
     size_t  *blen = &cw->blen1;
     mbstate_t mbs;
