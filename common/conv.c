@@ -313,7 +313,12 @@ cs_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 
 #endif
 
-
+/*
+ * conv_init --
+ *	Initialize iconv functions.
+ *
+ * PUBLIC: void conv_init __P((SCR *, SCR *));
+ */
 void
 conv_init (SCR *orig, SCR *sp)
 {
@@ -335,6 +340,12 @@ conv_init (SCR *orig, SCR *sp)
     }
 }
 
+/*
+ * conv_enc --
+ *	Convert file/input encoding.
+ *
+ * PUBLIC: int conv_enc __P((SCR *, int, char *));
+ */
 int
 conv_enc (SCR *sp, int option, char *enc)
 {
