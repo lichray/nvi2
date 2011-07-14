@@ -303,7 +303,7 @@ static int
 cl_resize(SCR *sp, size_t lines, size_t columns)
 {
 	ARGS *argv[2], a, b;
-	char b1[1024];
+	CHAR_T b1[1024];
 
 	a.bp = b1;
 	b.bp = NULL;
@@ -311,12 +311,10 @@ cl_resize(SCR *sp, size_t lines, size_t columns)
 	argv[0] = &a;
 	argv[1] = &b;
 
-	(void)snprintf(b1, sizeof(b1), "lines=%lu", (u_long)lines);
-	a.len = strlen(b1);
+	a.len = SPRINTF(b1, sizeof(b1), L("lines=%lu"), (u_long)lines);
 	if (opts_set(sp, argv, NULL))
 		return (1);
-	(void)snprintf(b1, sizeof(b1), "columns=%lu", (u_long)columns);
-	a.len = strlen(b1);
+	a.len = SPRINTF(b1, sizeof(b1), L("columns=%lu"), (u_long)lines);
 	if (opts_set(sp, argv, NULL))
 		return (1);
 	return (0);
