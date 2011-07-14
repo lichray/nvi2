@@ -64,9 +64,6 @@ editor(
 	size_t len;
 	u_int flags;
 	int ch, flagchk, lflag, secure, startup, readonly, rval, silent;
-#ifdef GTAGS
-	int gtags = 0;
-#endif
 	char *tag_f, *wsizearg, path[256];
 	CHAR_T *w;
 	size_t wlen;
@@ -118,18 +115,10 @@ editor(
 	/* Set the file snapshot flag. */
 	F_SET(gp, G_SNAPSHOT);
 
-#ifdef GTAGS
-#ifdef DEBUG
-	while ((ch = getopt(argc, argv, "c:D:eFGlRrSsT:t:vw:")) != EOF)
-#else
-	while ((ch = getopt(argc, argv, "c:eFGlRrSst:vw:")) != EOF)
-#endif
-#else
 #ifdef DEBUG
 	while ((ch = getopt(argc, argv, "c:D:eFlRrSsT:t:vw:")) != EOF)
 #else
 	while ((ch = getopt(argc, argv, "c:eFlRrSst:vw:")) != EOF)
-#endif
 #endif
 		switch (ch) {
 		case 'c':		/* Run the command. */
@@ -167,11 +156,6 @@ editor(
 		case 'F':		/* No snapshot. */
 			F_CLR(gp, G_SNAPSHOT);
 			break;
-#ifdef GTAGS
-		case 'G':		/* gtags mode. */
-			gtags = 1;
-			break;
-#endif
 		case 'l':		/* Set lisp, showmatch options. */
 			lflag = 1;
 			break;
@@ -270,10 +254,6 @@ editor(
 	}
 	if (readonly)
 		*oargp++ = O_READONLY;
-#ifdef GTAGS
-	if (gtags)
-		*oargp++ = O_GTAGSMODE;
-#endif
 	if (secure)
 		*oargp++ = O_SECURE;
 	*oargp = -1;			/* Options initialization. */
