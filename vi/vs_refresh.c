@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "@(#)vs_refresh.c	10.44 (Berkeley) 10/13/96";
+static const char sccsid[] = "$Id: vs_refresh.c,v 10.45 2011/07/14 16:05:02 zy Exp $ (Berkeley) $Date: 2011/07/14 16:05:02 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -40,9 +40,9 @@ static int	vs_paint __P((SCR *, u_int));
  * PUBLIC: int vs_repaint __P((SCR *, EVENT *));
  */
 int
-vs_repaint(sp, evp)
-	SCR *sp;
-	EVENT *evp;
+vs_repaint(
+	SCR *sp,
+	EVENT *evp)
 {
 	SMAP *smp;
 
@@ -62,9 +62,9 @@ vs_repaint(sp, evp)
  * PUBLIC: int vs_refresh __P((SCR *, int));
  */
 int
-vs_refresh(sp, forcepaint)
-	SCR *sp;
-	int forcepaint;
+vs_refresh(
+	SCR *sp,
+	int forcepaint)
 {
 	GS *gp;
 	SCR *tsp;
@@ -162,9 +162,9 @@ vs_refresh(sp, forcepaint)
  *	what you're doing.  It's subtle and quick to anger.
  */
 static int
-vs_paint(sp, flags)
-	SCR *sp;
-	u_int flags;
+vs_paint(
+	SCR *sp,
+	u_int flags)
 {
 	GS *gp;
 	SMAP *smp, tmp;
@@ -172,7 +172,7 @@ vs_paint(sp, flags)
 	recno_t lastline, lcnt;
 	size_t cwtotal, cnt, len, notused, off, y;
 	int ch, didpaint, isempty, leftright_warp;
-	char *p;
+	CHAR_T *p;
 
 #define	 LNO	sp->lno			/* Current file line. */
 #define	OLNO	vip->olno		/* Remembered file line. */
@@ -763,8 +763,7 @@ number:	if (O_ISSET(sp, O_NUMBER) &&
  *	Update the mode line.
  */
 static void
-vs_modeline(sp)
-	SCR *sp;
+vs_modeline(SCR *sp)
 {
 	static char * const modes[] = {
 		"215|Append",			/* SM_APPEND */
