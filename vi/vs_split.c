@@ -174,6 +174,9 @@ vs_split(
 	/* Fit the screen into the logical chain. */
 	vs_insert(new, sp->gp);
 
+	/* Tell the display that we're splitting. */
+	(void)gp->scr_split(sp, new);
+
 	/*
 	 * Initialize the screen flags:
 	 *
