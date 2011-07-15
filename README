@@ -1,6 +1,6 @@
-#	$Id: README,v 8.154 2011/06/26 13:11:10 zy Exp $ (Berkeley) $Date: 2011/06/26 13:11:10 $
+#	$Id: README,v 8.155 2011/07/15 04:45:07 zy Exp $ (Berkeley) $Date: 2011/07/15 04:45:07 $
 
-This is version 2.0.0 (2011-06-26) of nex/nvi, a reimplementation of the ex/vi
+This is version 2.0.0 (2011-07-11) of nex/nvi, a reimplementation of the ex/vi
 text editors originally distributed as part of the Fourth Berkeley
 Software Distribution (4BSD), by the University of California, Berkeley.
 
@@ -16,6 +16,17 @@ The directory layout is as follows:
     ex ............ Ex source code.
     include ....... Replacement include files.
     vi ............ Vi source code.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+o Nvi was written by Keith Bostic, and the last version is 1.79.  After that,
+
+	Sven Verdoolaege added the iconv support and the DB3 locking.
+
+	Jun-ichiro itojun Hagino developed the file encoding detection
+	techniques in his nvi-m17n.
+
+The following acknowledgments were written by Keith Bostic:
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 o This software is several years old and is the product of many folks' work.  
