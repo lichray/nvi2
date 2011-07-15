@@ -1115,6 +1115,10 @@ style) expressions.
 Set the character to perform file path completion on the colon
 command line.
 .TP
+.B "fileencoding [locale]"
+Set the encoding of the current file. The encoding needs to be
+supported by iconv.
+.TP
 .B "flash [on]"
 Flash the screen instead of beeping the keyboard on error.
 .TP
@@ -1130,6 +1134,10 @@ as long as an upper-case letter does not appear in the search string.
 .TP
 .B "ignorecase, ic [off]"
 Ignore case differences in regular expressions.
+.TP
+.B "inputencoding [locale]"
+Set the encoding of your input characters. The encoding needs to be
+supported by iconv.
 .TP
 .B "keytime [6]"
 The 10th's of a second
@@ -1553,6 +1561,7 @@ $HOME/.exrc
 2nd choice for local directory startup file.
 .SH SEE ALSO
 .IR ctags (1),
+.IR iconv (1),
 .IR more (1),
 .IR curses (3),
 .IR dbopen (3)
