@@ -10,7 +10,7 @@
  */
 
 /* Definition of a vi "word". */
-#define	inword(ch)	((UCHAR_T)ch <= 255 && (isalnum(ch) || (ch) == '_'))
+#define	inword(ch)	((UCHAR_T)ch < 255 && (isalnum(ch) || (ch) == '_'))
 
 typedef struct _vikeys VIKEYS;
 
