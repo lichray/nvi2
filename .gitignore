@@ -2,6 +2,7 @@
 *.swp
 *~
 *.orig
+*.core
 extern.h
 *_def.h
 tags
