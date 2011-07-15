@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_refresh.c,v 10.45 2011/07/14 16:05:02 zy Exp $ (Berkeley) $Date: 2011/07/14 16:05:02 $";
+static const char sccsid[] = "$Id: vs_refresh.c,v 10.51 2011/07/15 03:32:07 zy Exp $ (Berkeley) $Date: 2011/07/15 03:32:07 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -345,7 +345,7 @@ bottom:		if (db_last(sp, &lastline))
 		tmp.lno = LNO;
 		tmp.coff = HMAP->coff;
 		tmp.soff = 1;
-		lcnt = vs_sm_nlines(sp, &tmp, lastline, sp->t_rows);
+		lcnt = vs_sm_nlines(sp, &tmp, lastline+1, sp->t_rows);
 		if (lcnt < HALFTEXT(sp)) {
 			if (vs_sm_fill(sp, lastline, P_BOTTOM))
 				return (1);
@@ -507,8 +507,8 @@ adjust:	if (!O_ISSET(sp, O_LEFTRIGHT) &&
 		 * Count up the widths of the characters.  If it's a tab
 		 * character, go do it the the slow way.
 		 */
-		for (cwtotal = 0; cnt--; cwtotal += KEY_LEN(sp, ch))
-			if ((ch = *(u_char *)p--) == '\t')
+		for (cwtotal = 0; cnt--; cwtotal += KEY_COL(sp, ch))
+			if ((ch = *(UCHAR_T *)p--) == '\t')
 				goto slow;
 
 		/*
@@ -521,8 +521,8 @@ adjust:	if (!O_ISSET(sp, O_LEFTRIGHT) &&
 		 * If we're moving left, and there's a wide character in the
 		 * current position, go to the end of the character.
 		 */
-		if (KEY_LEN(sp, ch) > 1)
-			cwtotal -= KEY_LEN(sp, ch) - 1;
+		if (KEY_COL(sp, ch) > 1)
+			cwtotal -= KEY_COL(sp, ch) - 1;
 
 		/*
 		 * If the new column moved us off of the current logical line,
@@ -547,9 +547,9 @@ adjust:	if (!O_ISSET(sp, O_LEFTRIGHT) &&
 		 * screen boundary, we can quit.
 		 */
 		for (cwtotal = SCNO; cnt--;) {
-			if ((ch = *(u_char *)p++) == '\t')
+			if ((ch = *(UCHAR_T *)p++) == '\t')
 				goto slow;
-			if ((cwtotal += KEY_LEN(sp, ch)) >= SCREEN_COLS(sp))
+			if ((cwtotal += KEY_COL(sp, ch)) >= SCREEN_COLS(sp))
 				break;
 		}
 
@@ -804,13 +804,13 @@ vs_modeline(SCR *sp)
 				++p;
 				break;
 			}
-			if ((curlen += KEY_LEN(sp, *p)) > cols) {
+			if ((curlen += KEY_COL(sp, *p)) > cols) {
 				ellipsis = 3;
 				curlen +=
-				    KEY_LEN(sp, '.') * 3 + KEY_LEN(sp, ' ');
+				    KEY_COL(sp, '.') * 3 + KEY_COL(sp, ' ');
 				while (curlen > cols) {
 					++p;
-					curlen -= KEY_LEN(sp, *p);
+					curlen -= KEY_COL(sp, *p);
 				}
 				break;
 			}
@@ -818,13 +818,13 @@ vs_modeline(SCR *sp)
 		if (ellipsis) {
 			while (ellipsis--)
 				(void)gp->scr_addstr(sp,
-				    KEY_NAME(sp, '.'), KEY_LEN(sp, '.'));
+				    KEY_NAME(sp, '.'), KEY_COL(sp, '.'));
 			(void)gp->scr_addstr(sp,
-			    KEY_NAME(sp, ' '), KEY_LEN(sp, ' '));
+			    KEY_NAME(sp, ' '), KEY_COL(sp, ' '));
 		}
 		for (; *p != '\0'; ++p)
 			(void)gp->scr_addstr(sp,
-			    KEY_NAME(sp, *p), KEY_LEN(sp, *p));
+			    KEY_NAME(sp, *p), KEY_COL(sp, *p));
 	}
 
 	/* Clear the rest of the line. */
@@ -877,7 +877,7 @@ vs_modeline(SCR *sp)
 		if (O_ISSET(sp, O_SHOWMODE)) {
 			if (F_ISSET(sp->ep, F_MODIFIED))
 				(void)gp->scr_addstr(sp,
-				    KEY_NAME(sp, '*'), KEY_LEN(sp, '*'));
+				    KEY_NAME(sp, '*'), KEY_COL(sp, '*'));
 			(void)gp->scr_addstr(sp, t, len);
 		}
 	}
