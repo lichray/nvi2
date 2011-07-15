@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.66 04/07/11 15:49:09 zy Exp $ (Berkeley) $Date: 04/07/11 15:49:09 $";
+static const char sccsid[] = "$Id: options.c,v 10.67 2011/07/14 14:51:43 zy Exp $ (Berkeley) $Date: 2011/07/14 14:51:43 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -90,8 +90,6 @@ OPTLIST const optlist[] = {
 	{L("fileencoding"),f_encoding,	OPT_STR,	OPT_WC},
 /* O_FLASH	    HPUX */
 	{L("flash"),	NULL,		OPT_1BOOL,	0},
-/* O_GTAGSMODE      FreeBSD2.2 */
-	{L("gtagsmode"),	NULL,		OPT_0BOOL,	0},
 /* O_HARDTABS	    4BSD */
 	{L("hardtabs"),	NULL,		OPT_NUM,	0},
 /* O_ICLOWER	  4.4BSD */
@@ -258,7 +256,6 @@ static OABBREV const abbrev[] = {
 	{L("eb"),	O_ERRORBELLS},		/*     4BSD */
 	{L("ed"),	O_EDCOMPATIBLE},	/*     4BSD */
 	{L("ex"),	O_EXRC},		/* System V (undocumented) */
-	{L("gt"),	O_GTAGSMODE},		/* FreeBSD2.2 */
 	{L("fe"),	O_FILEENCODING},
 	{L("ht"),	O_HARDTABS},		/*     4BSD */
 	{L("ic"),	O_IGNORECASE},		/*     4BSD */

@@ -210,11 +210,6 @@ v_tagpush(SCR *sp, VICMD *vp)
 {
 	EXCMD cmd;
 
-#ifdef GTAGS
-	if (O_ISSET(sp, O_GTAGSMODE) && vp->m_start.cno == 0)
-		ex_cinit(sp, &cmd, C_RTAG, 0, OOBLNO, 0, 0);
-	else
-#endif
 	ex_cinit(sp, &cmd, C_TAG, 0, OOBLNO, 0, 0);
 	argv_exp0(sp, &cmd, VIP(sp)->keyw, STRLEN(VIP(sp)->keyw) + 1);
 	return (v_exec_ex(sp, vp, &cmd));

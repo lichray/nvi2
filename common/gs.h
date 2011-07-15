@@ -61,12 +61,8 @@ struct _gs {
 
 	SCR	*ccl_sp;		/* Colon command-line screen. */
 
-	void	*perl_interp;		/* Perl interpreter. */
-	void	*tcl_interp;		/* Tcl_Interp *: Tcl interpreter. */
-
 	void	*cl_private;		/* Curses support private area. */
 	void	*ip_private;		/* IP support private area. */
-	void	*tk_private;		/* Tk/Tcl support private area. */
 
 					/* File references. */
 	CIRCLEQ_HEAD(_frefh, _fref) frefq;

@@ -37,7 +37,7 @@ struct _scr {
 	int	 id;			/* Screen id #. */
 	int	 refcnt;		/* Reference count. */
 
-	CONVWIN	cw;			/* Iconv window */
+	CONVWIN cw;			/* Conversion buffer. */
 	GS	*gp;			/* Pointer to global area. */
 	SCR	*nextdisp;		/* Next display screen. */
 	SCR	*ccl_parent;		/* Colon command-line parent screen. */
@@ -91,7 +91,6 @@ struct _scr {
 
 	void	*ex_private;		/* Ex private area. */
 	void	*vi_private;		/* Vi private area. */
-	void	*perl_private;		/* Perl private area. */
 	void	*cl_private;		/* Curses private area. */
 
 	CONV	conv;

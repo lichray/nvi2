@@ -121,9 +121,6 @@ the file during your edit session.)
 .B \-l
 Start editing with the lisp and showmatch options set.
 .TP
-.B \-G
-Start editing in gtags mode, as if the gtagsmode option was set.
-.TP
 .B \-R
 Start editing in read-only mode, as if the command name was
 .IR view ,
@@ -432,8 +429,6 @@ commands or cancel partial commands.
 .TP
 .B "<control-]>"
 Push a tag reference onto the tag stack.
-In gtagsmode, if at the first column of line,
-locate function references otherwise function definitions.
 .TP
 .B "<control-^>"
 Switch to the most recently edited file.
@@ -945,9 +940,6 @@ Grow or shrink the current screen.
 .B "rew[ind][!]"
 Rewind the argument list.
 .TP
-.B "rta[g][!] tagstring"
-Edit the file referring the specified tag. (Only in gtagsmode)
-.TP
 .B "se[t] [option[=[value]] ...] [nooption ...] [option? ...] [all]"
 Display or set editor options.
 .TP
@@ -1121,9 +1113,6 @@ supported by iconv.
 .TP
 .B "flash [on]"
 Flash the screen instead of beeping the keyboard on error.
-.TP
-.B "gtagsmode, gt [off]"
-Use GTAGS and GRTAGS instead of tags.
 .TP
 .B "hardtabs, ht [8]"
 Set the spacing between hardware tab settings.
