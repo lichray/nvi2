@@ -139,14 +139,7 @@ db_get(
 	}
 
 	/* Look-aside into the cache, and see if the line we want is there. */
-	/*
-	 * Line cache will not work if different screens view the same
-	 * file with different encodings.
-	 * Multiple threads accessing the same cache can be a problem as
-	 * well.
-	 * So, line cache is (temporarily) disabled.
-	 */
-	if (0 && lno == ep->c_lno) {
+	if (lno == ep->c_lno) {
 #if defined(DEBUG) && 0
 	TRACE(sp, "retrieve cached line %lu\n", (u_long)lno);
 #endif
@@ -287,6 +280,8 @@ db_append(
 {
 	DBT data, key;
 	EXF *ep;
+	char *fp;
+	size_t flen;
 	int rval;
 
 #if defined(DEBUG) && 0
@@ -298,11 +293,13 @@ db_append(
 		return (1);
 	}
 		
+	INT2FILE(sp, p, len, fp, flen);
+
 	/* Update file. */
 	key.data = &lno;
 	key.size = sizeof(lno);
-	data.data = p;
-	data.size = len;
+	data.data = fp;
+	data.size = flen;
 	SIGBLOCK;
 	if (ep->db->put(ep->db, &key, &data, R_IAFTER) == -1) {
 		msgq(sp, M_SYSERR,
@@ -360,6 +357,8 @@ db_insert(
 {
 	DBT data, key;
 	EXF *ep;
+	char *fp;
+	size_t flen;
 	int rval;
 
 #if defined(DEBUG) && 0
@@ -372,11 +371,13 @@ db_insert(
 		return (1);
 	}
 		
+	INT2FILE(sp, p, len, fp, flen);
+		
 	/* Update file. */
 	key.data = &lno;
 	key.size = sizeof(lno);
-	data.data = p;
-	data.size = len;
+	data.data = fp;
+	data.size = flen;
 	SIGBLOCK;
 	if (ep->db->put(ep->db, &key, &data, R_IBEFORE) == -1) {
 		msgq(sp, M_SYSERR,
