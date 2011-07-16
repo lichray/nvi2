@@ -10,7 +10,7 @@
  */
 
 #define KEY_COL(sp, ch)							\
-	(INTISWIDE(ch) ? CHAR_WIDTH(sp, ch) ? CHAR_WIDTH(sp, ch) : 	\
+	(INTISWIDE(ch) ? CHAR_WIDTH(sp, ch) > 0 ? CHAR_WIDTH(sp, ch) : 	\
 					      1 : /* extra space */	\
 			 KEY_LEN(sp,ch))
 
