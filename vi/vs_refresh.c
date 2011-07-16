@@ -804,13 +804,13 @@ vs_modeline(SCR *sp)
 				++p;
 				break;
 			}
-			if ((curlen += KEY_COL(sp, *p)) > cols) {
+			if ((curlen += KEY_LEN(sp, *p)) > cols) {
 				ellipsis = 3;
 				curlen +=
-				    KEY_COL(sp, '.') * 3 + KEY_COL(sp, ' ');
+				    KEY_LEN(sp, '.') * 3 + KEY_LEN(sp, ' ');
 				while (curlen > cols) {
 					++p;
-					curlen -= KEY_COL(sp, *p);
+					curlen -= KEY_LEN(sp, *p);
 				}
 				break;
 			}
@@ -818,13 +818,13 @@ vs_modeline(SCR *sp)
 		if (ellipsis) {
 			while (ellipsis--)
 				(void)gp->scr_addstr(sp,
-				    KEY_NAME(sp, '.'), KEY_COL(sp, '.'));
+				    KEY_NAME(sp, '.'), KEY_LEN(sp, '.'));
 			(void)gp->scr_addstr(sp,
-			    KEY_NAME(sp, ' '), KEY_COL(sp, ' '));
+			    KEY_NAME(sp, ' '), KEY_LEN(sp, ' '));
 		}
 		for (; *p != '\0'; ++p)
 			(void)gp->scr_addstr(sp,
-			    KEY_NAME(sp, *p), KEY_COL(sp, *p));
+			    KEY_NAME(sp, *p), KEY_LEN(sp, *p));
 	}
 
 	/* Clear the rest of the line. */
@@ -877,7 +877,7 @@ vs_modeline(SCR *sp)
 		if (O_ISSET(sp, O_SHOWMODE)) {
 			if (F_ISSET(sp->ep, F_MODIFIED))
 				(void)gp->scr_addstr(sp,
-				    KEY_NAME(sp, '*'), KEY_COL(sp, '*'));
+				    KEY_NAME(sp, '*'), KEY_LEN(sp, '*'));
 			(void)gp->scr_addstr(sp, t, len);
 		}
 	}
