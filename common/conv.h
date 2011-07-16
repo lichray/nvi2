@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: conv.h,v 1.27 2001/08/18 21:41:41 skimo Exp $ (Berkeley) $Date: 2001/08/18 21:41:41 $
+ *	$Id: conv.h,v 1.28 2011/07/16 14:40:38 zy Exp $ (Berkeley) $Date: 2011/07/16 14:40:38 $
  */
 
 #define KEY_COL(sp, ch)							\
@@ -15,7 +15,10 @@
 			 KEY_LEN(sp,ch))
 
 struct _conv_win {
-    void    *bp1;
+	union	{
+		char 	*b_c1;
+		CHAR_T	*b_wc1;
+	};
     size_t   blen1;
 };
 

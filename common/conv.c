@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 1.27 2001/08/18 21:41:41 skimo Exp $ (Berkeley) $Date: 2001/08/18 21:41:41 $";
+static const char sccsid[] = "$Id: conv.c,v 1.28 2011/07/16 14:40:06 zy Exp $ (Berkeley) $Date: 2011/07/16 14:40:06 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -46,7 +46,7 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, size_t *tolen,
 	CHAR_T **dst)
 {
     int i;
-    CHAR_T **tostr = (CHAR_T **)&cw->bp1;
+    CHAR_T **tostr = &cw->b_wc1;
     size_t  *blen = &cw->blen1;
 
     BINC_RETW(NULL, *tostr, *blen, len);
@@ -55,7 +55,7 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, size_t *tolen,
     for (i = 0; i < len; ++i)
 	(*tostr)[i] = (u_char) str[i];
 
-    *dst = cw->bp1;
+    *dst = cw->b_wc1;
 
     return 0;
 }
@@ -90,7 +90,7 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 		size_t *tolen, CHAR_T **dst, char *enc)
 {
     int i = 0, j;
-    CHAR_T **tostr = (CHAR_T **)&cw->bp1;
+    CHAR_T **tostr = &cw->b_wc1;
     size_t  *blen = &cw->blen1;
     mbstate_t mbs;
     size_t   n;
@@ -134,14 +134,14 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     if (id != (iconv_t)-1)
 	iconv_close(id);
 
-    *dst = cw->bp1;
+    *dst = cw->b_wc1;
 
     return 0;
 err:
     *tolen = i;
     if (id != (iconv_t)-1)
 	iconv_close(id);
-    *dst = cw->bp1;
+    *dst = cw->b_wc1;
 
     return error;
 }
@@ -192,7 +192,7 @@ int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, size_t *tolen,
 	char **dst)
 {
     int i;
-    char **tostr = (char **)&cw->bp1;
+    char **tostr = &cw->b_c1;
     size_t  *blen = &cw->blen1;
 
     BINC_RETC(NULL, *tostr, *blen, len);
@@ -201,7 +201,7 @@ int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, size_t *tolen,
     for (i = 0; i < len; ++i)
 	(*tostr)[i] = str[i];
 
-    *dst = cw->bp1;
+    *dst = cw->b_wc1;
 
     return 0;
 }
@@ -211,7 +211,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 		size_t *tolen, char **pdst, char *enc)
 {
     size_t i, j, offset = 0;
-    char **tostr = (char **)&cw->bp1;
+    char **tostr = &cw->b_c1;
     size_t  *blen = &cw->blen1;
     mbstate_t mbs;
     size_t n;
@@ -232,10 +232,10 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	char *bp = buffer;						\
 	while (len != 0) {						\
 	    size_t outleft = cw->blen1 - offset;			\
-	    char *obp = (char *)cw->bp1 + offset;		    	\
+	    char *obp = cw->b_c1 + offset;		    	\
 	    if (cw->blen1 < offset + MB_CUR_MAX) {		    	\
 		nlen += 256;						\
-		BINC_RETC(NULL, cw->bp1, cw->blen1, nlen);		\
+		BINC_RETC(NULL, cw->b_c1, cw->blen1, nlen);		\
 	    }						    		\
 	    errno = 0;						    	\
 	    if (iconv(id, &bp, &len, &obp, &outleft) == -1 && 	        \
@@ -286,13 +286,13 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	*tolen = offset;
     }
 
-    *pdst = cw->bp1;
+    *pdst = cw->b_c1;
 
     return 0;
 err:
     *tolen = j;
 
-    *pdst = cw->bp1;
+    *pdst = cw->b_c1;
 
     return 1;
 }
