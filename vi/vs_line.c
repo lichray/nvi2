@@ -139,7 +139,7 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 			cols_per_screen -= O_NUMBER_LENGTH;
 			if ((!dne || smp->lno == 1) && skip_cols == 0) {
 				nlen = snprintf((char*)cbuf,
-				    sizeof(cbuf), O_NUMBER_FMT, smp->lno);
+				    sizeof(cbuf), O_NUMBER_FMT, (u_long)smp->lno);
 				(void)gp->scr_addstr(sp, (char*)cbuf, nlen);
 			}
 		}
@@ -532,7 +532,7 @@ vs_number(SCR *sp)
 			break;
 
 		(void)gp->scr_move(sp, smp - HMAP, 0);
-		len = snprintf(nbuf, sizeof(nbuf), O_NUMBER_FMT, smp->lno);
+		len = snprintf(nbuf, sizeof(nbuf), O_NUMBER_FMT, (u_long)smp->lno);
 		(void)gp->scr_addstr(sp, nbuf, len);
 	}
 	(void)gp->scr_move(sp, oldy, oldx);
