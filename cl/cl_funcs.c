@@ -259,7 +259,9 @@ int
 cl_clrtoeol(SCR *sp)
 {
 	WINDOW *win;
+#if 0
 	size_t spcnt, y, x;
+#endif
 
 	win = CLSP(sp) ? CLSP(sp) : stdscr;
 

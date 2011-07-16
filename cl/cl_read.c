@@ -152,7 +152,6 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 	struct timeval poll;
 	CL_PRIVATE *clp;
 	GS *gp;
-	SCR *tsp;
 	fd_set rdfd;
 	input_t rval;
 	int maxfd, nr, term_reset;

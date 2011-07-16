@@ -353,7 +353,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 	int cflag, lflag, nflag, pflag, rflag;
 	int didsub, do_eol_match, eflags, empty_ok, eval;
 	int linechanged, matched, quit, rval;
-	CHAR_T *p, *lb, *bp;
+	CHAR_T *bp, *lb;
 	enum nresult nret;
 
 	NEEDFILE(sp, cmdp);
