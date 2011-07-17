@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: line.c,v 10.22 2011/07/01 02:30:16 zy Exp $ (Berkeley) $Date: 2011/07/01 02:30:16 $";
+static const char sccsid[] = "$Id: line.c,v 10.23 2011/07/17 00:37:53 zy Exp $ (Berkeley) $Date: 2011/07/17 00:37:53 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -161,7 +161,7 @@ retry:
 	key.data = &lno;
 	key.size = sizeof(lno);
 	switch (ep->db->get(ep->db, &key, &data, 0)) {
-        case -1:
+	case -1:
 		goto err2;
 	case 1:
 err1:		if (LF_ISSET(DBG_FATAL))
@@ -181,17 +181,17 @@ err3:		if (lenp != NULL)
 	}
 
 	if (FILE2INT(sp, data.data, data.size, wp, wlen)) {
-	    if (!F_ISSET(sp, SC_CONV_ERROR)) {
-		F_SET(sp, SC_CONV_ERROR);
-		msgq(sp, M_ERR, "324|Conversion error on line %d", lno);
-	    }
-	    goto err3;
+		if (!F_ISSET(sp, SC_CONV_ERROR)) {
+			F_SET(sp, SC_CONV_ERROR);
+			msgq(sp, M_ERR, "324|Conversion error on line %d", lno);
+		}
+		goto err3;
 	}
 
 	/* Reset the cache. */
 	if (wp != data.data) {
-	    BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-	    MEMCPYW(ep->c_lp, wp, wlen);
+		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
+		MEMCPYW(ep->c_lp, wp, wlen);
 	}
 	ep->c_lno = lno;
 	ep->c_len = wlen;
@@ -555,22 +555,20 @@ alloc_err:
 		msgq(sp, M_DBERR, "007|unable to get last line");
 		*lnop = 0;
 		return (1);
-        case 0:
+	case 0:
 		;
 	}
 
 	memcpy(&lno, key.data, sizeof(lno));
 
 	if (lno != ep->c_lno) {
-	    FILE2INT(sp, data.data, data.size, wp, wlen);
+		FILE2INT(sp, data.data, data.size, wp, wlen);
 
-	    /* Fill the cache. */
-	    if (wp != data.data) {
-		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
+		/* Fill the cache. */
+		BINC_GOTO(sp, CHAR_T, ep->c_lp, ep->c_blen, wlen);
 		MEMCPYW(ep->c_lp, wp, wlen);
-	    }
-	    ep->c_lno = lno;
-	    ep->c_len = wlen;
+		ep->c_lno = lno;
+		ep->c_len = wlen;
 	}
 	ep->c_nlines = lno;
 
