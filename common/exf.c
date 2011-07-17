@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.50 2011/06/26 21:14:46 zy Exp $ (Berkeley) $Date: 2011/06/26 21:14:46 $";
+static const char sccsid[] = "$Id: exf.c,v 10.51 2011/07/17 16:52:43 zy Exp $ (Berkeley) $Date: 2011/07/17 16:52:43 $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -406,6 +406,9 @@ file_init(
 
 	/* Set the initial cursor position, queue initial command. */
 	file_cinit(sp);
+
+	/* Report conversion errors again. */
+	F_CLR(sp, SC_CONV_ERROR);
 
 	/* Redraw the screen from scratch, schedule a welcome message. */
 	F_SET(sp, SC_SCR_REFORMAT | SC_STATUS);
