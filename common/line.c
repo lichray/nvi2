@@ -544,14 +544,14 @@ db_last(
 	key.size = sizeof(lno);
 
 	switch (ep->db->seq(ep->db, &key, &data, R_LAST)) {
+	case -1:
+alloc_err:
+		msgq(sp, M_SYSERR, "007|unable to get last line");
+		*lnop = 0;
+		return (1);
 	case 1:
 		*lnop = 0;
 		return (0);
-	case -1:
-alloc_err:
-		msgq(sp, M_DBERR, "007|unable to get last line");
-		*lnop = 0;
-		return (1);
 	case 0:
 		;
 	}
