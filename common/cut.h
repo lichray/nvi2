@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: cut.h,v 10.9 2000/07/22 17:31:18 skimo Exp $ (Berkeley) $Date: 2000/07/22 17:31:18 $
+ *	$Id: cut.h,v 10.10 2011/07/16 18:06:00 zy Exp $ (Berkeley) $Date: 2011/07/16 18:06:00 $
  */
 
 typedef struct _texth TEXTH;		/* TEXT list head structure. */
@@ -16,8 +16,7 @@ CIRCLEQ_HEAD(_texth, _text);
 struct _cb {
 	LIST_ENTRY(_cb) q;		/* Linked list of cut buffers. */
 	TEXTH	 textq;			/* Linked list of TEXT structures. */
-	/* XXXX Needed ? Can non ascii-chars be cut buffer names ? */
-	CHAR_T	 name;			/* Cut buffer name. */
+	char	 name;			/* Cut buffer name. */
 	size_t	 len;			/* Total length of cut text. */
 
 #define	CB_LMODE	0x01		/* Cut was in line mode. */
