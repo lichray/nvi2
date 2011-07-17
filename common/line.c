@@ -176,8 +176,7 @@ err3:		if (lenp != NULL)
 		if (data.size > nlen) {
 			nlen = data.size;
 			goto retry;
-		} else
-			memcpy(ep->c_lp, data.data, nlen);
+		}
 	}
 
 	if (FILE2INT(sp, data.data, data.size, wp, wlen)) {
@@ -189,10 +188,8 @@ err3:		if (lenp != NULL)
 	}
 
 	/* Reset the cache. */
-	if (wp != data.data) {
-		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-		MEMCPYW(ep->c_lp, wp, wlen);
-	}
+	BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
+	MEMCPYW(ep->c_lp, wp, wlen);
 	ep->c_lno = lno;
 	ep->c_len = wlen;
 
@@ -565,7 +562,7 @@ alloc_err:
 		FILE2INT(sp, data.data, data.size, wp, wlen);
 
 		/* Fill the cache. */
-		BINC_GOTO(sp, CHAR_T, ep->c_lp, ep->c_blen, wlen);
+		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
 		MEMCPYW(ep->c_lp, wp, wlen);
 		ep->c_lno = lno;
 		ep->c_len = wlen;
