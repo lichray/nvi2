@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: line.c,v 10.23 2011/07/17 00:37:53 zy Exp $ (Berkeley) $Date: 2011/07/17 00:37:53 $";
+static const char sccsid[] = "$Id: line.c,v 10.24 2011/07/18 16:10:48 zy Exp $ (Berkeley) $Date: 2011/07/18 16:10:48 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -154,9 +154,6 @@ db_get(
 nocache:
 	nlen = 1024;
 retry:
-	/* data.size contains length in bytes */
-	BINC_GOTO(sp, CHAR_T, ep->c_lp, ep->c_blen, nlen);
-
 	/* Get the line from the underlying database. */
 	key.data = &lno;
 	key.size = sizeof(lno);
@@ -188,8 +185,11 @@ err3:		if (lenp != NULL)
 	}
 
 	/* Reset the cache. */
-	BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-	MEMCPYW(ep->c_lp, wp, wlen);
+	if (wp != data.data) {
+		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
+		MEMCPYW(ep->c_lp, wp, wlen);
+	} else
+		ep->c_lp = data.data;
 	ep->c_lno = lno;
 	ep->c_len = wlen;
 
@@ -562,8 +562,11 @@ alloc_err:
 		FILE2INT(sp, data.data, data.size, wp, wlen);
 
 		/* Fill the cache. */
-		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-		MEMCPYW(ep->c_lp, wp, wlen);
+		if (wp != data.data) {
+			BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
+			MEMCPYW(ep->c_lp, wp, wlen);
+		} else
+			ep->c_lp = data.data;
 		ep->c_lno = lno;
 		ep->c_len = wlen;
 	}
