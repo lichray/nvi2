@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: screen.c,v 10.23 2011/06/26 23:11:11 zy Exp $ (Berkeley) $Date: 2011/06/26 23:11:11 $";
+static const char sccsid[] = "$Id: screen.c,v 10.24 2011/07/18 16:58:31 zy Exp $ (Berkeley) $Date: 2011/07/18 16:58:31 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -188,6 +188,8 @@ screen_end(SCR *sp)
 		free(sp->repl);
 	if (sp->newl != NULL)
 		free(sp->newl);
+	if (sp->cw.b_c1 != NULL)
+		free(sp->cw.b_c1);
 
 	/* Free all the options */
 	opts_free(sp);

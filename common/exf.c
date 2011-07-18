@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.51 2011/07/17 16:52:43 zy Exp $ (Berkeley) $Date: 2011/07/17 16:52:43 $";
+static const char sccsid[] = "$Id: exf.c,v 10.52 2011/07/18 16:58:54 zy Exp $ (Berkeley) $Date: 2011/07/18 16:58:54 $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -721,6 +721,8 @@ file_end(
 		free(ep->rcv_path);
 	if (ep->rcv_mpath != NULL)
 		free(ep->rcv_mpath);
+	if (ep->c_lp != NULL)
+		free(ep->c_lp);
 
 	free(ep);
 	return (0);
