@@ -722,7 +722,7 @@ file_end(
 		free(ep->rcv_path);
 	if (ep->rcv_mpath != NULL)
 		free(ep->rcv_mpath);
-	if (ep->c_lp != NULL)
+	if (ep->c_blen > 0)
 		free(ep->c_lp);
 
 	free(ep);
