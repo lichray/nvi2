@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.52 2011/07/18 16:58:54 zy Exp $ (Berkeley) $Date: 2011/07/18 16:58:54 $";
+static const char sccsid[] = "$Id: exf.c,v 10.53 2011/07/20 00:38:28 zy Exp $ (Berkeley) $Date: 2011/07/20 00:38:28 $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -39,6 +39,7 @@ static const char sccsid[] = "$Id: exf.c,v 10.52 2011/07/18 16:58:54 zy Exp $ (B
 
 static int	file_backup __P((SCR *, char *, char *));
 static void	file_cinit __P((SCR *));
+static void	file_encinit __P((SCR *));
 static void	file_comment __P((SCR *));
 static int	file_spath __P((SCR *, FREF *, struct stat *, int *));
 
@@ -404,11 +405,11 @@ file_init(
 	sp->ep = ep;
 	sp->frp = frp;
 
+	/* Detect and set the file encoding */
+	file_encinit(sp);
+
 	/* Set the initial cursor position, queue initial command. */
 	file_cinit(sp);
-
-	/* Report conversion errors again. */
-	F_CLR(sp, SC_CONV_ERROR);
 
 	/* Redraw the screen from scratch, schedule a welcome message. */
 	F_SET(sp, SC_SCR_REFORMAT | SC_STATUS);
@@ -1210,6 +1211,44 @@ err:	if (rfd != -1)
 	if (bp != NULL)
 		FREE_SPACE(sp, bp, blen);
 	return (1);
+}
+
+/*
+ * file_encinit --
+ *	Read the first line and set the O_FILEENCODING.
+ */
+static void
+file_encinit(SCR *sp)
+{
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+	size_t len;
+	char *p;
+	int bom;
+	CHAR_T *wp;
+	size_t wlen;
+	char *oenc;
+
+	if(db_rget(sp, 1, &p, &len) || len < 3)
+		return;
+
+	/* Backup the old (locale) encoding. */
+	oenc = strdup(O_STR(sp, O_FILEENCODING));
+
+	/* Test UTF-16, UTF-8, then locale. */
+	bom = (u_char)p[0] + ((u_char)p[1] << 8);
+	/* XXX Only accepts UTF-16 with BOM. */
+	if (bom == 0xfeff || bom == 0xfffe) {
+		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16", 0);
+		if (!FILE2INT(sp, p, len, wp, wlen))
+		    goto clean;
+	}
+	o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
+	if (FILE2INT(sp, p, len, wp, wlen)) {
+		o_set(sp, O_FILEENCODING, OS_STRDUP, oenc, 0);
+	}
+clean:
+	free(oenc);
+#endif
 }
 
 /*
