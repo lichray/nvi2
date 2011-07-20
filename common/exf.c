@@ -1208,6 +1208,8 @@ err:	if (rfd != -1)
 	}
 	if (estr)
 		msgq_str(sp, M_SYSERR, estr, "%s");
+	if (d != NULL)
+		free(d);
 	if (bp != NULL)
 		FREE_SPACE(sp, bp, blen);
 	return (1);
