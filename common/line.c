@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: line.c,v 10.24 2011/07/18 16:10:48 zy Exp $ (Berkeley) $Date: 2011/07/18 16:10:48 $";
+static const char sccsid[] = "$Id: line.c,v 10.25 2011/07/19 21:56:27 zy Exp $ (Berkeley) $Date: 2011/07/19 21:56:27 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -576,6 +576,40 @@ alloc_err:
 	*lnop = (F_ISSET(sp, SC_TINPUT) &&
 	    ((TEXT *)sp->tiq.cqh_last)->lno > lno ?
 	    ((TEXT *)sp->tiq.cqh_last)->lno : lno);
+	return (0);
+}
+
+/*
+ * db_rget --
+ *	Retrieve a raw line from database. No cache, no conversion.
+ *
+ * PUBLIC: int db_rget __P((SCR *, recno_t, char **, size_t *));
+ */
+int
+db_rget(
+	SCR *sp,
+	recno_t lno,				/* Line number. */
+	char **pp,				/* Pointer store. */
+	size_t *lenp)				/* Length store. */
+{
+	DBT data, key;
+	EXF *ep;
+
+	/* Check for no underlying file. */
+	if ((ep = sp->ep) == NULL)
+		return (1);
+
+	/* Get the line from the underlying database. */
+	key.data = &lno;
+	key.size = sizeof(lno);
+	if (ep->db->get(ep->db, &key, &data, 0))
+	/* We do not report error, and do not ensure the size! */
+		return (1);
+
+	if (lenp != NULL)
+		*lenp = data.size;
+	if (pp != NULL)
+		*pp = data.data;
 	return (0);
 }
 
