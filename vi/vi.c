@@ -403,6 +403,7 @@ intr:			CLR_INTERRUPT(sp);
 		if (F_ISSET(gp, G_SRESTART) || F_ISSET(sp, SC_EX)) {
 			*spp = sp;
 			v_dtoh(sp);
+			gp->scr_discard(sp, NULL);
 			break;
 		}
 	}
@@ -1015,6 +1016,9 @@ v_dtoh(SCR *sp)
 		}
 		CIRCLEQ_REMOVE(&gp->dq, tsp, q);
 		CIRCLEQ_INSERT_TAIL(&gp->hq, tsp, q);
+		/* XXXX Change if hidden screens per window */
+		tsp->gp = 0;
+		gp->scr_discard(tsp, NULL);
 	}
 
 	/* Move current screen back to the display queue. */
