@@ -122,7 +122,7 @@ looks_utf16(const char *buf, size_t nbytes)
 	if (nbytes < 2)
 		return 0;
 
-	bom = (u_char)buf[0] + ((u_char)buf[1] << 8);
+	bom = ((u_char)buf[0] << 8) + (u_char)buf[1];
 	if (bom == 0xfffe)
 		bigend = 0;
 	else if (bom == 0xfeff)
