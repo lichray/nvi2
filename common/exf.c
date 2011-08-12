@@ -1225,31 +1225,15 @@ file_encinit(SCR *sp)
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
 	size_t len;
 	char *p;
-	int bom;
-	CHAR_T *wp;
-	size_t wlen;
-	char *oenc;
 
 	if(db_rget(sp, 1, &p, &len) || len < 3)
 		return;
 
-	/* Backup the old (locale) encoding. */
-	oenc = strdup(O_STR(sp, O_FILEENCODING));
-
-	/* Test UTF-16, UTF-8, then locale. */
-	bom = (u_char)p[0] + ((u_char)p[1] << 8);
-	/* XXX Only accepts UTF-16 with BOM. */
-	if (bom == 0xfeff || bom == 0xfffe) {
+	if (looks_utf8(p, len) > 1)
+		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
+	else if (looks_utf16(p, len) > 0)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16", 0);
-		if (!FILE2INT(sp, p, len, wp, wlen))
-		    goto clean;
-	}
-	o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
-	if (FILE2INT(sp, p, len, wp, wlen)) {
-		o_set(sp, O_FILEENCODING, OS_STRDUP, oenc, 0);
-	}
-clean:
-	free(oenc);
+	/* Fallback to locale encoding */
 #endif
 }
 
