@@ -1225,13 +1225,21 @@ file_encinit(SCR *sp)
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
 	size_t len;
 	char *p;
+	size_t blen = 0;
+	char buf[4096];	/* not need to be '\0'-terminated */
+	recno_t ln = 1;
 
-	if(db_rget(sp, 1, &p, &len) || len < 3)
-		return;
+	while (!db_rget(sp, ln++, &p, &len)) {
+		if (blen + len > sizeof(buf))
+			len = sizeof(buf) - blen;
+		strncpy(buf + blen, p, len);
+		blen += len;
+		if (blen == sizeof(buf)) break;
+	}
 
-	if (looks_utf8(p, len) > 1)
+	if (looks_utf8(buf, len) > 1)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
-	else if (looks_utf16(p, len) > 0)
+	else if (looks_utf16(buf, len) > 0)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16", 0);
 	/* Fallback to locale encoding */
 #endif
