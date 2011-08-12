@@ -1232,14 +1232,14 @@ file_encinit(SCR *sp)
 	while (!db_rget(sp, ln++, &p, &len)) {
 		if (blen + len > sizeof(buf))
 			len = sizeof(buf) - blen;
-		strncpy(buf + blen, p, len);
+		memcpy(buf + blen, p, len);
 		blen += len;
 		if (blen == sizeof(buf)) break;
 	}
 
-	if (looks_utf8(buf, len) > 1)
+	if (looks_utf8(buf, blen) > 1)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
-	else if (looks_utf16(buf, len) > 0)
+	else if (looks_utf16(buf, blen) > 0)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16", 0);
 	/* Fallback to locale encoding */
 #endif
