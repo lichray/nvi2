@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_write.c,v 10.39 2011/08/13 14:19:46 skimo Exp $ (Berkeley) $Date: 2011/08/13 14:19:46 $";
+static const char sccsid[] = "$Id: ex_write.c,v 10.39 2011/08/13 18:28:15 zy Exp $ (Berkeley) $Date: 2011/08/13 18:28:15 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -321,11 +321,8 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
 
 	if (tline != 0) {
-		if (!strcasecmp(O_STR(sp, O_FILEENCODING), "utf-16le")) {
-			putc('\xff', fp); putc('\xfe', fp);
-		} else if (!strcasecmp(O_STR(sp, O_FILEENCODING), "utf-16be")) {
-			putc('\xfe', fp); putc('\xff', fp);
-		}
+		if (sp->ep->bom && fwrite(&sp->ep->bom, 2, 1, fp) != 1)
+			goto err;
 		for (; fline <= tline; ++fline, ++lcnt) {
 			/* Caller has to provide any interrupt message. */
 			if ((lcnt + 1) % INTERRUPT_CHECK == 0) {
@@ -344,7 +341,7 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 				goto err;
 			ccnt += len;
 			if (isutf16 && putc('\0', fp) != '\0')
-				break;
+				break;	/* UTF-16 uses '000a' as EOL */
 			if (putc('\n', fp) != '\n')
 				break;
 			++ccnt;

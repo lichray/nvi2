@@ -1247,6 +1247,7 @@ file_encinit(SCR *sp)
 			db_rget(sp, 1, &p, &len);
 			nlen = len-2;
 			GET_SPACE_GOTOC(sp, np, nlen, nlen);
+			memcpy(sp->ep->_bom, p, 2);
 			memcpy(np, p+2, len-2);
 			db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
 		}
