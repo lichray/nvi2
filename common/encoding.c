@@ -6,7 +6,7 @@
  */
 
 #ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.1 2011/08/13 22:07:42 zy Exp $ (Berkeley) $Date: 2011/08/13 22:07:42 $";
+static const char sccsid[] = "$Id: encoding.c,v 1.2 2011/08/13 22:58:03 zy Exp $ (Berkeley) $Date: 2011/08/13 22:58:03 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -152,9 +152,6 @@ looks_utf16(const char *buf, size_t nbytes)
 		else if (!(0xDC00 <= c && c <= 0xDFFF))
 			return 0;
 	}
-
-	if (following)
-		return 0;
 
 	return 1 + bigend;
 }

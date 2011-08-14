@@ -1234,7 +1234,10 @@ file_encinit(SCR *sp)
 			len = sizeof(buf) - blen;
 		memcpy(buf + blen, p, len);
 		blen += len;
-		if (blen == sizeof(buf)) break;
+		if (blen == sizeof(buf))
+			break;
+		else
+			buf[blen++] = '\n';
 	}
 
 	if (looks_utf8(buf, blen) > 1)
