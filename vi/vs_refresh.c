@@ -345,7 +345,7 @@ bottom:		if (db_last(sp, &lastline))
 		tmp.lno = LNO;
 		tmp.coff = HMAP->coff;
 		tmp.soff = 1;
-		lcnt = vs_sm_nlines(sp, &tmp, lastline+1, sp->t_rows);
+		lcnt = vs_sm_nlines(sp, &tmp, lastline, sp->t_rows);
 		if (lcnt < HALFTEXT(sp)) {
 			if (vs_sm_fill(sp, lastline, P_BOTTOM))
 				return (1);
