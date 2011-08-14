@@ -118,6 +118,7 @@ looks_utf16(const char *buf, size_t nbytes)
 	size_t i;
 	unsigned int c;
 	int bom;
+	int following = 0;
 
 	if (nbytes < 2)
 		return 0;
@@ -131,18 +132,29 @@ looks_utf16(const char *buf, size_t nbytes)
 		return 0;
 
 	for (i = 2; i + 1 < nbytes; i += 2) {
-		/* XXX fix to properly handle chars > 65536 */
-
 		if (bigend)
 			c = (u_char)buf[i + 1] + 256 * (u_char)buf[i];
 		else
 			c = (u_char)buf[i] + 256 * (u_char)buf[i + 1];
 
-		if (c == 0xfffe)
-			return 0;
-		if (c < 128 && text_chars[(size_t)c] != T)
+		if (!following)
+			if (c < 0xD800 || c > 0xDFFF)
+				if (c < 128 && text_chars[(size_t)c] != T)
+					return 0;
+				else
+					following = 0;
+			else if (!(0xD800 <= c && c <= 0xDBFF))
+				return 0;
+			else {
+				following = 1;
+				continue;
+			}
+		else if (!(0xDC00 <= c && c <= 0xDFFF))
 			return 0;
 	}
+
+	if (following)
+		return 0;
 
 	return 1 + bigend;
 }
