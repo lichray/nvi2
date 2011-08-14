@@ -6,7 +6,7 @@
  */
 
 #ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.0 2011/08/12 09:17:03 zy Exp $ (Berkeley) $Date: 2011/08/12 09:17:03 $";
+static const char sccsid[] = "$Id: encoding.c,v 1.1 2011/08/13 22:07:42 zy Exp $ (Berkeley) $Date: 2011/08/13 22:07:42 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -47,7 +47,7 @@ static char text_chars[256] = {
  *      1: 7-bit text
  *      2: definitely UTF-8 text (valid high-bit set bytes)
  *
- *  We do no accept UTF-8 with BOM.
+ *  Based on RFC 3629. UTF-8 with BOM is not accepted.
  *
  * PUBLIC: int looks_utf8 __P((const char *, size_t));
  */
@@ -73,15 +73,15 @@ looks_utf8(const char *buf, size_t nbytes)
 			int following;
 
 			if ((buf[i] & 0x20) == 0)		/* 110xxxxx */
-				following = 1;
+				if ((buf[1] & 0x3e))	/* C0, C1 */
+					following = 1;
+				else return -1;
 			else if ((buf[i] & 0x10) == 0)	/* 1110xxxx */
 				following = 2;
 			else if ((buf[i] & 0x08) == 0)	/* 11110xxx */
-				following = 3;
-			else if ((buf[i] & 0x04) == 0)	/* 111110xx */
-				following = 4;
-			else if ((buf[i] & 0x02) == 0)	/* 1111110x */
-				following = 5;
+				if ((u_char)buf[i] < 0xf5 || 0xf7 < (u_char)buf[i])
+					following = 3;
+				else return -1;		/* F5, F6, F7 */
 			else
 				return -1;
 
@@ -90,7 +90,7 @@ looks_utf8(const char *buf, size_t nbytes)
 				if (i >= nbytes)
 					goto done;
 
-				if ((buf[i] & 0x80) == 0 || (buf[i] & 0x40))
+				if (buf[i] & 0x40)	/* 10xxxxxx */
 					return -1;
 			}
 
