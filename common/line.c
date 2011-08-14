@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: line.c,v 10.25 2011/07/19 21:56:27 zy Exp $ (Berkeley) $Date: 2011/07/19 21:56:27 $";
+static const char sccsid[] = "$Id: line.c,v 10.26 2011/08/12 12:36:41 zy Exp $ (Berkeley) $Date: 2011/08/12 12:36:41 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -610,6 +610,38 @@ db_rget(
 		*lenp = data.size;
 	if (pp != NULL)
 		*pp = data.data;
+	return (0);
+}
+
+/*
+ * db_rset --
+ *	Store a line in the file. No log, no conversion.
+ *
+ * PUBLIC: int db_rset __P((SCR *, recno_t, char *, size_t));
+ */
+int
+db_rset(
+	SCR *sp,
+	recno_t lno,
+	char *p,
+	size_t len)
+{
+	DBT data, key;
+	EXF *ep;
+
+	/* Check for no underlying file. */
+	if ((ep = sp->ep) == NULL)
+		return (1);
+		
+	/* Update file. */
+	key.data = &lno;
+	key.size = sizeof(lno);
+	data.data = p;
+	data.size = len;
+	if (ep->db->put(ep->db, &key, &data, 0) == -1)
+	/* We do not report error, and do not ensure the size! */
+		return (1);
+
 	return (0);
 }
 

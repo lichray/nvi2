@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_write.c,v 10.38 2001/06/25 15:19:22 skimo Exp $ (Berkeley) $Date: 2001/06/25 15:19:22 $";
+static const char sccsid[] = "$Id: ex_write.c,v 10.39 2011/08/13 18:28:15 zy Exp $ (Berkeley) $Date: 2011/08/13 18:28:15 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -25,6 +25,7 @@ static const char sccsid[] = "$Id: ex_write.c,v 10.38 2001/06/25 15:19:22 skimo 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
 
 #include "../common/common.h"
@@ -287,6 +288,7 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	CHAR_T *p;
 	char *f;
 	size_t flen;
+	int isutf16;
 
 	gp = sp->gp;
 	fline = fm->lno;
@@ -315,7 +317,12 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	ccnt = 0;
 	lcnt = 0;
 	msg = "253|Writing...";
-	if (tline != 0)
+
+	isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
+
+	if (tline != 0) {
+		if (sp->ep->bom && fwrite(&sp->ep->bom, 2, 1, fp) != 1)
+			goto err;
 		for (; fline <= tline; ++fline, ++lcnt) {
 			/* Caller has to provide any interrupt message. */
 			if ((lcnt + 1) % INTERRUPT_CHECK == 0) {
@@ -333,10 +340,13 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 			if (fwrite(f, 1, flen, fp) != flen)
 				goto err;
 			ccnt += len;
+			if (isutf16 && putc('\0', fp) != '\0')
+				break;	/* UTF-16 uses '000a' as EOL */
 			if (putc('\n', fp) != '\n')
 				break;
 			++ccnt;
 		}
+	}
 
 	if (fflush(fp))
 		goto err;

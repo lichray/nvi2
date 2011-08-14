@@ -1239,9 +1239,25 @@ file_encinit(SCR *sp)
 
 	if (looks_utf8(buf, blen) > 1)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
-	else if (looks_utf16(buf, blen) > 0)
-		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16", 0);
+	else {
+		int st = looks_utf16(buf, blen);
+		if (st > 0) {
+			char *np;
+			size_t nlen;
+			db_rget(sp, 1, &p, &len);
+			nlen = len-2;
+			GET_SPACE_GOTOC(sp, np, nlen, nlen);
+			memcpy(sp->ep->_bom, p, 2);
+			memcpy(np, p+2, len-2);
+			db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
+		}
+		if (st == 1)
+			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
+		else if (st == 2)
+			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
+	}
 	/* Fallback to locale encoding */
+alloc_err:;
 #endif
 }
 
