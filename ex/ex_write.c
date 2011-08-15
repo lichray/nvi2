@@ -340,10 +340,15 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 			if (fwrite(f, 1, flen, fp) != flen)
 				goto err;
 			ccnt += len;
-			if (isutf16 && putc('\0', fp) != '\0')
-				break;	/* UTF-16 uses '000a' as EOL */
+			/* UTF-16 w/o BOM is big-endian */
+			if (isutf16 && sp->ep->_bom[0] != '\xff'
+					&& putc('\0', fp) != '\0')
+				break;	/* '000a' */
 			if (putc('\n', fp) != '\n')
 				break;
+			if (sp->ep->_bom[0] == '\xff'
+					&& putc('\0', fp) != '\0')
+				break;	/* '0a00' */
 			++ccnt;
 		}
 	}

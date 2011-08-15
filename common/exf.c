@@ -1254,9 +1254,16 @@ file_encinit(SCR *sp)
 			memcpy(np, p+2, len-2);
 			db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
 		}
-		if (st == 1)
+		if (st == 1) {
+			DBT key;
+			recno_t lno;
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
-		else if (st == 2)
+			db_last(sp, &lno);
+			key.data = &lno;
+			key.size = sizeof(lno);
+			sp->ep->db->del(sp->ep->db, &key, 0);
+			sp->ep->c_nlines--;
+		} else if (st == 2)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
 	}
 	/* Fallback to locale encoding */
