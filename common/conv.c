@@ -92,9 +92,9 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 {
 	/* XXX UTF-16 linesep hack */
 	if (!strncasecmp(enc, "utf-16", 6) && len % 2) {
-		len -= 1;
-		if (*str == '\0')	/* little-endian */
+		if (str[len-1] != '\0')	/* little-endian */
 			str++;
+		len -= 1;
 	}
 
     int i = 0, j;
