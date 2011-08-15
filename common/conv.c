@@ -91,11 +91,8 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 		size_t *tolen, CHAR_T **dst, char *enc)
 {
 	/* XXX UTF-16 linesep hack */
-	if (!strncasecmp(enc, "utf-16", 6) && len % 2) {
-		if (str[len-1] != '\0')	/* little-endian */
-			str++;
-		len -= 1;
-	}
+	if (!strncasecmp(enc, "utf-16", 6) && len % 2)
+		str[--len] != '\0' && str++;	/* shortern by 1, shift if LE */
 
     int i = 0, j;
     CHAR_T **tostr = &cw->b_wc1;
