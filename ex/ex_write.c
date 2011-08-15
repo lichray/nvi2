@@ -341,14 +341,14 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 				goto err;
 			ccnt += len;
 			/* UTF-16 w/o BOM is big-endian */
-			if (isutf16 && sp->ep->_bom[0] != '\xff'
-					&& putc('\0', fp) != '\0')
-				break;	/* '000a' */
-			if (putc('\n', fp) != '\n')
+			if (isutf16 && sp->ep->_bom[0] != '\xff') {	/* UTF-16BE */
+				if (fwrite("\0\x0a", 1, 2, fp) != 2)
+					break;
+			} else if (sp->ep->_bom[0] == '\xff') {		/* UTF-16LE */
+				if (fwrite("\x0a\0", 1, 2, fp) != 2)
+					break;
+			} else if (putc('\n', fp) != '\n')
 				break;
-			if (sp->ep->_bom[0] == '\xff'
-					&& putc('\0', fp) != '\0')
-				break;	/* '0a00' */
 			++ccnt;
 		}
 	}
