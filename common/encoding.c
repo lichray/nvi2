@@ -73,17 +73,17 @@ looks_utf8(const char *buf, size_t nbytes)
 			int following;
 
 			if ((buf[i] & 0x20) == 0)		/* 110xxxxx */
-				if ((buf[1] & 0x3e))	/* C0, C1 */
+				if ((u_char)buf[i] > 0xc1)	/* C0, C1 */
 					following = 1;
 				else return -1;
 			else if ((buf[i] & 0x10) == 0)	/* 1110xxxx */
 				following = 2;
 			else if ((buf[i] & 0x08) == 0)	/* 11110xxx */
-				if ((u_char)buf[i] < 0xf5 || 0xf7 < (u_char)buf[i])
+				if ((u_char)buf[i] < 0xf5)
 					following = 3;
 				else return -1;		/* F5, F6, F7 */
 			else
-				return -1;
+				return -1;		/* F8~FF */
 
 			for (n = 0; n < following; n++) {
 				i++;
