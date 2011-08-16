@@ -1,6 +1,6 @@
-#	$Id: README,v 8.155 2011/07/15 04:45:07 zy Exp $ (Berkeley) $Date: 2011/07/15 04:45:07 $
+#	$Id: README,v 8.156 2011/08/16 13:55:14 zy Exp $ (Berkeley) $Date: 2011/08/16 13:55:14 $
 
-This is version 2.0.0 (2011-07-11) of nex/nvi, a reimplementation of the ex/vi
+This is version 2.0.1 (2011-08-16) of nex/nvi, a reimplementation of the ex/vi
 text editors originally distributed as part of the Fourth Berkeley
 Software Distribution (4BSD), by the University of California, Berkeley.
 
