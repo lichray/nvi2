@@ -32,6 +32,7 @@ static const char sccsid[] = "$Id: ex_version.c,v 10.32 2001/06/25 15:19:22 skim
 int
 ex_version(SCR *sp, EXCMD *cmdp)
 {
-	msgq(sp, M_INFO, VI_VERSION);
+	msgq(sp, M_INFO, "Version "VI_VERSION
+			 " The CSRG, University of California, Berkeley.");
 	return (0);
 }
