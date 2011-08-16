@@ -15,6 +15,9 @@
 #ifdef HAVE_NCURSESW_NCURSES_H /* { */
 #include <ncursesw/ncurses.h>
 #else /* } { */
+#if defined(USE_WIDECHAR) && !defined(_XOPEN_SOURCE_EXTENDED)
+#define _XOPEN_SOURCE_EXTENDED 1
+#endif
 #ifdef HAVE_NCURSES_H /* { */
 #include <ncurses.h>
 #else /* } { */
