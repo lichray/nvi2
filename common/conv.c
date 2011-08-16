@@ -339,10 +339,16 @@ conv_init (SCR *orig, SCR *sp)
 	sp->conv.input2int = ie_char2int;
 #endif
 #ifdef USE_ICONV
-	o_set(sp, O_FILEENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
 #endif
     }
+    /* XXX
+     * Do not inherit file encoding from the old screen,
+     * but overwrite the fileencoding option in .exrc
+     */
+#ifdef USE_ICONV
+    o_set(sp, O_FILEENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
+#endif
 }
 
 /*
