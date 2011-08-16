@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_main.c,v 10.54 2001/07/29 19:07:27 skimo Exp $ (Berkeley) $Date: 2001/07/29 19:07:27 $";
+static const char sccsid[] = "$Id: cl_main.c,v 10.55 2011/08/15 19:52:28 zy Exp $ (Berkeley) $Date: 2011/08/15 19:52:28 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -139,10 +139,8 @@ main(int argc, char **argv)
 	 * XXX
 	 * Reset the X11 xterm icon/window name.
 	 */
-	if (F_ISSET(clp, CL_RENAME)) {
-		(void)printf(XTERM_RENAME, ttype);
-		(void)fflush(stdout);
-	}
+	if (F_ISSET(clp, CL_RENAME))
+		cl_setname(gp, clp->oname);
 
 	/* If a killer signal arrived, pretend we just got it. */
 	if (clp->killersig) {
@@ -153,6 +151,8 @@ main(int argc, char **argv)
 
 	/* Free the global and CL private areas. */
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
+	if (clp->oname != NULL)
+		free(clp->oname);
 	free(clp);
 	free(gp);
 #endif

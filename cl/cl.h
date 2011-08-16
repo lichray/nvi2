@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: cl.h,v 10.33 2011/07/14 15:14:00 zy Exp $ (Berkeley) $Date: 2011/07/14 15:14:00 $
+ *	$Id: cl.h,v 10.34 2011/08/15 20:07:32 zy Exp $ (Berkeley) $Date: 2011/08/15 20:07:32 $
  */
 
 #ifdef USE_SLANG_CURSES
@@ -41,6 +41,8 @@ typedef struct _cl_private {
 	char	*cuu1;		/* Cursor up terminal string. */
 	char	*rmso, *smso;	/* Inverse video terminal strings. */
 	char	*smcup, *rmcup;	/* Terminal start/stop strings. */
+
+	char	*oname;		/* Original screen window name. */
 
 	SCR	*focus;		/* Screen that has the "focus". */
 
@@ -82,9 +84,6 @@ typedef enum { INP_OK=0, INP_EOF, INP_ERR, INP_INTR, INP_TIMEOUT } input_t;
 /* The screen position relative to a specific window. */
 #define	RCNO(sp, cno)	(cno)
 #define	RLNO(sp, lno)	(lno)
-
-/* X11 xterm escape sequence to rename the icon/window. */
-#define	XTERM_RENAME	"\033]0;%s\007"
 
 /*
  * XXX

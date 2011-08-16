@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_funcs.c,v 10.72 2002/03/02 23:18:33 skimo Exp $ (Berkeley) $Date: 2002/03/02 23:18:33 $";
+static const char sccsid[] = "$Id: cl_funcs.c,v 10.73 2011/08/15 19:55:33 zy Exp $ (Berkeley) $Date: 2011/08/15 19:55:33 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -638,12 +638,13 @@ cl_rename(SCR *sp, char *name, int on)
 {
 	GS *gp;
 	CL_PRIVATE *clp;
-	char *ttype;
+	FILE *pfp;
+	char buf[256], *s, *e;
+	char * wid;
+	char cmd[64];
 
 	gp = sp->gp;
 	clp = CLP(sp);
-
-	ttype = OG_STR(gp, GO_TERM);
 
 	/*
 	 * XXX
@@ -651,19 +652,44 @@ cl_rename(SCR *sp, char *name, int on)
 	 */
 	if (on) {
 		clp->focus = sp;
-		if (F_ISSET(clp, CL_RENAME_OK) &&
-		    !strncmp(ttype, "xterm", sizeof("xterm") - 1)) {
-			F_SET(clp, CL_RENAME);
-			(void)printf(XTERM_RENAME, name);
-			(void)fflush(stdout);
+		if (!F_ISSET(clp, CL_RENAME_OK) ||
+				strcmp(OG_STR(gp, GO_TERM), "xterm"))
+			return (0);
+
+		if (clp->oname == NULL && (wid = getenv("WINDOWID"))) {
+			snprintf(cmd, sizeof(cmd), "xprop -id %s WM_NAME", wid);
+			if ((pfp = popen(cmd, "r")) && fgets(buf, sizeof(buf), pfp) &&
+					(s = strchr(buf, '"')) && (e = strrchr(buf, '"')))
+				clp->oname = strndup(s + 1, e - s - 1);
 		}
+
+		cl_setname(gp, name);
+
+		F_SET(clp, CL_RENAME);
 	} else
 		if (F_ISSET(clp, CL_RENAME)) {
+			cl_setname(gp, clp->oname);
+
 			F_CLR(clp, CL_RENAME);
-			(void)printf(XTERM_RENAME, ttype);
-			(void)fflush(stdout);
 		}
 	return (0);
+}
+
+/*
+ * cl_setname --
+ *	Set a X11 icon/window name.
+ *
+ * PUBLIC: void cl_setname __P((GS *, char *));
+ */
+void
+cl_setname(GS *gp, char *name)
+{
+/* X11 xterm escape sequence to rename the icon/window. */
+#define	XTERM_RENAME	"\033]0;%s\007"
+
+	(void)printf(XTERM_RENAME, name == NULL ? OG_STR(gp, GO_TERM) : name);
+	(void)fflush(stdout);
+#undef XTERM_RENAME
 }
 
 /* 
