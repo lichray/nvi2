@@ -1246,13 +1246,13 @@ file_encinit(SCR *sp)
 		int st = looks_utf16(buf, blen);
 		if (st > 0) {
 			char *np;
-			size_t nlen;
 			db_rget(sp, 1, &p, &len);
-			nlen = len-2;
-			GET_SPACE_GOTOC(sp, np, nlen, nlen);
-			memcpy(sp->ep->_bom, p, 2);
-			memcpy(np, p+2, len-2);
-			db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
+			if ((np = malloc(len-2))) {
+				memcpy(sp->ep->_bom, p, 2);
+				memcpy(np, p+2, len-2);
+				db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
+				free(np);
+			}
 		}
 		if (st == 1) {
 			DBT key, data;
@@ -1266,7 +1266,6 @@ file_encinit(SCR *sp)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
 	}
 	/* Fallback to locale encoding */
-alloc_err:;
 #endif
 }
 
