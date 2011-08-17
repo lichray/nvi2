@@ -15,6 +15,7 @@ The directory layout is as follows:
     docs .......... Ex/vi documentation, both current and historic.
     ex ............ Ex source code.
     include ....... Replacement include files.
+    regex ......... Modified regex library with wide character support.
     vi ............ Vi source code.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
