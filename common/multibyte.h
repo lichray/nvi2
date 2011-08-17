@@ -52,8 +52,8 @@ typedef	u_char		CHAR_T;
 typedef	u_char		UCHAR_T;
 
 #define STRLEN		strlen
-#define STRTOL		strtol
-#define STRTOUL		strtoul
+#define STRTOL(a,b,c)	(strtol(a,(char**)b,c))
+#define STRTOUL(a,b,c)	(strtoul(a,(char**)b,c))
 #define SPRINTF		snprintf
 #define STRCMP		strcmp
 #define STRPBRK		strpbrk
