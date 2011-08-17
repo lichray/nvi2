@@ -107,8 +107,8 @@ struct _scr {
 #define	RE_C_SUBST	0x0008		/* Compile substitute replacement. */
 #define	RE_C_TAG	0x0010		/* Compile ctag pattern. */
 
-#define	RE_WSTART	"[[:<:]]"	/* Ex/vi: not-in-word search pattern. */
-#define	RE_WSTOP	"[[:>:]]"
+#define	RE_WSTART	L("[[:<:]]")	/* Ex/vi: not-in-word search pattern. */
+#define	RE_WSTOP	L("[[:>:]]")
 #define RE_WSTART_LEN	(sizeof(RE_WSTART)/sizeof(CHAR_T)-1)
 #define RE_WSTOP_LEN	(sizeof(RE_WSTOP)/sizeof(CHAR_T)-1)
 					/* Ex/vi: flags to search routines. */
