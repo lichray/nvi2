@@ -206,7 +206,7 @@ int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, size_t *tolen,
     for (i = 0; i < len; ++i)
 	(*tostr)[i] = str[i];
 
-    *dst = cw->b_wc1;
+    *dst = cw->b_c1;
 
     return 0;
 }
