@@ -1228,6 +1228,9 @@ file_encinit(SCR *sp)
 	size_t blen = 0;
 	char buf[4096];	/* not need to be '\0'-terminated */
 	recno_t ln = 1;
+	EXF *ep;
+
+	ep = sp->ep;
 
 	while (!db_rget(sp, ln++, &p, &len)) {
 		if (blen + len > sizeof(buf))
@@ -1248,7 +1251,7 @@ file_encinit(SCR *sp)
 			char *np;
 			db_rget(sp, 1, &p, &len);
 			if ((np = malloc(len-2))) {
-				memcpy(sp->ep->_bom, p, 2);
+				memcpy(ep->_bom, p, 2);
 				memcpy(np, p+2, len-2);
 				db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
 				free(np);
@@ -1259,8 +1262,9 @@ file_encinit(SCR *sp)
 			recno_t lno;
 			key.data = &lno;
 			key.size = sizeof(lno);
-			!sp->ep->db->seq(sp->ep->db, &key, &data, R_LAST) &&
-			*(char*)data.data == '\0' && sp->ep->db->del(sp->ep->db, &key, 0);
+			if (!ep->db->seq(ep->db, &key, &data, R_LAST) &&
+					*(char*)data.data == '\0')
+				ep->db->del(ep->db, &key, 0);
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
 		} else if (st == 2)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
