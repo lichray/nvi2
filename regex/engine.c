@@ -72,11 +72,11 @@ struct match {
 	struct re_guts *g;
 	int eflags;
 	regmatch_t *pmatch;	/* [nsub+1] (0 element unused) */
-	RCHAR_T *offp;		/* offsets work from here */
-	RCHAR_T *beginp;		/* start of string -- virtual NUL precedes */
-	RCHAR_T *endp;		/* end of string -- virtual NUL here */
-	RCHAR_T *coldp;		/* can be no match starting before here */
-	RCHAR_T **lastpos;	/* [nplus+1] */
+	const RCHAR_T *offp;		/* offsets work from here */
+	const RCHAR_T *beginp;		/* start of string -- virtual NUL precedes */
+	const RCHAR_T *endp;		/* end of string -- virtual NUL here */
+	const RCHAR_T *coldp;		/* can be no match starting before here */
+	const RCHAR_T **lastpos;	/* [nplus+1] */
 	STATEVARS;
 	states st;		/* current states */
 	states fresh;		/* states for a fresh start */
@@ -90,11 +90,11 @@ extern "C" {
 #endif
 
 /* === engine.c === */
-static int matcher __P((struct re_guts *g, RCHAR_T *string, size_t nmatch, regmatch_t pmatch[], int eflags));
-static RCHAR_T *dissect __P((struct match *m, RCHAR_T *start, RCHAR_T *stop, sopno startst, sopno stopst));
-static RCHAR_T *backref __P((struct match *m, RCHAR_T *start, RCHAR_T *stop, sopno startst, sopno stopst, sopno lev));
-static RCHAR_T *fast __P((struct match *m, RCHAR_T *start, RCHAR_T *stop, sopno startst, sopno stopst));
-static RCHAR_T *slow __P((struct match *m, RCHAR_T *start, RCHAR_T *stop, sopno startst, sopno stopst));
+static int matcher __P((struct re_guts *g, const RCHAR_T *string, size_t nmatch, regmatch_t pmatch[], int eflags));
+static const RCHAR_T *dissect __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
+static const RCHAR_T *backref __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst, sopno lev));
+static const RCHAR_T *fast __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
+static const RCHAR_T *slow __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
 static states step __P((struct re_guts *g, sopno start, sopno stop, states bef, int ch, states aft));
 #define	BOL	(OUT+1)
 #define	EOL	(BOL+1)
@@ -132,26 +132,26 @@ static char *pchar __P((int ch));
 
 /*
  - matcher - the actual matching engine
- == static int matcher(register struct re_guts *g, RCHAR_T *string, \
+ == static int matcher(register struct re_guts *g, const RCHAR_T *string, \
  ==	size_t nmatch, regmatch_t pmatch[], int eflags);
  */
 static int			/* 0 success, REG_NOMATCH failure */
 matcher(g, string, nmatch, pmatch, eflags)
 register struct re_guts *g;
-RCHAR_T *string;
+const RCHAR_T *string;
 size_t nmatch;
 regmatch_t pmatch[];
 int eflags;
 {
-	register RCHAR_T *endp;
+	register const RCHAR_T *endp;
 	register int i;
 	struct match mv;
 	register struct match *m = &mv;
-	register RCHAR_T *dp;
+	register const RCHAR_T *dp;
 	const register sopno gf = g->firststate+1;	/* +1 for OEND */
 	const register sopno gl = g->laststate;
-	RCHAR_T *start;
-	RCHAR_T *stop;
+	const RCHAR_T *start;
+	const RCHAR_T *stop;
 
 	/* simplify the situation where possible */
 	if (g->cflags&REG_NOSUB)
@@ -229,8 +229,8 @@ int eflags;
 			dp = dissect(m, m->coldp, endp, gf, gl);
 		} else {
 			if (g->nplus > 0 && m->lastpos == NULL)
-				m->lastpos = (RCHAR_T **)malloc((g->nplus+1) *
-							sizeof(RCHAR_T *));
+				m->lastpos = (const RCHAR_T **)malloc((g->nplus+1) *
+							sizeof(const RCHAR_T *));
 			if (g->nplus > 0 && m->lastpos == NULL) {
 				free(m->pmatch);
 				STATETEARDOWN(m);
@@ -298,30 +298,30 @@ int eflags;
 
 /*
  - dissect - figure out what matched what, no back references
- == static RCHAR_T *dissect(register struct match *m, RCHAR_T *start, \
- ==	RCHAR_T *stop, sopno startst, sopno stopst);
+ == static const RCHAR_T *dissect(register struct match *m, const RCHAR_T *start, \
+ ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
-static RCHAR_T *			/* == stop (success) always */
+static const RCHAR_T *			/* == stop (success) always */
 dissect(m, start, stop, startst, stopst)
 register struct match *m;
-RCHAR_T *start;
-RCHAR_T *stop;
+const RCHAR_T *start;
+const RCHAR_T *stop;
 sopno startst;
 sopno stopst;
 {
 	register int i;
 	register sopno ss;	/* start sop of current subRE */
 	register sopno es;	/* end sop of current subRE */
-	register RCHAR_T *sp;	/* start of string matched by it */
-	register RCHAR_T *stp;	/* string matched by it cannot pass here */
-	register RCHAR_T *rest;	/* start of rest of string */
-	register RCHAR_T *tail;	/* string unmatched by rest of RE */
+	register const RCHAR_T *sp;	/* start of string matched by it */
+	register const RCHAR_T *stp;	/* string matched by it cannot pass here */
+	register const RCHAR_T *rest;	/* start of rest of string */
+	register const RCHAR_T *tail;	/* string unmatched by rest of RE */
 	register sopno ssub;	/* start sop of subsubRE */
 	register sopno esub;	/* end sop of subsubRE */
-	register RCHAR_T *ssp;	/* start of string matched by subsubRE */
-	register RCHAR_T *sep;	/* end of string matched by subsubRE */
-	register RCHAR_T *oldssp;	/* previous ssp */
-	register RCHAR_T *dp;
+	register const RCHAR_T *ssp;	/* start of string matched by subsubRE */
+	register const RCHAR_T *sep;	/* end of string matched by subsubRE */
+	register const RCHAR_T *oldssp;	/* previous ssp */
+	register const RCHAR_T *dp;
 
 	AT("diss", start, stop, startst, stopst);
 	sp = start;
@@ -486,25 +486,25 @@ sopno stopst;
 
 /*
  - backref - figure out what matched what, figuring in back references
- == static RCHAR_T *backref(register struct match *m, RCHAR_T *start, \
- ==	RCHAR_T *stop, sopno startst, sopno stopst, sopno lev);
+ == static const RCHAR_T *backref(register struct match *m, const RCHAR_T *start, \
+ ==	const RCHAR_T *stop, sopno startst, sopno stopst, sopno lev);
  */
-static RCHAR_T *			/* == stop (success) or NULL (failure) */
+static const RCHAR_T *			/* == stop (success) or NULL (failure) */
 backref(m, start, stop, startst, stopst, lev)
 register struct match *m;
-RCHAR_T *start;
-RCHAR_T *stop;
+const RCHAR_T *start;
+const RCHAR_T *stop;
 sopno startst;
 sopno stopst;
 sopno lev;			/* PLUS nesting level */
 {
 	register int i;
 	register sopno ss;	/* start sop of current subRE */
-	register RCHAR_T *sp;	/* start of string matched by it */
+	register const RCHAR_T *sp;	/* start of string matched by it */
 	register sopno ssub;	/* start sop of subsubRE */
 	register sopno esub;	/* end sop of subsubRE */
-	register RCHAR_T *ssp;	/* start of string matched by subsubRE */
-	register RCHAR_T *dp;
+	register const RCHAR_T *ssp;	/* start of string matched by subsubRE */
+	register const RCHAR_T *dp;
 	register size_t len;
 	register int hard;
 	register sop s;
@@ -519,7 +519,7 @@ sopno lev;			/* PLUS nesting level */
 	for (ss = startst; !hard && ss < stopst; ss++)
 		switch (OP(s = m->g->strip[ss])) {
 		case OCHAR:
-			if (sp == stop || *sp++ != (RCHAR_T)OPND(s))
+			if (sp == stop || *sp++ != (const RCHAR_T)OPND(s))
 				return(NULL);
 			break;
 		case OANY:
@@ -690,26 +690,26 @@ sopno lev;			/* PLUS nesting level */
 
 /*
  - fast - step through the string at top speed
- == static RCHAR_T *fast(register struct match *m, RCHAR_T *start, \
- ==	RCHAR_T *stop, sopno startst, sopno stopst);
+ == static const RCHAR_T *fast(register struct match *m, const RCHAR_T *start, \
+ ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
-static RCHAR_T *			/* where tentative match ended, or NULL */
+static const RCHAR_T *			/* where tentative match ended, or NULL */
 fast(m, start, stop, startst, stopst)
 register struct match *m;
-RCHAR_T *start;
-RCHAR_T *stop;
+const RCHAR_T *start;
+const RCHAR_T *stop;
 sopno startst;
 sopno stopst;
 {
 	register states st = m->st;
 	register states fresh = m->fresh;
 	register states tmp = m->tmp;
-	register RCHAR_T *p = start;
+	register const RCHAR_T *p = start;
 	register int c = (start == m->beginp) ? OUT : *(start-1);
 	register int lastc;	/* previous c */
 	register int flagch;
 	register int i;
-	register RCHAR_T *coldp;	/* last p after which no match was underway */
+	register const RCHAR_T *coldp;	/* last p after which no match was underway */
 
 	CLEAR(st);
 	SET1(st, startst);
@@ -781,26 +781,26 @@ sopno stopst;
 
 /*
  - slow - step through the string more deliberately
- == static RCHAR_T *slow(register struct match *m, RCHAR_T *start, \
- ==	RCHAR_T *stop, sopno startst, sopno stopst);
+ == static const RCHAR_T *slow(register struct match *m, const RCHAR_T *start, \
+ ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
-static RCHAR_T *			/* where it ended */
+static const RCHAR_T *			/* where it ended */
 slow(m, start, stop, startst, stopst)
 register struct match *m;
-RCHAR_T *start;
-RCHAR_T *stop;
+const RCHAR_T *start;
+const RCHAR_T *stop;
 sopno startst;
 sopno stopst;
 {
 	register states st = m->st;
 	register states empty = m->empty;
 	register states tmp = m->tmp;
-	register RCHAR_T *p = start;
+	register const RCHAR_T *p = start;
 	register int c = (start == m->beginp) ? OUT : *(start-1);
 	register int lastc;	/* previous c */
 	register int flagch;
 	register int i;
-	register RCHAR_T *matchp;	/* last p at which a match ended */
+	register const RCHAR_T *matchp;	/* last p at which a match ended */
 
 	AT("slow", start, stop, startst, stopst);
 	CLEAR(st);
@@ -904,8 +904,8 @@ register states aft;		/* states already known reachable after */
 			break;
 		case OCHAR:
 			/* only characters can match */
-			assert(!NONCHAR(ch) || ch != (RCHAR_T)OPND(s));
-			if (ch == (RCHAR_T)OPND(s))
+			assert(!NONCHAR(ch) || ch != (const RCHAR_T)OPND(s));
+			if (ch == (const RCHAR_T)OPND(s))
 				FWD(aft, bef, 1);
 			break;
 		case OBOL:
