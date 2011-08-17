@@ -33,6 +33,9 @@ typedef	int		ARG_CHAR_T;
 typedef	wchar_t		CHAR_T;
 #define	MAX_CHAR_T	0x7fffffff
 typedef	u_int		UCHAR_T;
+typedef wchar_t 	RCHAR_T;
+#define RCHAR_T_MAX	((1 << 24)-1)
+#define RCHAR_BIT	24
 
 #define STRLEN		wcslen
 #define STRTOL		wcstol
@@ -50,6 +53,9 @@ typedef	u_int		UCHAR_T;
 typedef	u_char		CHAR_T;
 #define	MAX_CHAR_T	0xff
 typedef	u_char		UCHAR_T;
+typedef char		RCHAR_T;
+#define RCHAR_T_MAX	CHAR_MAX
+#define RCHAR_BIT 	CHAR_BIT
 
 #define STRLEN		strlen
 #define STRTOL(a,b,c)	(strtol(a,(char**)b,c))
