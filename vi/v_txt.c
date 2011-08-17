@@ -1914,8 +1914,10 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 	target = current;
 	if (isindent)
 		target += COL_OFF(target, sw);
-	else
-		target -= --target % sw;
+	else {
+		--target;
+		target -= target % sw;
+	}
 
 	/*
 	 * The AI characters will be turned into overwrite characters if the
