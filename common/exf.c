@@ -78,7 +78,7 @@ file_add(
 	gp = sp->gp;
 	if (name != NULL)
 		for (frp = gp->frefq.cqh_first;
-		    frp != (FREF *)&gp->frefq; frp = frp->q.cqe_next) {
+		    frp != (void *)&gp->frefq; frp = frp->q.cqe_next) {
 			if (frp->name == NULL) {
 				tfrp = frp->q.cqe_next;
 				CIRCLEQ_REMOVE(&gp->frefq, frp, q);

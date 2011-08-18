@@ -252,7 +252,7 @@ ex_aci(SCR *sp, EXCMD *cmdp, enum which cmd)
 		return (1);
 
 	for (cnt = 0, tp = tiq.cqh_first;
-	    tp != (TEXT *)&tiq; ++cnt, tp = tp->q.cqe_next)
+	    tp != (void *)&tiq; ++cnt, tp = tp->q.cqe_next)
 		if (db_append(sp, 1, lno++, tp->lb, tp->len))
 			return (1);
 
