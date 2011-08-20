@@ -23,7 +23,7 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.38 2001/06/25 15:19:19 skimo
 #include <sys/select.h>
 #endif
 #include <sys/stat.h>
-#ifdef HAVE_SYS5_PTY
+#if HAVE_SYS_STROPTS_H
 #include <sys/stropts.h>
 #endif
 #include <sys/time.h>
