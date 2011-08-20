@@ -1,0 +1,27 @@
+#cmakedefine DEBUG
+#cmakedefine HAVE_BSD_CURSES
+
+#cmakedefine USE_WIDECHAR
+#cmakedefine USE_ICONV
+
+#cmakedefine HAVE_VFORK
+#cmakedefine HAVE_REVOKE
+#cmakedefine HAVE_BROKEN_GETTIMEOFDAY
+#cmakedefine HAVE_LOCK_FLOCK
+#cmakedefine HAVE_LOCK_FCNTL
+
+#cmakedefine HAVE_NCURSESW_NCURSES_H
+#cmakedefine HAVE_NCURSES_H
+#cmakedefine HAVE_CURSES_WADDNSTR
+#cmakedefine HAVE_CURSES_BEEP
+#cmakedefine HAVE_CURSES_FLASH
+#cmakedefine HAVE_CURSES_IDLOK
+#cmakedefine HAVE_CURSES_KEYPAD
+#cmakedefine HAVE_CURSES_NEWTERM
+#cmakedefine HAVE_CURSES_SETUPTERM
+#cmakedefine HAVE_CURSES_TIGETSTR
+
+#cmakedefine HAVE_SYS_MMAN_H
+#cmakedefine HAVE_SYS_SELECT_H
+#cmakedefine HAVE_SYS_STROPTS_H
+#cmakedefine HAVE_TERM_H
