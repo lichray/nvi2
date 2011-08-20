@@ -318,7 +318,7 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	lcnt = 0;
 	msg = "253|Writing...";
 
-#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+#ifdef USE_ICONV
 	isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
 #else
 	isutf16 = 0;
