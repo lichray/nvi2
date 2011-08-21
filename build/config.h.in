@@ -1,27 +1,70 @@
+/* $Id: config.h.in,v 9.0 2011/08/21 01:44:35 zy Exp $ (Berkeley) $Date: 2011/08/21 01:44:35 $ */
+
+/* Define if you want a debugging version. */
 #cmakedefine DEBUG
+
+/* Define if you have a BSD version of curses. */
 #cmakedefine HAVE_BSD_CURSES
 
+/* Define when using wide characters */
 #cmakedefine USE_WIDECHAR
+
+/* Define when iconv can be used */
 #cmakedefine USE_ICONV
 
+/* Define if you have the `vfork' function. */
 #cmakedefine HAVE_VFORK
+
+/* Define if you have the Berkeley style revoke(2) system call. */
 #cmakedefine HAVE_REVOKE
+
+/* Define if you have a System V-style (broken) gettimeofday. */
 #cmakedefine HAVE_BROKEN_GETTIMEOFDAY
+
+/* Define if you have flock(2) style locking. */
 #cmakedefine HAVE_LOCK_FLOCK
+
+/* Define if you have fcntl(2) style locking. */
 #cmakedefine HAVE_LOCK_FCNTL
 
+/* Define if you have the <ncursesw/ncurses.h> header file. */
 #cmakedefine HAVE_NCURSESW_NCURSES_H
+
+/* Define if you have <ncurses.h> */
 #cmakedefine HAVE_NCURSES_H
+
+/* Define if you have the curses(3) waddnstr function. */
 #cmakedefine HAVE_CURSES_WADDNSTR
+
+/* Define if you have the curses(3) beep function. */
 #cmakedefine HAVE_CURSES_BEEP
+
+/* Define if you have the curses(3) flash function. */
 #cmakedefine HAVE_CURSES_FLASH
+
+/* Define if you have the curses(3) idlok function. */
 #cmakedefine HAVE_CURSES_IDLOK
+
+/* Define if you have the curses(3) keypad function. */
 #cmakedefine HAVE_CURSES_KEYPAD
+
+/* Define if you have the curses(3) newterm function. */
 #cmakedefine HAVE_CURSES_NEWTERM
+
+/* Define if you have the curses(3) setupterm function. */
 #cmakedefine HAVE_CURSES_SETUPTERM
+
+/* Define if you have the curses(3) tigetstr/tigetnum functions. */
 #cmakedefine HAVE_CURSES_TIGETSTR
 
+/* Define if you have <sys/mman.h> */
 #cmakedefine HAVE_SYS_MMAN_H
+
+/* Define if you have <sys/select.h> */
 #cmakedefine HAVE_SYS_SELECT_H
+
+/* Define if you have <sys/stropts.h> */
 #cmakedefine HAVE_SYS_STROPTS_H
+
+/* Define if you have <term.h> */
 #cmakedefine HAVE_TERM_H
