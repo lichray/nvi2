@@ -29,9 +29,6 @@ FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
 check_function_exists(vfork HAVE_VFORK)
-if(NOT HAVE_VFORK)
-	set(vfork TRUE)
-endif(NOT HAVE_VFORK)
 check_function_exists(revoke HAVE_REVOKE)
 
 check_c_source_compiles("
