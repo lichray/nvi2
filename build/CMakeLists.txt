@@ -89,6 +89,27 @@ check_function_exists(grantpt HAVE_SYS5_PTY)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_SOURCE_DIR}/config.h)
 
+find_program(vi_cv_path_shell sh)
+find_program(vi_cv_path_sendmail sendmail)
+
+# test for existing vi.recover first, then try to mkdir if failed
+find_file(vi_cv_path_preserve vi.recover PATHS /var/preserve /var/tmp /usr/tmp)
+if(NOT vi_cv_path_preserve)
+	foreach(_path /var/preserve /var/tmp /usr/tmp)
+		execute_process(COMMAND /bin/mkdir -p ${_path}/vi.recover
+			RESULT_VARIABLE _path_st)
+		if(NOT _path_st)
+			set(vi_cv_path_preserve ${_path}/vi.recover)
+			break()
+		endif(NOT _path_st)
+	endforeach(_path /var/preserve /var/tmp /usr/tmp)
+endif(NOT vi_cv_path_preserve)
+
+mark_as_advanced(vi_cv_path_shell vi_cv_path_sendmail vi_cv_path_preserve)
+
+configure_file(${CMAKE_SOURCE_DIR}/pathnames.h.in
+	${CMAKE_SOURCE_DIR}/pathnames.h)
+
 add_executable(nvi ${MAIN_SRCS})
 target_link_libraries(nvi ${CURSES_LIBRARY})
 if(USE_WIDECHAR)
