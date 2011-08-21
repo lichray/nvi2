@@ -93,7 +93,8 @@ find_program(vi_cv_path_shell sh)
 find_program(vi_cv_path_sendmail sendmail)
 
 # test for existing vi.recover first, then try to mkdir if failed
-find_file(vi_cv_path_preserve vi.recover PATHS /var/preserve /var/tmp /usr/tmp)
+find_file(vi_cv_path_preserve vi.recover
+	PATHS /var/preserve /var/tmp /usr/tmp NO_DEFAULT_PATH)
 if(NOT vi_cv_path_preserve)
 	foreach(_path /var/preserve /var/tmp /usr/tmp)
 		execute_process(COMMAND /bin/mkdir -p ${_path}/vi.recover
@@ -109,6 +110,8 @@ mark_as_advanced(vi_cv_path_shell vi_cv_path_sendmail vi_cv_path_preserve)
 
 configure_file(${CMAKE_SOURCE_DIR}/pathnames.h.in
 	${CMAKE_SOURCE_DIR}/pathnames.h)
+configure_file(${CMAKE_SOURCE_DIR}/recover.in
+	${CMAKE_SOURCE_DIR}/recover @ONLY)
 
 add_executable(nvi ${MAIN_SRCS})
 target_link_libraries(nvi ${CURSES_LIBRARY})
