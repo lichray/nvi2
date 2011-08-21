@@ -16,7 +16,7 @@
  * 2.9BSD extension to create a new process without copying the address space
  */
 #ifndef	HAVE_VFORK
-#define	vfork fork
+#define	vfork	fork
 #endif
 
 /*
