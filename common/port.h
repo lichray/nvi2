@@ -8,8 +8,16 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: port.h,v 9.0 2011/08/21 00:37:13 zy Exp $ (Berkeley) $Date: 2011/08/21 00:37:13 $
+ *	$Id: port.h,v 9.1 2011/08/21 03:41:06 zy Exp $ (Berkeley) $Date: 2011/08/21 03:41:06 $
  */
+
+/*
+ * XXX
+ * 2.9BSD extension to create a new process without copying the address space
+ */
+#ifndef	HAVE_VFORK
+#define	vfork fork
+#endif
 
 /*
  * XXX
