@@ -1,4 +1,4 @@
-/* $Id: config.h.in,v 9.0 2011/08/21 01:44:35 zy Exp $ (Berkeley) $Date: 2011/08/21 01:44:35 $ */
+/* $Id: config.h.in,v 9.1 2011/08/21 02:14:13 zy Exp $ (Berkeley) $Date: 2011/08/21 02:14:13 $ */
 
 /* Define if you want a debugging version. */
 #cmakedefine DEBUG
@@ -12,8 +12,8 @@
 /* Define when iconv can be used */
 #cmakedefine USE_ICONV
 
-/* Define if you have the `vfork' function. */
-#cmakedefine HAVE_VFORK
+/* Define vfork as fork if vfork does not work.  */
+#cmakedefine vfork fork
 
 /* Define if you have the Berkeley style revoke(2) system call. */
 #cmakedefine HAVE_REVOKE
