@@ -7,6 +7,9 @@ include(CheckSymbolExists)
 include(CheckLibraryExists)
 include(CheckCSourceCompiles)
 
+# unused, just hide them
+mark_as_advanced(FORCE CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
+
 option(DEBUG "Build a debugging version" OFF)
 option(HAVE_BSD_CURSES "Old BSD Style curses library" OFF)
 option(USE_WIDECHAR "Enable wide character support" ON)
@@ -19,6 +22,7 @@ else(DEBUG)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 endif(DEBUG)
 
+# generate the public headers
 execute_process(COMMAND ./distrib WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
@@ -46,9 +50,11 @@ include_directories(. .. ../include)
 check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 
+# XXX CMakeCache.txt needs to be removed by hand
 if(USE_WIDECHAR)
 	find_library(CURSES_LIBRARY NAMES ncursesw cursesw)
 
+	# link to the wchar_t awared BSD libregex.a
 	add_definitions(-D__REGEX_PRIVATE)
 	include_directories(../regex)
 	add_library(regex STATIC ${REGEX_SRCS})
