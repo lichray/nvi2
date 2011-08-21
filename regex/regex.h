@@ -42,7 +42,7 @@
 
 #ifdef __REGEX_PRIVATE
 #include "config.h"
-#include "port.h"
+#include "../common/port.h"
 #include "../common/multibyte.h"
 #endif
 
