@@ -534,7 +534,7 @@ next:	if (v_event_get(sp, evp, 0, ec_flags))
 	 * This was not documented as far as I know, and is a great test of vi
 	 * clones.
 	 */
-	if (rcol == 0 && !LF_ISSET(TXT_REPLAY) && evp->e_c == '\0') {
+	if (LF_ISSET(TXT_RECORD) && rcol == 0 && evp->e_c == '\0') {
 		if (vip->rep == NULL)
 			goto done;
 
@@ -594,8 +594,11 @@ next:	if (v_event_get(sp, evp, 0, ec_flags))
 		vip->rep[rcol++] = *evp;
 	}
 
-replay:	if (LF_ISSET(TXT_REPLAY))
+replay:	if (LF_ISSET(TXT_REPLAY)) {
+		if (rcol == vip->rep_cnt)
+			goto k_escape;
 		evp = vip->rep + rcol++;
+	}
 
 	/* Wrapmargin check for leading space. */
 	if (wm_skip) {
