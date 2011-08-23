@@ -460,7 +460,7 @@ v_end(gp)
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
 	{ FREF *frp;
 		/* Free FREF's. */
-		while ((frp = gp->frefq.cqh_first) != (FREF *)&gp->frefq) {
+		while ((frp = gp->frefq.cqh_first) != (void *)&gp->frefq) {
 			CIRCLEQ_REMOVE(&gp->frefq, frp, q);
 			if (frp->name != NULL)
 				free(frp->name);
