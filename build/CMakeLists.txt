@@ -16,10 +16,9 @@ option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
 if(DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g
-	-fstrict-aliasing -Wstrict-aliasing")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -fstrict-aliasing -Wstrict-aliasing -Wformat -Wno-pointer-sign")
 else(DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wno-pointer-sign")
 endif(DEBUG)
 
 # generate the public headers
