@@ -18,9 +18,9 @@ struct _exf {
 
 					/* Underlying database state. */
 	union {
-		uint16_t	bom;	/* Byte-order-mark */
-		char	_bom[2];
-	};
+		uint16_t	i;	/* Byte-order-mark */
+		char	c[2];
+	}	bom;
 	DB	*db;			/* File db structure. */
 	CHAR_T	*c_lp;			/* Cached line. */
 	size_t	 c_len;			/* Cached line length. */

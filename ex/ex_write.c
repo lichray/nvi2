@@ -325,7 +325,7 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 #endif
 
 	if (tline != 0) {
-		if (sp->ep->bom && fwrite(&sp->ep->bom, 2, 1, fp) != 1)
+		if (sp->ep->bom.i && fwrite(&sp->ep->bom.i, 2, 1, fp) != 1)
 			goto err;
 		for (; fline <= tline; ++fline, ++lcnt) {
 			/* Caller has to provide any interrupt message. */
@@ -345,10 +345,10 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 				goto err;
 			ccnt += len;
 			/* UTF-16 w/o BOM is big-endian */
-			if (isutf16 && sp->ep->_bom[0] != '\xff') {	/* UTF-16BE */
+			if (isutf16 && sp->ep->bom.c[0] != '\xff') {	/* UTF-16BE */
 				if (fwrite("\0\x0a", 1, 2, fp) != 2)
 					break;
-			} else if (sp->ep->_bom[0] == '\xff') {		/* UTF-16LE */
+			} else if (sp->ep->bom.c[0] == '\xff') {	/* UTF-16LE */
 				if (fwrite("\x0a\0", 1, 2, fp) != 2)
 					break;
 			} else if (putc('\n', fp) != '\n')

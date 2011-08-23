@@ -908,7 +908,7 @@ two_addr:	switch (ecp->addrcnt) {
 			ecp->addr1.cno = ecp->addr2.cno = sp->cno;
 			break;
 		case 1:				/* Default to first address. */
-			//ecp->addrcnt = 2;	/* XXX Was this needed ??? */
+			/* ecp->addrcnt = 2;	XXX Was this needed ??? */
 			ecp->addr2 = ecp->addr1;
 			break;
 		case 2:

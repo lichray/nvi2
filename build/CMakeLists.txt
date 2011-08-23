@@ -16,7 +16,7 @@ option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
 if(DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -fstrict-aliasing -Wstrict-aliasing -Wformat -Wno-pointer-sign")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -fstrict-aliasing -Wstrict-aliasing -Wformat -Wno-pointer-sign -ansi")
 else(DEBUG)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wno-pointer-sign")
 endif(DEBUG)

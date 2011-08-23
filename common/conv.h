@@ -15,10 +15,10 @@
 			 KEY_LEN(sp,ch))
 
 struct _conv_win {
-	union	{
-		char 	*b_c1;
-		CHAR_T	*b_wc1;
-	};
+	union {
+		char 	*c;
+		CHAR_T	*wc;
+	}	bp1;
     size_t   blen1;
 };
 

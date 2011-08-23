@@ -188,8 +188,8 @@ screen_end(SCR *sp)
 		free(sp->repl);
 	if (sp->newl != NULL)
 		free(sp->newl);
-	if (sp->cw.b_c1 != NULL)
-		free(sp->cw.b_c1);
+	if (sp->cw.bp1.c != NULL)
+		free(sp->cw.bp1.c);
 
 	/* Free all the options */
 	opts_free(sp);
