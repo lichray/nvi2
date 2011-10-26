@@ -139,16 +139,20 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     }
     *tolen = i;
 
+#ifdef USE_ICONV
     if (id != (iconv_t)-1)
 	iconv_close(id);
+#endif
 
     *dst = cw->bp1.wc;
 
     return 0;
 err:
     *tolen = i;
+#ifdef USE_ICONV
     if (id != (iconv_t)-1)
 	iconv_close(id);
+#endif
     *dst = cw->bp1.wc;
 
     return error;
