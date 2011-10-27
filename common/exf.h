@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: exf.h,v 10.8 2011/08/13 17:59:41 zy Exp $ (Berkeley) $Date: 2011/08/13 17:59:41 $
+ *	$Id: exf.h,v 10.8 2011/10/27 00:35:26 zy Exp $ (Berkeley) $Date: 2011/10/27 00:35:26 $
  */
 					/* Undo direction. */
 /*
@@ -17,10 +17,6 @@ struct _exf {
 	int	 refcnt;		/* Reference count. */
 
 					/* Underlying database state. */
-	union {
-		uint16_t	i;	/* Byte-order-mark */
-		char	c[2];
-	}	bom;
 	DB	*db;			/* File db structure. */
 	CHAR_T	*c_lp;			/* Cached line. */
 	size_t	 c_len;			/* Cached line length. */

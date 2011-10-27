@@ -1251,7 +1251,6 @@ file_encinit(SCR *sp)
 			char *np;
 			db_rget(sp, 1, &p, &len);
 			if ((np = malloc(len-2))) {
-				memcpy(ep->bom.c, p, 2);
 				memcpy(np, p+2, len-2);
 				db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
 				free(np);
