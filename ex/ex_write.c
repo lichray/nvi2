@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_write.c,v 10.39 2011/08/13 18:28:15 zy Exp $ (Berkeley) $Date: 2011/08/13 18:28:15 $";
+static const char sccsid[] = "$Id: ex_write.c,v 10.40 2011/10/27 00:28:35 zy Exp $ (Berkeley) $Date: 2011/10/27 00:28:35 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -318,14 +318,15 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	lcnt = 0;
 	msg = "253|Writing...";
 
-#ifdef USE_ICONV
-	isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
-#else
-	isutf16 = 0;
-#endif
+	if (O_STR(sp, O_FILEENCODING)) {
+		isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
+		isutf16 += !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16le", 8);
+	} else isutf16 = 0;
 
 	if (tline != 0) {
-		if (sp->ep->bom.i && fwrite(&sp->ep->bom.i, 2, 1, fp) != 1)
+		if (isutf16 == 1 && fwrite("\xfe\xff", 1, 2, fp) != 2)
+			goto err;
+		if (isutf16 == 2 && fwrite("\xff\xfe", 1, 2, fp) != 2)
 			goto err;
 		for (; fline <= tline; ++fline, ++lcnt) {
 			/* Caller has to provide any interrupt message. */
@@ -345,10 +346,10 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 				goto err;
 			ccnt += len;
 			/* UTF-16 w/o BOM is big-endian */
-			if (isutf16 && sp->ep->bom.c[0] != '\xff') {	/* UTF-16BE */
+			if (isutf16 == 1) {	/* UTF-16BE */
 				if (fwrite("\0\x0a", 1, 2, fp) != 2)
 					break;
-			} else if (sp->ep->bom.c[0] == '\xff') {	/* UTF-16LE */
+			} else if (isutf16 == 2) {	/* UTF-16LE */
 				if (fwrite("\x0a\0", 1, 2, fp) != 2)
 					break;
 			} else if (putc('\n', fp) != '\n')
