@@ -419,6 +419,7 @@ conv_enc (SCR *sp, int option, char *enc)
 
     return 0;
 err:
+#endif
     switch (option) {
     case O_FILEENCODING:
 	msgq(sp, M_ERR,
@@ -429,7 +430,6 @@ err:
 	    "322|Input encoding conversion not supported");
 	break;
     }
-#endif
     return 1;
 }
 
