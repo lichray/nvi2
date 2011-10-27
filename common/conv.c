@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 1.29 2011/08/13 12:53:23 zy Exp $ (Berkeley) $Date: 2011/08/13 12:53:23 $";
+static const char sccsid[] = "$Id: conv.c,v 1.30 2011/10/27 17:38:13 zy Exp $ (Berkeley) $Date: 2011/10/27 17:38:13 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -91,11 +91,9 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 		size_t *tolen, CHAR_T **dst, char *enc)
 {
 	/* XXX UTF-16 linesep hack */
-#ifdef USE_ICONV
-    if (!strncasecmp(enc, "utf-16", 6) && len % 2)
-	if (str[--len] != '\0')		/* shortern by 1 */
+    if (enc && !strncasecmp(enc, "utf-16", 6) && len % 2)
+	if (--len, !strncasecmp(enc, "utf-16le", 8))
 	    str++;			/* shift if LE */
-#endif
 
     int i = 0, j;
     CHAR_T **tostr = &cw->bp1.wc;
