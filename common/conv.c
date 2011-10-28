@@ -111,7 +111,7 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     BINC_RETW(NULL, *tostr, *blen, nlen);
 
 #ifdef USE_ICONV
-    if (strcmp(nl_langinfo(CODESET), enc)) {
+    if (strcasecmp(nl_langinfo(CODESET), enc)) {
 	id = iconv_open(nl_langinfo(CODESET), enc);
 	if (id == (iconv_t)-1)
 	    goto err;
@@ -264,7 +264,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     dst = *tostr; buflen = *blen;
 
 #ifdef USE_ICONV
-    if (strcmp(nl_langinfo(CODESET), enc)) {
+    if (strcasecmp(nl_langinfo(CODESET), enc)) {
 	id = iconv_open(enc, nl_langinfo(CODESET));
 	if (id == (iconv_t)-1)
 	    goto err;
