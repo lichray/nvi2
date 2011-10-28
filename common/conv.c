@@ -335,13 +335,30 @@ conv_init (SCR *orig, SCR *sp)
     if (orig != NULL)
 	MEMCPY(&sp->conv, &orig->conv, 1);
     else {
+	char *ctp;
 	setlocale(LC_ALL, "");
 #ifdef USE_WIDECHAR
+	ctp = strchr(setlocale(LC_CTYPE, NULL), '.');
+	if (ctp) ++ctp;
+	/*
+	 * The CJK hacks try to use GB18030 to handle
+	 * eucCN, eucJP, eucKR, GB2312, GBK, CP949, CP936.
+	 *
+	 * XXX
+	 * This fixes the libncursesw limitaions (GB2312, GBK, and CP949
+	 * do not work) on FreeBSD at the same time.
+	 */
+	if (!strncmp(ctp, "euc", 3) || !strncmp(ctp, "GB", 2) ||
+	    !strcmp(ctp, "CP949") || !strcmp(ctp, "CP936"))
+		setlocale(LC_CTYPE, "zh_CN.GB18030");
+
 	sp->conv.sys2int = cs_char2int;
 	sp->conv.int2sys = cs_int2char;
 	sp->conv.file2int = fe_char2int;
 	sp->conv.int2file = fe_int2char;
 	sp->conv.input2int = ie_char2int;
+#elif __linux__
+	setlocale(LC_CTYPE, "");
 #endif
 #ifdef USE_ICONV
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);

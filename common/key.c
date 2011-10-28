@@ -21,7 +21,6 @@ static const char sccsid[] = "$Id: key.c,v 10.49 2011/06/26 00:52:41 zy Exp $ (B
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,22 +108,6 @@ v_key_init(SCR *sp)
 
 	gp = sp->gp;
 
-	/*
-	 * XXX
-	 * 8-bit only, for now.  Recompilation should get you any 8-bit
-	 * character set, as long as nul isn't a character.
-	 */
-	(void)setlocale(LC_ALL, "");
-#if __linux__
-	/*
-	 * In libc 4.5.26, setlocale(LC_ALL, ""), doesn't setup the table
-	 * for ctype(3c) correctly.  This bug is fixed in libc 4.6.x.
-	 *
-	 * This code works around this problem for libc 4.5.x users.
-	 * Note that this code is harmless if you're using libc 4.6.x.
-	 */
-	(void)setlocale(LC_CTYPE, "");
-#endif
 	v_key_ilookup(sp);
 
 	v_keyval(sp, K_CNTRLD, KEY_VEOF);
