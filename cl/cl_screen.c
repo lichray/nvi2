@@ -562,6 +562,12 @@ cl_freecap(CL_PRIVATE *clp)
 		free(clp->smso);
 		clp->smso = NULL;
 	}
+	/* Required by libcursesw :) */
+	if (clp->cw.bp1.c != NULL) {
+		free(clp->cw.bp1.c);
+		clp->cw.bp1.c = NULL;
+		clp->cw.blen1 = 0;
+	}
 }
 
 /*
