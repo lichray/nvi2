@@ -11,6 +11,9 @@ static const char sccsid[] = "$Id: encoding.c,v 1.2 2011/08/13 22:58:03 zy Exp $
 
 #include <sys/types.h>
 
+int looks_utf8 __P((const char *, size_t));
+int looks_utf16 __P((const char *, size_t));
+
 #define F 0   /* character never appears in text */
 #define T 1   /* character appears in plain ASCII text */
 #define I 2   /* character appears in ISO-8859 text */

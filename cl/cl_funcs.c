@@ -874,7 +874,7 @@ usage: vi [-eFlRrSv] [-c command] [-t tag] [-w size] [file ...]\n"
  * gdbrefresh --
  *	Stub routine so can flush out curses screen changes using gdb.
  */
-int
+static int
 gdbrefresh(void)
 {
 	refresh();
