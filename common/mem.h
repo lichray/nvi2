@@ -9,7 +9,7 @@
  *	$Id: mem.h,v 10.13 2002/01/05 23:13:37 skimo Exp $ (Berkeley) $Date: 2002/01/05 23:13:37 $
  */
 
-#ifdef HAVE_GCC
+#ifdef DEBUG
 #define CHECK_TYPE(type, var)						\
 	type L__lp __attribute__((unused)) = var;
 #else
