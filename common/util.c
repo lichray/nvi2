@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.23 2011/07/04 20:27:50 zy Exp $ (Berkeley) $Date: 2011/07/04 20:27:50 $";
+static const char sccsid[] = "$Id: util.c,v 10.24 2011/11/19 17:36:27 zy Exp $ (Berkeley) $Date: 2011/11/19 17:36:27 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -45,7 +45,7 @@ binc(
 	if (min && *bsizep >= min)
 		return (bp);
 
-	csize = *bsizep + MAX(min, 256);
+	csize = p2roundup(MAX(min, 256));
 	REALLOC(sp, bp, void *, csize);
 
 	if (bp == NULL) {

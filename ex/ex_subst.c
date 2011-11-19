@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_subst.c,v 10.50 2002/02/09 21:18:23 skimo Exp $ (Berkeley) $Date: 2002/02/09 21:18:23 $";
+static const char sccsid[] = "$Id: ex_subst.c,v 10.51 2011/11/19 17:38:07 zy Exp $ (Berkeley) $Date: 2011/11/19 17:38:07 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -316,7 +316,7 @@ ex_subtilde(SCR *sp, EXCMD *cmdp)
 
 #define	BUILD(sp, l, len) {						\
 	if (lbclen + (len) > lblen) {					\
-		lblen += MAX(lbclen + (len), 256);			\
+		lblen = p2roundup(MAX(lbclen + (len), 256));		\
 		REALLOC(sp, lb, CHAR_T *, lblen * sizeof(CHAR_T));	\
 		if (lb == NULL) {					\
 			lbclen = 0;					\
@@ -329,7 +329,7 @@ ex_subtilde(SCR *sp, EXCMD *cmdp)
 
 #define	NEEDSP(sp, len, pnt) {						\
 	if (lbclen + (len) > lblen) {					\
-		lblen += MAX(lbclen + (len), 256);			\
+		lblen = p2roundup(MAX(lbclen + (len), 256));		\
 		REALLOC(sp, lb, CHAR_T *, lblen * sizeof(CHAR_T));	\
 		if (lb == NULL) {					\
 			lbclen = 0;					\
