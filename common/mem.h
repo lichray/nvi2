@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.13 2002/01/05 23:13:37 skimo Exp $ (Berkeley) $Date: 2002/01/05 23:13:37 $
+ *	$Id: mem.h,v 10.14 2011/11/19 17:07:21 zy Exp $ (Berkeley) $Date: 2011/11/19 17:07:21 $
  */
 
 #ifdef DEBUG
@@ -203,3 +203,25 @@
  */
 #define	MEMMOVE(p, t, len)	memmove(p, t, (len) * sizeof(*(p)))
 #define	MEMSET(p, value, len)	memset(p, value, (len) * sizeof(*(p)))
+
+/* 
+ * p2roundup --
+ *	Get next power of 2; convenient for realloc.
+ *
+ * Reference: FreeBSD /usr/src/lib/libc/stdio/getdelim.c
+ */
+static __inline size_t
+p2roundup(size_t n)
+{
+	n--;
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 8;
+	n |= n >> 16;
+#if SIZE_T_MAX > 0xffffffffU
+	n |= n >> 32;
+#endif
+	n++;
+	return (n);
+}
