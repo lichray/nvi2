@@ -242,7 +242,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	char *bp = buffer;						\
 	while (len != 0) {						\
 	    size_t outleft = cw->blen1 - offset;			\
-	    char *obp = cw->bp1.c + offset;		    	\
+	    char *obp = cw->bp1.c + offset;				\
 	    if (cw->blen1 < offset + MB_CUR_MAX) {		    	\
 		nlen += 256;						\
 		BINC_RETC(NULL, cw->bp1.c, cw->blen1, nlen);		\
