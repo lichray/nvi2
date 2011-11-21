@@ -127,7 +127,7 @@ v_key_init(SCR *sp)
 	}
 
 	/* Find a non-printable character to use as a message separator. */
-	for (ch = 1; ch != 0; ++ch) /* XXX quit if overflowed */
+	for (ch = 1; ch < UCHAR_MAX; ++ch)
 		if (!ISPRINT(ch)) {
 			gp->noprint = ch;
 			break;

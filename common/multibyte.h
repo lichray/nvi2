@@ -20,7 +20,7 @@
  *		traditional promotion rules.  It should also be able
  *		to be compared against any CHAR_T for equality without
  *		problems.
- * MAX_CHAR_T	The maximum value of any character.
+ * RCHAR_T	The character type used by the internal regex engine.
  *
  * If no integral type can hold a character, don't even try the port.
  */
@@ -31,7 +31,6 @@ typedef	int		ARG_CHAR_T;
 #include <wctype.h>
 
 typedef	wchar_t		CHAR_T;
-#define	MAX_CHAR_T	0x7fffffff
 typedef	u_int		UCHAR_T;
 typedef wchar_t 	RCHAR_T;
 #define RCHAR_T_MAX	((1 << 24)-1)
@@ -51,7 +50,6 @@ typedef wchar_t 	RCHAR_T;
 
 #else
 typedef	u_char		CHAR_T;
-#define	MAX_CHAR_T	0xff
 typedef	u_char		UCHAR_T;
 typedef char		RCHAR_T;
 #define RCHAR_T_MAX	CHAR_MAX

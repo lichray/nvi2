@@ -2375,7 +2375,7 @@ txt_hex(SCR *sp, TEXT *tp)
 	/* Get the value. */
 	errno = 0;
 	value = STRTOL(wp, NULL, 16);
-	if (errno || value > MAX_CHAR_T) {
+	if (errno || value > UCHAR_MAX) {
 nothex:		tp->lb[tp->cno] = savec;
 		return (0);
 	}
