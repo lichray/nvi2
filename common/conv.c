@@ -3,6 +3,8 @@
  *	The Regents of the University of California.  All rights reserved.
  * Copyright (c) 1993, 1994, 1995, 1996
  *	Keith Bostic.  All rights reserved.
+ * Copyright (c) 2011, 2012
+ *	Zhihao Yuan.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
  */
@@ -10,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 1.30 2011/10/27 17:38:13 zy Exp $ (Berkeley) $Date: 2011/10/27 17:38:13 $";
+static const char sccsid[] = "$Id: conv.c,v 1.31 2011/12/01 16:21:25 zy Exp $ (Berkeley) $Date: 2011/12/01 16:21:25 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -335,11 +337,11 @@ conv_init (SCR *orig, SCR *sp)
     if (orig != NULL)
 	MEMCPY(&sp->conv, &orig->conv, 1);
     else {
-	char *ctp;
+	char *ctype;
+	char *cp;
 	setlocale(LC_ALL, "");
+	ctype = setlocale(LC_CTYPE, NULL);
 #ifdef USE_WIDECHAR
-	ctp = strchr(setlocale(LC_CTYPE, NULL), '.');
-	if (ctp) ++ctp;
 	/*
 	 * The CJK hacks try to use GB18030 to handle
 	 * eucCN, eucJP, eucKR, GB2312, GBK, CP949, CP936.
@@ -348,15 +350,28 @@ conv_init (SCR *orig, SCR *sp)
 	 * This fixes the libncursesw limitaions (GB2312, GBK, and CP949
 	 * do not work) on FreeBSD at the same time.
 	 */
-	if (!strncmp(ctp, "euc", 3) || !strncmp(ctp, "GB", 2) ||
-	    !strcmp(ctp, "CP949") || !strcmp(ctp, "CP936"))
+	if ((cp = strchr(ctype, '.'))) {
+	    ++cp;
+	    if (!strncmp(cp, "euc", 3) || !strncmp(cp, "GB", 2) ||
+		!strcmp(cp, "CP949") || !strcmp(cp, "CP936"))
 		setlocale(LC_CTYPE, "zh_CN.GB18030");
+	}
 
-	sp->conv.sys2int = cs_char2int;
-	sp->conv.int2sys = cs_int2char;
-	sp->conv.file2int = fe_char2int;
-	sp->conv.int2file = fe_int2char;
-	sp->conv.input2int = ie_char2int;
+	/*
+	 * Switch to 8bit mode if locale is C;
+	 * LC_CTYPE should be reseted to C if unmatched.
+	 */
+	if (!strcmp(ctype, "C") || !strcmp(ctype, "POSIX")) {
+	    sp->conv.sys2int = sp->conv.file2int = raw2int;
+	    sp->conv.int2sys = sp->conv.int2file = int2raw;
+	    sp->conv.input2int = raw2int;
+	} else {
+	    sp->conv.sys2int = cs_char2int;
+	    sp->conv.int2sys = cs_int2char;
+	    sp->conv.file2int = fe_char2int;
+	    sp->conv.int2file = fe_int2char;
+	    sp->conv.input2int = ie_char2int;
+	}
 #elif __linux__
 	setlocale(LC_CTYPE, "");
 #endif
