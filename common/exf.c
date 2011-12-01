@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.53 2011/07/20 00:38:28 zy Exp $ (Berkeley) $Date: 2011/07/20 00:38:28 $";
+static const char sccsid[] = "$Id: exf.c,v 10.54 2011/12/01 15:05:39 zy Exp $ (Berkeley) $Date: 2011/12/01 15:05:39 $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -215,15 +215,15 @@ file_init(
 		/*
 		 * XXX
 		 * A seat of the pants calculation: try to keep the file in
-		 * 15 pages or less.  Don't use a page size larger than 10K
+		 * 15 pages or less.  Don't use a page size larger than 16K
 		 * (vi should have good locality) or smaller than 1K.
 		 */
 		psize = ((sb.st_size / 15) + 1023) / 1024;
-		if (psize > 10)
-			psize = 10;
+		if (psize > 16)
+			psize = 16;
 		if (psize == 0)
 			psize = 1;
-		psize *= 1024;
+		psize = p2roundup(psize) << 10;
 
 		F_SET(ep, F_DEVSET);
 		ep->mdev = sb.st_dev;
