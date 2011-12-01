@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.49 2011/06/26 00:52:41 zy Exp $ (Berkeley) $Date: 2011/06/26 00:52:41 $";
+static const char sccsid[] = "$Id: key.c,v 10.50 2011/11/30 23:46:20 zy Exp $ (Berkeley) $Date: 2011/11/30 23:46:20 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -274,7 +274,7 @@ nopr:	if (ISCNTRL(ch) && (ch < 0x20 || ch == 0x7f)) {
 		sp->cname[1] = ch == 0x7f ? '?' : '@' + ch;
 		len = 2;
 	} else if (O_ISSET(sp, O_OCTAL)) {
-#define	BITS	(sizeof(CHAR_T) * 8)
+#define	BITS	(/*sizeof(CHAR_T) **/8)
 #define	SHIFT	(BITS - BITS % 3)
 #define	TOPMASK	(BITS % 3 == 2 ? 3 : 1) << (BITS - BITS % 3)
 		sp->cname[0] = '\\';
