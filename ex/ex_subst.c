@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_subst.c,v 10.51 2011/11/19 17:38:07 zy Exp $ (Berkeley) $Date: 2011/11/19 17:38:07 $";
+static const char sccsid[] = "$Id: ex_subst.c,v 10.52 2011/11/30 22:30:09 zy Exp $ (Berkeley) $Date: 2011/11/30 22:30:09 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1425,6 +1425,9 @@ subzero:			if (match[no].rm_so == -1 ||
 			case 'U':
 				++rp;
 				conv = C_UPPER;
+				continue;
+			case '\r':
+				OUTCH(ch, 0);
 				continue;
 			default:
 				++rp;
