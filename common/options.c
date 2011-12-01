@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.67 2011/07/14 14:51:43 zy Exp $ (Berkeley) $Date: 2011/07/14 14:51:43 $";
+static const char sccsid[] = "$Id: options.c,v 10.68 2011/11/30 23:49:41 zy Exp $ (Berkeley) $Date: 2011/11/30 23:49:41 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -136,11 +136,11 @@ OPTLIST const optlist[] = {
 /* O_MSGCAT	  4.4BSD */
 	{L("msgcat"),	f_msgcat,	OPT_STR,	0},
 /* O_NOPRINT	  4.4BSD */
-	{L("noprint"),	f_print,	OPT_STR,	0},
+	{L("noprint"),	f_print,	OPT_STR,	OPT_EARLYSET},
 /* O_NUMBER	    4BSD */
 	{L("number"),	f_reformat,	OPT_0BOOL,	0},
 /* O_OCTAL	  4.4BSD */
-	{L("octal"),	f_print,	OPT_0BOOL,	0},
+	{L("octal"),	f_print,	OPT_0BOOL,	OPT_EARLYSET},
 /* O_OPEN	    4BSD */
 	{L("open"),	NULL,		OPT_1BOOL,	0},
 /* O_OPTIMIZE	    4BSD */
@@ -150,7 +150,7 @@ OPTLIST const optlist[] = {
 /* O_PATH	  4.4BSD */
 	{L("path"),	NULL,		OPT_STR,	0},
 /* O_PRINT	  4.4BSD */
-	{L("print"),	f_print,	OPT_STR,	0},
+	{L("print"),	f_print,	OPT_STR,	OPT_EARLYSET},
 /* O_PROMPT	    4BSD */
 	{L("prompt"),	NULL,		OPT_1BOOL,	0},
 /* O_READONLY	    4BSD (undocumented) */
@@ -591,6 +591,14 @@ opts_set(
 					if (!O_ISSET(sp, offset))
 						break;
 
+			if (F_ISSET(op, OPT_EARLYSET)) {
+				/* Set the value. */
+				if (turnoff)
+					O_CLR(sp, offset);
+				else
+					O_SET(sp, offset);
+			}
+
 			/* Report to subsystems. */
 			if ((op->func != NULL &&
 			    op->func(sp, spo, NULL, &isset)) ||
@@ -601,11 +609,13 @@ opts_set(
 				break;
 			}
 
-			/* Set the value. */
-			if (isset)
-				O_SET(sp, offset);
-			else
-				O_CLR(sp, offset);
+			if (!F_ISSET(op, OPT_EARLYSET)) {
+				/* Set the value. */
+				if (isset)
+					O_SET(sp, offset);
+				else
+					O_CLR(sp, offset);
+			}
 			break;
 		case OPT_NUM:
 			if (turnoff) {
@@ -684,6 +694,13 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 			    O_VAL(sp, offset) == value)
 				break;
 
+			if (F_ISSET(op, OPT_EARLYSET))
+				/* Set the value. */
+				if (o_set(sp, offset, 0, NULL, value)) {
+					rval = 1;
+					break;
+				}
+
 			/* Report to subsystems. */
 			INT2CHAR(sp, sep, STRLEN(sep) + 1, np, nlen);
 			if ((op->func != NULL &&
@@ -695,9 +712,10 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 				break;
 			}
 
-			/* Set the value. */
-			if (o_set(sp, offset, 0, NULL, value))
-				rval = 1;
+			if (!F_ISSET(op, OPT_EARLYSET))
+				/* Set the value. */
+				if (o_set(sp, offset, 0, NULL, value))
+					rval = 1;
 			break;
 		case OPT_STR:
 			if (turnoff) {
@@ -723,6 +741,13 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 			    !strcmp(O_STR(sp, offset), np))
 				break;
 
+			if (F_ISSET(op, OPT_EARLYSET))
+				/* Set the value. */
+				if (o_set(sp, offset, OS_STRDUP, np, 0)) {
+					rval = 1;
+					break;
+				}
+
 			/* Report to subsystems. */
 			if ((op->func != NULL &&
 			    op->func(sp, spo, np, NULL)) ||
@@ -733,9 +758,10 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 				break;
 			}
 
-			/* Set the value. */
-			if (o_set(sp, offset, OS_STRDUP, np, 0))
-				rval = 1;
+			if (!F_ISSET(op, OPT_EARLYSET))
+				/* Set the value. */
+				if (o_set(sp, offset, OS_STRDUP, np, 0))
+					rval = 1;
 			break;
 		default:
 			abort();
