@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vi.c,v 10.59 2011/07/15 04:35:23 zy Exp $ (Berkeley) $Date: 2011/07/15 04:35:23 $";
+static const char sccsid[] = "$Id: vi.c,v 10.60 2011/12/01 14:36:07 zy Exp $ (Berkeley) $Date: 2011/12/01 14:36:07 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1076,8 +1076,8 @@ v_curword(SCR *sp)
 	    end = beg; ++end < len && state == inword(p[end]););
 
 	vip = VIP(sp);
-	len = (end - beg);
-	BINC_RETW(sp, vip->keyw, vip->klen, len+1);
+	vip->klen = len = (end - beg);
+	BINC_RETW(sp, vip->keyw, vip->keywlen, len+1);
 	MEMMOVEW(vip->keyw, p + beg, len);
 	vip->keyw[len] = '\0';				/* XXX */
 	return (0);
