@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_relative.c,v 10.18 2001/07/08 13:02:48 skimo Exp $ (Berkeley) $Date: 2001/07/08 13:02:48 $";
+static const char sccsid[] = "$Id: vs_relative.c,v 10.19 2011/12/01 15:22:59 zy Exp $ (Berkeley) $Date: 2011/12/01 15:22:59 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -133,7 +133,7 @@ done:		if (diffp != NULL)		/* XXX */
 	 * Initialize the pointer into the buffer and current offset.
 	 */
 	p = lp;
-	curoff = 0;
+	curoff = scno;
 
 	/* Macro to return the display length of any signal character. */
 #define	CHLEN(val) (ch = *(UCHAR_T *)p++) == '\t' &&			\
