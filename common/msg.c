@@ -66,7 +66,7 @@ msgq(sp, mt, fmt, va_alist)
 	} str[__NL_ARGMAX];
 #endif
 	static int reenter;		/* STATIC: Re-entrancy check. */
-	CHAR_T ch;
+	int ch;
 	GS *gp;
 	size_t blen, cnt1, cnt2, len, mlen, nlen, soff;
 	const char *p, *t, *u;
