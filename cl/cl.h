@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: cl.h,v 10.34 2011/08/15 20:07:32 zy Exp $ (Berkeley) $Date: 2011/08/15 20:07:32 $
+ *	$Id: cl.h,v 10.34 2011/08/15 20:07:32 zy Exp $
  */
 
 #ifdef USE_SLANG_CURSES

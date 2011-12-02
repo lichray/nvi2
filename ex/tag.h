@@ -8,7 +8,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: tag.h,v 10.8 2000/07/14 14:29:22 skimo Exp $ (Berkeley) $Date: 2000/07/14 14:29:22 $
+ *	$Id: tag.h,v 10.8 2000/07/14 14:29:22 skimo Exp $
  */
 
 /*

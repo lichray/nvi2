@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: common.h,v 10.21 2011/06/26 14:28:12 zy Exp $ (Berkeley) $Date: 2011/06/26 14:28:12 $
+ *	$Id: common.h,v 10.21 2011/06/26 14:28:12 zy Exp $
  */
 
 /*

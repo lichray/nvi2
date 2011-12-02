@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: gs.h,v 10.35 2011/06/26 21:32:04 zy Exp $ (Berkeley) $Date: 2011/06/26 21:32:04 $
+ *	$Id: gs.h,v 10.35 2011/06/26 21:32:04 zy Exp $
  */
 
 #define	TEMPORARY_FILE_STRING	"/tmp"	/* Default temporary file name. */

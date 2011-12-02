@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: multibyte.h,v 1.28 2011/07/16 18:40:01 zy Exp $ (Berkeley) $Date: 2011/07/16 18:40:01 $
+ *	$Id: multibyte.h,v 1.28 2011/07/16 18:40:01 zy Exp $
  */
 
 #ifndef MULTIBYTE_H

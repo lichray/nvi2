@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: screen.h,v 10.25 2011/06/02 22:06:47 zy Exp $ (Berkeley) $Date: 2011/06/02 22:06:47 $
+ *	$Id: screen.h,v 10.25 2011/06/02 22:06:47 zy Exp $
  */
 
 /*

@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: ex.h,v 10.30 2004/03/16 14:11:33 skimo Exp $ (Berkeley) $Date: 2004/03/16 14:11:33 $
+ *	$Id: ex.h,v 10.30 2004/03/16 14:11:33 skimo Exp $
  */
 
 #define	PROMPTCHAR	':'		/* Prompt using a colon. */

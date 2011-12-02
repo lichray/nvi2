@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: options.h,v 10.21 2011/11/30 23:49:41 zy Exp $ (Berkeley) $Date: 2011/11/30 23:49:41 $
+ *	$Id: options.h,v 10.21 2011/11/30 23:49:41 zy Exp $
  */
 
 /*

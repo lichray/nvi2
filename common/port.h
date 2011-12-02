@@ -8,7 +8,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: port.h,v 9.1 2011/08/21 03:41:06 zy Exp $ (Berkeley) $Date: 2011/08/21 03:41:06 $
+ *	$Id: port.h,v 9.1 2011/08/21 03:41:06 zy Exp $
  */
 
 /*

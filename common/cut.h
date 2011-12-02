@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: cut.h,v 10.9 2000/07/22 17:31:18 skimo Exp $ (Berkeley) $Date: 2000/07/22 17:31:18 $
+ *	$Id: cut.h,v 10.9 2000/07/22 17:31:18 skimo Exp $
  */
 
 typedef struct _texth TEXTH;		/* TEXT list head structure. */

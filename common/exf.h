@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: exf.h,v 10.8 2011/10/27 00:35:26 zy Exp $ (Berkeley) $Date: 2011/10/27 00:35:26 $
+ *	$Id: exf.h,v 10.8 2011/10/27 00:35:26 zy Exp $
  */
 					/* Undo direction. */
 /*

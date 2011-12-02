@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: script.h,v 10.2 1996/03/06 19:53:00 bostic Exp $ (Berkeley) $Date: 1996/03/06 19:53:00 $
+ *	$Id: script.h,v 10.2 1996/03/06 19:53:00 bostic Exp $
  */
 
 struct _script {

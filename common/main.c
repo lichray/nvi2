@@ -18,7 +18,7 @@ static const char copyright[] =
 #endif /* not lint */
 
 #ifndef lint
-static const char sccsid[] = "$Id: main.c,v 10.64 2011/07/04 14:33:38 zy Exp $ (Berkeley) $Date: 2011/07/04 14:33:38 $";
+static const char sccsid[] = "$Id: main.c,v 10.64 2011/07/04 14:33:38 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>

@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: conv.h,v 1.28 2011/07/16 14:40:38 zy Exp $ (Berkeley) $Date: 2011/07/16 14:40:38 $
+ *	$Id: conv.h,v 1.28 2011/07/16 14:40:38 zy Exp $
  */
 
 #define KEY_COL(sp, ch)							\

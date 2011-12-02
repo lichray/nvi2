@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: vi.h,v 10.27 2002/01/19 21:59:07 skimo Exp $ (Berkeley) $Date: 2002/01/19 21:59:07 $
+ *	$Id: vi.h,v 10.27 2002/01/19 21:59:07 skimo Exp $
  */
 
 /* Definition of a vi "word". */

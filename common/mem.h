@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.14 2011/11/19 17:07:21 zy Exp $ (Berkeley) $Date: 2011/11/19 17:07:21 $
+ *	$Id: mem.h,v 10.14 2011/11/19 17:07:21 zy Exp $
  */
 
 #ifdef DEBUG

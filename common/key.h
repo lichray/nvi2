@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: key.h,v 10.52 2011/12/02 01:17:53 zy Exp $ (Berkeley) $Date: 2011/12/02 01:17:53 $
+ *	$Id: key.h,v 10.52 2011/12/02 01:17:53 zy Exp $
  */
 
 #include "multibyte.h"

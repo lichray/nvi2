@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: screen.c,v 10.24 2011/07/18 16:58:31 zy Exp $ (Berkeley) $Date: 2011/07/18 16:58:31 $";
+static const char sccsid[] = "$Id: screen.c,v 10.24 2011/07/18 16:58:31 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
