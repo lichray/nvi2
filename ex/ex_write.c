@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_write.c,v 10.40 2011/10/27 00:28:35 zy Exp $ (Berkeley) $Date: 2011/10/27 00:28:35 $";
+static const char sccsid[] = "$Id: ex_write.c,v 10.41 2011/12/02 01:07:06 zy Exp $ (Berkeley) $Date: 2011/12/02 01:07:06 $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -133,6 +133,7 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 	size_t nlen;
 	char *n;
 	int rc;
+	EX_PRIVATE *exp;
 
 	NEEDFILE(sp, cmdp);
 
@@ -161,6 +162,12 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 		}
 		if (argv_exp1(sp, cmdp, p, STRLEN(p), 1))
 			return (1);
+
+		/* Set the last bang command */
+		exp = EXP(sp);
+		free(exp->lastbcomm);
+		exp->lastbcomm = v_wstrdup(sp, cmdp->argv[1]->bp,
+		    cmdp->argv[1]->len);
 
 		/*
 		 * Historically, vi waited after a write filter even if there
