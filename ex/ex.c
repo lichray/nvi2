@@ -2342,7 +2342,7 @@ ex_comlog(sp, ecp)
 	if (ecp->flags)
 		TRACE(sp, " flags 0x%x", ecp->flags);
 	if (F_ISSET(&exc, E_BUFFER))
-		TRACE(sp, " buffer %c", ecp->buffer);
+		TRACE(sp, " buffer "WC, ecp->buffer);
 	if (ecp->argc)
 		for (cnt = 0; cnt < ecp->argc; ++cnt)
 			TRACE(sp, " arg %d: {%s}", cnt, ecp->argv[cnt]->bp);
