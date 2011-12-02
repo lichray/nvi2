@@ -892,7 +892,7 @@ success_open:
 	 * Note that this code is harmless if you're using libc 4.6.x.
 	 */
 	if (LF_ISSET(FS_APPEND) && lseek(fd, (off_t)0, SEEK_END) < 0) {
-		msgq(sp, M_SYSERR, name);
+		msgq(sp, M_SYSERR, "%s", name);
 		return (1);
 	}
 #endif

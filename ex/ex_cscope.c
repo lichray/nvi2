@@ -238,14 +238,14 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 	 * name regardless so that we can use it as a base for searches.
 	 */
 	if (stat(np, &sb)) {
-		msgq(sp, M_SYSERR, np);
+		msgq(sp, M_SYSERR, "%s", np);
 		return (1);
 	}
 	if (S_ISDIR(sb.st_mode)) {
 		(void)snprintf(path, sizeof(path),
 		    "%s/%s", np, CSCOPE_DBFILE);
 		if (stat(path, &sb)) {
-			msgq(sp, M_SYSERR, path);
+			msgq(sp, M_SYSERR, "%s", path);
 			return (1);
 		}
 		dbname = CSCOPE_DBFILE;

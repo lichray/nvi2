@@ -174,7 +174,7 @@ ex_tag_next(SCR *sp, EXCMD *cmdp)
 	if (tqp->current->msg) {
 	    INT2CHAR(sp, tqp->current->msg, tqp->current->mlen + 1,
 		     np, nlen);
-	    msgq(sp, M_INFO, np);
+	    msgq(sp, M_INFO, "%s", np);
 	}
 	return (0);
 }
@@ -214,7 +214,7 @@ ex_tag_prev(SCR *sp, EXCMD *cmdp)
 	if (tqp->current->msg) {
 	    INT2CHAR(sp, tqp->current->msg, tqp->current->mlen + 1,
 		     np, nlen);
-	    msgq(sp, M_INFO, np);
+	    msgq(sp, M_INFO, "%s", np);
 	}
 	return (0);
 }
@@ -789,7 +789,7 @@ tagq_push(SCR *sp, TAGQ *tqp, int new_screen, int force)
 	if (tqp->current->msg) {
 	    INT2CHAR(sp, tqp->current->msg, tqp->current->mlen + 1,
 		     np, nlen);
-	    msgq(sp, M_INFO, np);
+	    msgq(sp, M_INFO, "%s", np);
 	}
 
 	/*
