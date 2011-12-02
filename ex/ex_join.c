@@ -36,8 +36,8 @@ ex_join(SCR *sp, EXCMD *cmdp)
 {
 	recno_t from, to;
 	size_t blen, clen, len, tlen;
-	int echar, extra, first;
-	CHAR_T *bp, *tbp;
+	int echar = 0, extra, first;
+	CHAR_T *bp, *tbp = NULL;
 	CHAR_T *p;
 
 	NEEDFILE(sp, cmdp);
