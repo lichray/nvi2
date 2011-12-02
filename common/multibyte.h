@@ -51,7 +51,7 @@ typedef wchar_t 	RCHAR_T;
 #else
 typedef	u_char		CHAR_T;
 typedef	u_char		UCHAR_T;
-typedef char		RCHAR_T;
+typedef	char		RCHAR_T;
 #define RCHAR_T_MAX	CHAR_MAX
 #define RCHAR_BIT 	CHAR_BIT
 
