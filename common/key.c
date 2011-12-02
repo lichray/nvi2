@@ -119,12 +119,8 @@ v_key_init(SCR *sp)
 	qsort(keylist, nkeylist, sizeof(keylist[0]), v_key_cmp);
 
 	/* Initialize the fast lookup table. */
-	for (gp->max_special = 0, kp = keylist, cnt = nkeylist; cnt--; ++kp) {
-		if (gp->max_special < kp->value)
-			gp->max_special = kp->value;
-		if (kp->ch <= MAX_FAST_KEY)
-			gp->special_key[kp->ch] = kp->value;
-	}
+	for (kp = keylist, cnt = nkeylist; cnt--; ++kp)
+		gp->special_key[kp->ch] = kp->value;
 
 	/* Find a non-printable character to use as a message separator. */
 	for (ch = 1; ch < UCHAR_MAX; ++ch)
