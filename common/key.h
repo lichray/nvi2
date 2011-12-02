@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: key.h,v 10.51 2011/06/27 00:42:07 zy Exp $ (Berkeley) $Date: 2011/06/27 00:42:07 $
+ *	$Id: key.h,v 10.52 2011/12/02 01:17:53 zy Exp $ (Berkeley) $Date: 2011/12/02 01:17:53 $
  */
 
 #include "multibyte.h"
@@ -29,6 +29,8 @@
     iswcntrl((ch))
 #define ISDIGIT(ch) \
     iswdigit((ch))
+#define ISXDIGIT(ch) \
+    iswxdigit((ch))
 #define ISPRINT(ch) \
     iswprint((ch))
 #define ISBLANK(ch) \
@@ -60,6 +62,8 @@
     iscntrl((ch))
 #define ISDIGIT(ch) \
     isdigit((ch))
+#define ISXDIGIT(ch) \
+    isxdigit((ch))
 #define ISPRINT(ch) \
     isprint((ch))
 #define ISBLANK(ch) \
