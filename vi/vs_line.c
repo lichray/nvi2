@@ -43,14 +43,14 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 	char *kp;
 	GS *gp;
 	SMAP *tsmp;
-	size_t chlen, cno_cnt, cols_per_screen, len, nlen;
+	size_t chlen = 0, cno_cnt, cols_per_screen, len, nlen;
 	size_t offset_in_char, offset_in_line, oldx, oldy;
 	size_t scno, skip_cols, skip_screens;
 	int dne, is_cached, is_partial, is_tab, no_draw;
 	int list_tab, list_dollar;
 	CHAR_T *p;
 	CHAR_T *cbp, *ecbp, cbuf[128];
-	CHAR_T ch;
+	CHAR_T ch = L('\0');
 
 #if defined(DEBUG) && 0
 	TRACE(sp, "vs_line: row %u: line: %u off: %u\n",
@@ -407,7 +407,7 @@ display:
 			continue;
 
 #define	FLUSH {								\
-	*cbp = '\0';							\
+	*cbp = L('\0');							\
 	(void)gp->scr_waddstr(sp, cbuf, cbp - cbuf);			\
 	cbp = cbuf;							\
 }

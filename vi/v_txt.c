@@ -649,7 +649,7 @@ replay:	if (LF_ISSET(TXT_REPLAY)) {
 	 * this test delimits the value by any non-hex character.  Offset by
 	 * one, we use 0 to mean that we've found <CH_HEX>.
 	 */
-	if (hexcnt > 1 && !isxdigit(evp->e_c)) {
+	if (hexcnt > 1 && !ISXDIGIT(evp->e_c)) {
 		hexcnt = 0;
 		if (txt_hex(sp, tp))
 			goto err;
