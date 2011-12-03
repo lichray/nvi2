@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_z.c,v 10.12 2001/06/25 15:19:36 skimo Exp $";
+static const char sccsid[] = "$Id: v_z.c,v 10.13 2011/12/02 17:26:59 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -34,7 +34,7 @@ int
 v_z(SCR *sp, VICMD *vp)
 {
 	recno_t lno;
-	u_int value;
+	e_key_t value;
 
 	/*
 	 * The first count is the line to use.  If the value doesn't

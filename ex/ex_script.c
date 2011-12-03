@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.38 2001/06/25 15:19:19 skimo Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.39 2011/12/02 17:40:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -208,7 +208,7 @@ sscr_getprompt(SCR *sp)
 	fd_set fdset;
 	recno_t lline;
 	size_t llen, len;
-	u_int value;
+	e_key_t value;
 	int nr;
 
 	FD_ZERO(&fdset);
@@ -467,7 +467,7 @@ sscr_insert(SCR *sp)
 	fd_set rdfd;
 	recno_t lno;
 	size_t blen, len, tlen;
-	u_int value;
+	e_key_t value;
 	int nr, rval;
 	CHAR_T *bp;
 

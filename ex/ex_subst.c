@@ -1346,7 +1346,7 @@ re_sub(
 	 */
 #define	OUTCH(ch, nltrans) {						\
 	CHAR_T __ch = (ch);						\
-	u_int __value = KEY_VAL(sp, __ch);				\
+	e_key_t __value = KEY_VAL(sp, __ch);				\
 	if (nltrans && (__value == K_CR || __value == K_NL)) {		\
 		NEEDNEWLINE(sp);					\
 		sp->newl[sp->newl_cnt++] = lbclen;			\

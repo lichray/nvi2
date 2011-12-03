@@ -301,9 +301,9 @@ done:	sp->cname[sp->clen = len] = '\0';
  *	Fill in the value for a key.  This routine is the backup
  *	for the KEY_VAL() macro.
  *
- * PUBLIC: int v_key_val __P((SCR *, ARG_CHAR_T));
+ * PUBLIC: e_key_t v_key_val __P((SCR *, ARG_CHAR_T));
  */
-int
+e_key_t
 v_key_val(
 	SCR *sp,
 	ARG_CHAR_T ch)

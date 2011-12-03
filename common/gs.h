@@ -125,7 +125,7 @@ struct _gs {
 #define	KEY_VAL(sp, ch)							\
 	((UCHAR_T)(ch) <= MAX_FAST_KEY ? 				\
 	    sp->gp->special_key[(unsigned char)ch] : v_key_val(sp,ch))
-	u_char				/* Fast lookup table. */
+	e_key_t				/* Fast lookup table. */
 	    special_key[MAX_FAST_KEY + 1];
 
 /* Flags. */
