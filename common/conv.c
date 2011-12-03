@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 1.31 2011/12/01 16:21:25 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 1.32 2011/12/03 07:08:48 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -137,16 +137,8 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 	    j = 0;
 	}
     }
-    *tolen = i;
 
-#ifdef USE_ICONV
-    if (id != (iconv_t)-1)
-	iconv_close(id);
-#endif
-
-    *dst = cw->bp1.wc;
-
-    return 0;
+    error = 0;
 err:
     *tolen = i;
 #ifdef USE_ICONV
@@ -232,6 +224,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     size_t buflen;
     char	buffer[CONV_BUFFER_SIZE];
     iconv_t	id = (iconv_t)-1;
+    int		error = 1;
 
 /* convert first len bytes of buffer and append it to cw->bp
  * len is adjusted => 0
@@ -298,15 +291,17 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	*tolen = offset;
     }
 
-    *pdst = cw->bp1.c;
-
-    return 0;
+    error = 0;
 err:
-    *tolen = j;
-
+    if (error)
+	*tolen = j;
+#ifdef USE_ICONV
+    if (id != (iconv_t)-1)
+	iconv_close(id);
+#endif
     *pdst = cw->bp1.c;
 
-    return 1;
+    return error;
 }
 
 static int 
