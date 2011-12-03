@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 8.32 2011/08/22 16:59:09 zy Exp $ (Berkeley) $Date: 2011/08/22 16:59:09 $
+#	$Id: Makefile,v 8.32 2011/08/22 16:59:09 zy Exp $
 
 CAT=	dutch english french german polish ru_RU.KOI8-R spanish swedish \
 	uk_UA.KOI8-U
