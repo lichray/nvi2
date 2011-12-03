@@ -187,7 +187,7 @@ struct _event {
 
 typedef struct _keylist {
 	e_key_t value;			/* Special value. */
-	CHAR_T ch;			/* Key. */
+	int	ch;			/* Key. */
 } KEYLIST;
 extern KEYLIST keylist[];
 

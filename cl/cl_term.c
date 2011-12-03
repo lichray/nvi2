@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_term.c,v 10.31 2001/07/08 13:06:56 skimo Exp $";
+static const char sccsid[] = "$Id: cl_term.c,v 10.32 2011/12/02 18:20:54 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -122,8 +122,9 @@ cl_term_init(SCR *sp)
 		MEMCPYW(name, wp, wlen);
 		CHAR2INT(sp, t, strlen(t), wp, wlen);
 		MEMCPYW(ts, wp, wlen);
+		output[0] = (UCHAR_T)kp->ch;
 		if (seq_set(sp, name, strlen(tkp->name), ts, strlen(t),
-		    &kp->ch, 1, SEQ_INPUT, SEQ_NOOVERWRITE | SEQ_SCREEN))
+		    output, 1, SEQ_INPUT, SEQ_NOOVERWRITE | SEQ_SCREEN))
 			return (1);
 	}
 
