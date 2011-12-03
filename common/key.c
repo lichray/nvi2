@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.50 2011/11/30 23:46:20 zy Exp $";
+static const char sccsid[] = "$Id: key.c,v 10.51 2011/12/02 18:52:34 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -101,7 +101,7 @@ static int nkeylist =
 int
 v_key_init(SCR *sp)
 {
-	CHAR_T ch;
+	int ch;
 	GS *gp;
 	KEYLIST *kp;
 	int cnt;
@@ -119,16 +119,12 @@ v_key_init(SCR *sp)
 	qsort(keylist, nkeylist, sizeof(keylist[0]), v_key_cmp);
 
 	/* Initialize the fast lookup table. */
-	for (gp->max_special = 0, kp = keylist, cnt = nkeylist; cnt--; ++kp) {
-		if (gp->max_special < kp->value)
-			gp->max_special = kp->value;
-		if (kp->ch <= MAX_FAST_KEY)
-			gp->special_key[kp->ch] = kp->value;
-	}
+	for (kp = keylist, cnt = nkeylist; cnt--; ++kp)
+		gp->special_key[kp->ch] = kp->value;
 
 	/* Find a non-printable character to use as a message separator. */
-	for (ch = 1; ch < UCHAR_MAX; ++ch)
-		if (!ISPRINT(ch)) {
+	for (ch = 1; ch <= UCHAR_MAX; ++ch)
+		if (!isprint(ch)) {
 			gp->noprint = ch;
 			break;
 		}
@@ -192,10 +188,13 @@ v_key_ilookup(SCR *sp)
 	GS *gp;
 	size_t len;
 
-	for (gp = sp->gp, ch = 0; ch <= MAX_FAST_KEY; ++ch)
+	for (gp = sp->gp, ch = 0;; ++ch) {
 		for (p = gp->cname[ch].name, t = v_key_name(sp, ch),
 		    len = gp->cname[ch].len = sp->clen; len--;)
 			*p++ = *t++;
+		if (ch == MAX_FAST_KEY)
+			break;
+	}
 }
 
 /*
@@ -305,9 +304,9 @@ done:	sp->cname[sp->clen = len] = '\0';
  *	Fill in the value for a key.  This routine is the backup
  *	for the KEY_VAL() macro.
  *
- * PUBLIC: int v_key_val __P((SCR *, ARG_CHAR_T));
+ * PUBLIC: e_key_t v_key_val __P((SCR *, ARG_CHAR_T));
  */
-int
+e_key_t
 v_key_val(
 	SCR *sp,
 	ARG_CHAR_T ch)
@@ -617,7 +616,8 @@ newmap:	evp = &gp->i_event[gp->i_next];
 	 */
 	if (istimeout || F_ISSET(&evp->e_ch, CH_NOMAP) ||
 	    !LF_ISSET(EC_MAPCOMMAND | EC_MAPINPUT) ||
-	    (evp->e_c < MAX_BIT_SEQ && !bit_test(gp->seqb, evp->e_c)))
+	    ((evp->e_c & ~MAX_BIT_SEQ) == 0 &&
+	    !bit_test(gp->seqb, evp->e_c)))
 		goto nomap;
 
 	/* Search the map. */
