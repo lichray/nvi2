@@ -203,7 +203,7 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 	size_t len;
 	int cur_argc;
 	char *dbname, path[MAXPATHLEN];
-	char *np;
+	char *np = NULL;
 	size_t nlen;
 
 	exp = EXP(sp);
