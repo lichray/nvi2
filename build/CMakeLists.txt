@@ -15,10 +15,23 @@ option(HAVE_BSD_CURSES "Old BSD Style curses library" OFF)
 option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
+function(JOIN VALUES OUTPUT)
+	string(REPLACE ";" " " _TMP_STR "${VALUES}")
+	set(${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
 if(DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -fstrict-aliasing -Wstrict-aliasing -Wformat -Wno-pointer-sign -Wmissing-prototypes -ansi")
+	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O0 -g"
+		"-fstrict-aliasing -Wstrict-aliasing"
+		"-Wformat"
+		"-Wmissing-prototypes"
+		"-Wno-pointer-sign")
+	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wno-pointer-sign")
+	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
+		"-Wuninitialized"
+		"-Wno-pointer-sign")
+	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
 # generate the public headers
