@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.50 2011/11/30 23:46:20 zy Exp $";
+static const char sccsid[] = "$Id: key.c,v 10.51 2011/12/02 18:52:34 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -613,7 +613,8 @@ newmap:	evp = &gp->i_event[gp->i_next];
 	 */
 	if (istimeout || F_ISSET(&evp->e_ch, CH_NOMAP) ||
 	    !LF_ISSET(EC_MAPCOMMAND | EC_MAPINPUT) ||
-	    (evp->e_c < MAX_BIT_SEQ && !bit_test(gp->seqb, evp->e_c)))
+	    ((evp->e_c & ~MAX_BIT_SEQ) == 0 &&
+	    !bit_test(gp->seqb, evp->e_c)))
 		goto nomap;
 
 	/* Search the map. */

@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: gs.h,v 10.35 2011/06/26 21:32:04 zy Exp $
+ *	$Id: gs.h,v 10.36 2011/12/02 18:45:06 zy Exp $
  */
 
 #define	TEMPORARY_FILE_STRING	"/tmp"	/* Default temporary file name. */
@@ -106,16 +106,16 @@ struct _gs {
 	CB	 dcb_store;		/* Default cut buffer storage. */
 	LIST_HEAD(_cuth, _cb) cutq;	/* Linked list of cut buffers. */
 
-#define	MAX_BIT_SEQ	128		/* Max + 1 fast check character. */
+#define	MAX_BIT_SEQ	0x7f		/* Max + 1 fast check character. */
 	LIST_HEAD(_seqh, _seq) seqq;	/* Linked list of maps, abbrevs. */
-	bitstr_t bit_decl(seqb, MAX_BIT_SEQ);
+	bitstr_t bit_decl(seqb, MAX_BIT_SEQ + 1);
 
-#define	MAX_FAST_KEY	254		/* Max fast check character.*/
+#define	MAX_FAST_KEY	0xff		/* Max fast check character.*/
 #define	KEY_LEN(sp, ch)							\
-	((UCHAR_T)(ch) <= MAX_FAST_KEY ?			\
+	(((ch) & ~MAX_FAST_KEY) == 0 ?					\
 	    sp->gp->cname[(unsigned char)ch].len : v_key_len(sp, ch))
 #define	KEY_NAME(sp, ch)						\
-	((UCHAR_T)(ch) <= MAX_FAST_KEY ?				\
+	(((ch) & ~MAX_FAST_KEY) == 0 ?					\
 	    sp->gp->cname[(unsigned char)ch].name : v_key_name(sp, ch))
 	struct {
 		u_char	 name[MAX_CHARACTER_COLUMNS + 1];
@@ -123,7 +123,7 @@ struct _gs {
 	} cname[MAX_FAST_KEY + 1];	/* Fast lookup table. */
 
 #define	KEY_VAL(sp, ch)							\
-	((UCHAR_T)(ch) <= MAX_FAST_KEY ? 				\
+	(((ch) & ~MAX_FAST_KEY) == 0 ? 					\
 	    sp->gp->special_key[(unsigned char)ch] : v_key_val(sp,ch))
 	e_key_t				/* Fast lookup table. */
 	    special_key[MAX_FAST_KEY + 1];

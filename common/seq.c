@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: seq.c,v 10.16 2011/07/04 20:23:03 zy Exp $";
+static const char sccsid[] = "$Id: seq.c,v 10.17 2011/12/02 18:49:24 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -125,7 +125,7 @@ mem1:		errno = sv_errno;
 	}
 
 	/* Set the fast lookup bit. */
-	if ((UCHAR_T)qp->input[0] < MAX_BIT_SEQ)
+	if ((qp->input[0] & ~MAX_BIT_SEQ) == 0)
 		bit_set(sp->gp->seqb, qp->input[0]);
 
 	return (0);
