@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: distrib,v 8.27 2011/12/03 03:23:41 zy Exp $
+# $Id: distrib,v 8.28 2011/12/03 03:45:14 zy Exp $
 
 # Build include files.
 f=../cl/extern.h
@@ -29,8 +29,7 @@ chmod 444 $f
 f=../ex/version.h
 echo "Building $f"
 rm -f $f
-sed -n 's/^.*version \([^)]*)\).*/#define VI_VERSION "nvi-\1"/p' \
-	../README > $f
+sed -n 's/^.*version \([^)]*)\).*/#define VI_VERSION "\1"/p' ../README > $f
 chmod 444 $f
 
 f=../common/options_def.h
