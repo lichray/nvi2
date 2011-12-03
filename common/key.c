@@ -188,10 +188,13 @@ v_key_ilookup(SCR *sp)
 	GS *gp;
 	size_t len;
 
-	for (gp = sp->gp, ch = 0; ch <= MAX_FAST_KEY; ++ch)
+	for (gp = sp->gp, ch = 0;; ++ch) {
 		for (p = gp->cname[ch].name, t = v_key_name(sp, ch),
 		    len = gp->cname[ch].len = sp->clen; len--;)
 			*p++ = *t++;
+		if (ch == MAX_FAST_KEY)
+			break;
+	}
 }
 
 /*
