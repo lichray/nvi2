@@ -6,7 +6,7 @@
  */
 
 #ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.2 2011/08/13 22:58:03 zy Exp $";
+static const char sccsid[] = "$Id: encoding.c,v 1.3 2011/12/03 02:22:20 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -76,13 +76,13 @@ looks_utf8(const char *buf, size_t nbytes)
 			int following;
 
 			if ((buf[i] & 0x20) == 0)		/* 110xxxxx */
-				if (buf[i] > '\xc1')	/* C0, C1 */
+				if (buf[i] > '\xC1')	/* C0, C1 */
 					following = 1;
 				else return -1;
 			else if ((buf[i] & 0x10) == 0)	/* 1110xxxx */
 				following = 2;
 			else if ((buf[i] & 0x08) == 0)	/* 11110xxx */
-				if (buf[i] < '\xf5')
+				if (buf[i] < '\xF5')
 					following = 3;
 				else return -1;		/* F5, F6, F7 */
 			else
@@ -126,19 +126,19 @@ looks_utf16(const char *buf, size_t nbytes)
 	if (nbytes < 2)
 		return 0;
 
-	bom = ((u_char)buf[0] << 8) + (u_char)buf[1];
-	if (bom == 0xfffe)
+	bom = (u_char)buf[0] << 8 ^ (u_char)buf[1];
+	if (bom == 0xFFFE)
 		bigend = 0;
-	else if (bom == 0xfeff)
+	else if (bom == 0xFEFF)
 		bigend = 1;
 	else
 		return 0;
 
 	for (i = 2; i + 1 < nbytes; i += 2) {
 		if (bigend)
-			c = (u_char)buf[i + 1] + 256 * (u_char)buf[i];
+			c = (u_char)buf[i] << 8 ^ (u_char)buf[i + 1];
 		else
-			c = (u_char)buf[i] + 256 * (u_char)buf[i + 1];
+			c = (u_char)buf[i] ^ (u_char)buf[i + 1] << 8;
 
 		if (!following)
 			if (c < 0xD800 || c > 0xDFFF)
