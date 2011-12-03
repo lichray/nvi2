@@ -76,7 +76,7 @@ struct _gs {
 	DB	*msg;			/* Message catalog DB. */
 	MSGH	 msgq;			/* User message list. */
 #define	DEFAULT_NOPRINT	'\1'		/* Emergency non-printable character. */
-	CHAR_T	 noprint;		/* Cached, unprintable character. */
+	int	 noprint;		/* Cached, unprintable character. */
 
 	char	*tmp_bp;		/* Temporary buffer. */
 	size_t	 tmp_blen;		/* Temporary buffer size. */

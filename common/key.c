@@ -101,7 +101,7 @@ static int nkeylist =
 int
 v_key_init(SCR *sp)
 {
-	CHAR_T ch;
+	int ch;
 	GS *gp;
 	KEYLIST *kp;
 	int cnt;
@@ -123,8 +123,8 @@ v_key_init(SCR *sp)
 		gp->special_key[kp->ch] = kp->value;
 
 	/* Find a non-printable character to use as a message separator. */
-	for (ch = 1; ch < UCHAR_MAX; ++ch)
-		if (!ISPRINT(ch)) {
+	for (ch = 1; ch <= UCHAR_MAX; ++ch)
+		if (!isprint(ch)) {
 			gp->noprint = ch;
 			break;
 		}
