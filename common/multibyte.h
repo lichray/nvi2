@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: multibyte.h,v 1.28 2011/07/16 18:40:01 zy Exp $
+ *	$Id: multibyte.h,v 1.29 2011/12/03 01:33:31 zy Exp $
  */
 
 #ifndef MULTIBYTE_H
@@ -42,11 +42,27 @@ typedef wchar_t 	RCHAR_T;
 #define SPRINTF		swprintf
 #define STRCMP		wcscmp
 #define STRPBRK		wcspbrk
+#define ISALPHA		iswalpha
+#define ISALNUM		iswalnum
+#define ISBLANK		iswblank
+#define ISCNTRL		iswcntrl
+#define ISDIGIT		iswdigit
+#define ISXDIGIT	iswxdigit
+#define ISGRAPH		iswgraph
+#define ISLOWER		iswlower
+#define ISPRINT		iswprint
+#define ISPUNCT		iswpunct
+#define ISSPACE		iswspace
+#define ISUPPER		iswupper
+#define TOLOWER		towlower
 #define TOUPPER		towupper
 #define STRSET		wmemset
-#define VSPRINTF	vswprintf
+#define STRCHR		wcschr
 
 #define L(ch)		L ## ch
+#define WS		"%ls"
+#define WVS		"%*ls"
+#define WC		"%lc"
 
 #else
 typedef	u_char		CHAR_T;
@@ -61,11 +77,27 @@ typedef	char		RCHAR_T;
 #define SPRINTF		snprintf
 #define STRCMP		strcmp
 #define STRPBRK		strpbrk
+#define ISALPHA		isalpha
+#define ISALNUM		isalnum
+#define ISBLANK		isblank
+#define ISCNTRL		iscntrl
+#define ISDIGIT		isdigit
+#define ISXDIGIT	isxdigit
+#define ISGRAPH		isgraph
+#define ISLOWER		islower
+#define ISPRINT		isprint
+#define ISPUNCT		ispunct
+#define ISSPACE		isspace
+#define ISUPPER		isupper
+#define TOLOWER		tolower
 #define TOUPPER		toupper
 #define STRSET		memset
-#define VSPRINTF	vsnprintf
+#define STRCHR		strchr
 
 #define L(ch)		ch
+#define WS		"%s"
+#define WVS		"%*s"
+#define WC		"%c"
 
 #endif
 
