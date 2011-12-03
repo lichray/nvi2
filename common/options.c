@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.68 2011/11/30 23:49:41 zy Exp $";
+static const char sccsid[] = "$Id: options.c,v 10.69 2011/12/03 08:25:01 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -444,15 +444,6 @@ opts_init(
 	for (; *oargs != -1; ++oargs)
 		OI(*oargs, optlist[*oargs].name);
 #undef OI
-
-	/*
-	 * Inform the underlying screen of the initial values of the
-	 * edit options.
-	 */
-	for (op = optlist, cnt = 0; op->name != NULL; ++op, ++cnt) {
-		isset = O_ISSET(sp, cnt);
-		(void)sp->gp->scr_optchange(sp, cnt, O_STR(sp, cnt), &isset);
-	}
 	return (0);
 
 err:	msgq(sp, M_ERR,
