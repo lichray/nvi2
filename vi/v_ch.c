@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_ch.c,v 10.10 2001/06/25 15:19:30 skimo Exp $";
+static const char sccsid[] = "$Id: v_ch.c,v 10.11 2011/12/02 19:49:50 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -138,7 +138,8 @@ v_chf(SCR *sp, VICMD *vp)
 {
 	size_t len;
 	u_long cnt;
-	int isempty, key;
+	int isempty;
+	ARG_CHAR_T key;
 	CHAR_T *endp, *p, *startp;
 
 	/*
@@ -219,7 +220,8 @@ v_chF(SCR *sp, VICMD *vp)
 {
 	size_t len;
 	u_long cnt;
-	int isempty, key;
+	int isempty;
+	ARG_CHAR_T key;
 	CHAR_T *endp, *p;
 
 	/*
