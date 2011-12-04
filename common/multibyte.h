@@ -20,6 +20,7 @@
  *		traditional promotion rules.  It should also be able
  *		to be compared against any CHAR_T for equality without
  *		problems.
+ * UCHAR_T	The shortest unified character type (8-bit clean).
  * RCHAR_T	The character type used by the internal regex engine.
  *
  * If no integral type can hold a character, don't even try the port.
@@ -31,7 +32,7 @@ typedef	int		ARG_CHAR_T;
 #include <wctype.h>
 
 typedef	wchar_t		CHAR_T;
-typedef	u_int		UCHAR_T;
+typedef	wint_t		UCHAR_T;
 typedef wchar_t 	RCHAR_T;
 #define RCHAR_T_MAX	((1 << 24)-1)
 #define RCHAR_BIT	24
