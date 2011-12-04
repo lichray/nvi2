@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 1.32 2011/12/03 07:08:48 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.33 2011/12/04 04:06:45 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -32,12 +32,8 @@ static const char sccsid[] = "$Id: conv.c,v 1.32 2011/12/03 07:08:48 zy Exp $";
 
 #ifdef USE_ICONV
 #include <langinfo.h>
-#include <iconv.h>
-
 #define LANGCODESET	nl_langinfo(CODESET)
 #else
-typedef int	iconv_t;
-
 #define LANGCODESET	""
 #endif
 
@@ -84,19 +80,21 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, size_t *tolen,
 	}				    				\
 	src = buffer;							\
     } while (0)
+
+#define IC_RESET()							\
+    do {								\
+	if (id != (iconv_t)-1)						\
+	    iconv(id, NULL, NULL, NULL, NULL);				\
+    } while(0)
 #else
 #define CONVERT(str, left, src, len)
+#define IC_RESET()
 #endif
 
 static int 
 default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
-		size_t *tolen, CHAR_T **dst, char *enc)
+		size_t *tolen, CHAR_T **dst, iconv_t id)
 {
-	/* XXX UTF-16 linesep hack */
-    if (enc && !strncasecmp(enc, "utf-16", 6) && len % 2)
-	if (--len, !strncasecmp(enc, "utf-16le", 8))
-	    str++;			/* shift if LE */
-
     int i = 0, j;
     CHAR_T **tostr = &cw->bp1.wc;
     size_t  *blen = &cw->blen1;
@@ -104,7 +102,6 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     size_t   n;
     ssize_t  nlen = len;
     char *src = (char *)str;
-    iconv_t	id = (iconv_t)-1;
     char	buffer[CONV_BUFFER_SIZE];
     size_t	left = len;
     int		error = 1;
@@ -113,12 +110,8 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     BINC_RETW(NULL, *tostr, *blen, nlen);
 
 #ifdef USE_ICONV
-    if (strcasecmp(nl_langinfo(CODESET), enc)) {
-	id = iconv_open(nl_langinfo(CODESET), enc);
-	if (id == (iconv_t)-1)
-	    goto err;
+    if (id != (iconv_t)-1)
 	CONVERT(str, left, src, len);
-    }
 #endif
 
     for (i = 0, j = 0; j < len; ) {
@@ -141,11 +134,8 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     error = 0;
 err:
     *tolen = i;
-#ifdef USE_ICONV
-    if (id != (iconv_t)-1)
-	iconv_close(id);
-#endif
     *dst = cw->bp1.wc;
+    IC_RESET();
 
     return error;
 }
@@ -154,41 +144,30 @@ static int
 fe_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, CHAR_T **dst)
 {
-    return default_char2int(sp, str, len, cw, tolen, dst, O_STR(sp, O_FILEENCODING));
+    /* XXX UTF-16 linesep hack */
+    char *enc = O_STR(sp, O_FILEENCODING);
+    if (enc && !strncasecmp(enc, "utf-16", 6) && len % 2)
+	if (--len, !strncasecmp(enc, "utf-16le", 8))
+	    str++;			/* shift if LE */
+
+    return default_char2int(sp, str, len, cw, tolen, dst,
+	sp->conv.id[IC_FE_CHAR2INT]);
 }
 
 static int 
 ie_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, CHAR_T **dst)
 {
-    return default_char2int(sp, str, len, cw, tolen, dst, O_STR(sp, O_INPUTENCODING));
+    return default_char2int(sp, str, len, cw, tolen, dst,
+	sp->conv.id[IC_IE_CHAR2INT]);
 }
 
 static int 
 cs_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, CHAR_T **dst)
 {
-    return default_char2int(sp, str, len, cw, tolen, dst, LANGCODESET);
-}
-
-static int 
-CHAR_T_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, 
-	size_t *tolen, char **dst)
-{
-    *tolen = len * sizeof(CHAR_T);
-    *dst = (char*) str;
-
-    return 0;
-}
-
-static int 
-CHAR_T_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
-	size_t *tolen, CHAR_T **dst)
-{
-    *tolen = len / sizeof(CHAR_T);
-    *dst = (CHAR_T*) str;
-
-    return 0;
+    return default_char2int(sp, str, len, cw, tolen, dst,
+	(iconv_t)-1);
 }
 
 static int 
@@ -212,7 +191,7 @@ int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, size_t *tolen,
 
 static int 
 default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, 
-		size_t *tolen, char **pdst, char *enc)
+		size_t *tolen, char **pdst, iconv_t id)
 {
     size_t i, j, offset = 0;
     char **tostr = &cw->bp1.c;
@@ -223,7 +202,6 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     char *dst;
     size_t buflen;
     char	buffer[CONV_BUFFER_SIZE];
-    iconv_t	id = (iconv_t)-1;
     int		error = 1;
 
 /* convert first len bytes of buffer and append it to cw->bp
@@ -259,10 +237,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     dst = *tostr; buflen = *blen;
 
 #ifdef USE_ICONV
-    if (strcasecmp(nl_langinfo(CODESET), enc)) {
-	id = iconv_open(enc, nl_langinfo(CODESET));
-	if (id == (iconv_t)-1)
-	    goto err;
+    if (id != (iconv_t)-1) {
 	dst = buffer; buflen = CONV_BUFFER_SIZE;
     }
 #endif
@@ -295,11 +270,8 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 err:
     if (error)
 	*tolen = j;
-#ifdef USE_ICONV
-    if (id != (iconv_t)-1)
-	iconv_close(id);
-#endif
     *pdst = cw->bp1.c;
+    IC_RESET();
 
     return error;
 }
@@ -308,21 +280,23 @@ static int
 fe_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, char **dst)
 {
-    return default_int2char(sp, str, len, cw, tolen, dst, O_STR(sp, O_FILEENCODING));
+    return default_int2char(sp, str, len, cw, tolen, dst,
+	sp->conv.id[IC_FE_INT2CHAR]);
 }
 
 static int 
 cs_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, char **dst)
 {
-    return default_int2char(sp, str, len, cw, tolen, dst, LANGCODESET);
+    return default_int2char(sp, str, len, cw, tolen, dst,
+	(iconv_t)-1);
 }
 
 #endif
 
 /*
  * conv_init --
- *	Initialize iconv functions.
+ *	Initialize the iconv environment.
  *
  * PUBLIC: void conv_init __P((SCR *, SCR *));
  */
@@ -373,14 +347,18 @@ conv_init (SCR *orig, SCR *sp)
 #ifdef USE_ICONV
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
 #endif
+	sp->conv.id[IC_IE_CHAR2INT] = (iconv_t)-1;
     }
     /* XXX
      * Do not inherit file encoding from the old screen,
      * but overwrite the fileencoding option in .exrc
      */
 #ifdef USE_ICONV
+    conv_enc(sp, O_INPUTENCODING, 0);
     o_set(sp, O_FILEENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
 #endif
+    sp->conv.id[IC_FE_CHAR2INT] = (iconv_t)-1;
+    sp->conv.id[IC_FE_INT2CHAR] = (iconv_t)-1;
 }
 
 /*
@@ -393,49 +371,33 @@ int
 conv_enc (SCR *sp, int option, char *enc)
 {
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
-    iconv_t id;
-    char2wchar_t    *c2w;
-    wchar2char_t    *w2c;
+    iconv_t *c2w, *w2c;
 
     switch (option) {
     case O_FILEENCODING:
-	c2w = &sp->conv.file2int;
-	w2c = &sp->conv.int2file;
+	c2w = sp->conv.id + IC_FE_CHAR2INT;
+	w2c = sp->conv.id + IC_FE_INT2CHAR;
+	if (!enc) enc = O_STR(sp, O_FILEENCODING);
+	if (*c2w != (iconv_t)-1)
+	    iconv_close(*c2w);
+	if (*w2c != (iconv_t)-1)
+	    iconv_close(*w2c);
+	if (strcasecmp(LANGCODESET, enc)) {
+	    if ((*c2w = iconv_open(LANGCODESET, enc)) == (iconv_t)-1)
+		goto err;
+	    if ((*w2c = iconv_open(enc, LANGCODESET)) == (iconv_t)-1)
+		goto err;
+	} else *c2w = *w2c = (iconv_t)-1;
 	break;
     case O_INPUTENCODING:
-	c2w = &sp->conv.input2int;
-	w2c = NULL;
-	break;
-    }
-
-    if (!*enc) {
-	if (c2w) *c2w = raw2int;
-	if (w2c) *w2c = int2raw;
-	return 0;
-    }
-
-    if (!strcmp(enc, "WCHAR_T")) {
-	if (c2w) *c2w = CHAR_T_char2int;
-	if (w2c) *w2c = CHAR_T_int2char;
-	return 0;
-    }
-
-    id = iconv_open(enc, nl_langinfo(CODESET));
-    if (id == (iconv_t)-1)
-	goto err;
-    iconv_close(id);
-    id = iconv_open(nl_langinfo(CODESET), enc);
-    if (id == (iconv_t)-1)
-	goto err;
-    iconv_close(id);
-
-    switch (option) {
-    case O_FILEENCODING:
-	*c2w = fe_char2int;
-	*w2c = fe_int2char;
-	break;
-    case O_INPUTENCODING:
-	*c2w = ie_char2int;
+	c2w = sp->conv.id + IC_IE_CHAR2INT;
+	if (!enc) enc = O_STR(sp, O_INPUTENCODING);
+	if (*c2w != (iconv_t)-1)
+	    iconv_close(*c2w);
+	if (strcasecmp(LANGCODESET, enc)) {
+	    if ((*c2w = iconv_open(LANGCODESET, enc)) == (iconv_t)-1)
+		goto err;
+	} else *c2w = (iconv_t)-1;
 	break;
     }
 
@@ -458,3 +420,21 @@ err:
     return 1;
 }
 
+/*
+ * conv_end --
+ *	Close the iconv descriptors, release the buffer.
+ *
+ * PUBLIC: void conv_end __P((SCR *));
+ */
+void
+conv_end (SCR *sp)
+{
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+    int i;
+    for (i = 0; i <= IC_IE_CHAR2INT; ++i)
+	if (sp->conv.id[i] != (iconv_t)-1)
+	    iconv_close(sp->conv.id[i]);
+	if (sp->cw.bp1.c != NULL)
+	    free(sp->cw.bp1.c);
+#endif
+}

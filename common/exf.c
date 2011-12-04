@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.54 2011/12/01 15:05:39 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.55 2011/12/04 04:06:45 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -1269,6 +1269,8 @@ file_encinit(SCR *sp)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
 	}
 	/* Fallback to locale encoding */
+
+	conv_enc(sp, O_FILEENCODING, 0);
 #endif
 }
 
