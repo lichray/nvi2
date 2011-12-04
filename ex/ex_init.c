@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_init.c,v 10.31 2001/06/25 15:19:16 skimo Exp $";
+static const char sccsid[] = "$Id: ex_init.c,v 10.32 2011/12/04 03:46:06 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -100,6 +100,9 @@ ex_screen_end(SCR *sp)
 
 	if (exp->lastbcomm != NULL)
 		free(exp->lastbcomm);
+
+	if (exp->ibcw.bp1.c != NULL)
+		free(exp->ibcw.bp1.c);
 
 	if (ex_tag_free(sp))
 		rval = 1;
