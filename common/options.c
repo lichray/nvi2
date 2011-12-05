@@ -415,7 +415,9 @@ opts_init(
 	 * Set boolean default values, and copy all settings into the default
 	 * information.  OS_NOFREE is set, we're copying, not replacing.
 	 */
-	for (op = optlist, cnt = 0; op->name != NULL; ++op, ++cnt)
+	for (op = optlist, cnt = 0; op->name != NULL; ++op, ++cnt) {
+		if (F_ISSET(op, OPT_GLOBAL))
+			continue;
 		switch (op->type) {
 		case OPT_0BOOL:
 			break;
@@ -434,6 +436,7 @@ opts_init(
 		default:
 			abort();
 		}
+	}
 
 	/*
 	 * !!!
