@@ -18,6 +18,7 @@ static const char sccsid[] = "$Id: v_match.c,v 10.10 2001/06/25 15:19:32 skimo E
 #include <sys/time.h>
 
 #include <bitstring.h>
+#include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
