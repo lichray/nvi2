@@ -195,12 +195,6 @@ screen_end(SCR *sp)
 	/* Free all the options */
 	opts_free(sp);
 
-	/* Free the global option */
-#if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
-	if (screen_next(sp) == NULL)
-		free(O_STR(sp, O_TERM));
-#endif
-
 	/* Free the screen itself. */
 	free(sp);
 

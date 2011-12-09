@@ -154,6 +154,7 @@ main(int argc, char **argv)
 	if (clp->oname != NULL)
 		free(clp->oname);
 	free(clp);
+	free(OG_STR(gp, GO_TERM));
 	free(gp);
 #endif
 
