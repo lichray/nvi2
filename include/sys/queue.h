@@ -133,6 +133,7 @@ struct {								\
 /*
  * Tail queue functions.
  */
+
 #define	TAILQ_INIT(head) {						\
 	(head)->tqh_first = NULL;					\
 	(head)->tqh_last = &(head)->tqh_first;				\
@@ -180,6 +181,27 @@ struct {								\
 		(head)->tqh_last = (elm)->field.tqe_prev;		\
 	*(elm)->field.tqe_prev = (elm)->field.tqe_next;			\
 }
+
+/* Tail queue access methods. */
+#define	TAILQ_EMPTY(head)	((head)->tqh_first == NULL)
+#define	TAILQ_FIRST(head)	((head)->tqh_first)
+#define	TAILQ_LAST(head, headname)					\
+	(*(((struct headname *)((head)->tqh_last))->tqh_last))
+
+#define	TAILQ_NEXT(elm, field) ((elm)->field.tqe_next)
+#define	TAILQ_PREV(elm, headname, field)				\
+	(*(((struct headname *)((elm)->field.tqe_prev))->tqh_last))
+
+
+#define	TAILQ_FOREACH(var, head, field)					\
+	for ((var) = TAILQ_FIRST((head));				\
+	    (var);							\
+	    (var) = TAILQ_NEXT((var), field))
+
+#define	TAILQ_FOREACH_REVERSE(var, head, headname, field)		\
+	for ((var) = TAILQ_LAST((head), headname);			\
+	    (var);							\
+	    (var) = TAILQ_PREV((var), headname, field))
 
 /*
  * Circular queue definitions.
