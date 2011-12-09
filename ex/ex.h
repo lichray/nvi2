@@ -158,8 +158,8 @@ struct _excmd {
 /* Ex private, per-screen memory. */
 typedef struct _ex_private {
 	CIRCLEQ_HEAD(_tqh, _tagq) tq;	/* Tag queue. */
-	TAILQ_HEAD(_tagfh, _tagf) tagfq;/* Tag file list. */
-	LIST_HEAD(_csch, _csc) cscq;    /* Cscope connection list. */
+	TAILQ_HEAD(_tagfh, _tagf) tagfq[1];/* Tag file list. */
+	LIST_HEAD(_csch, _csc) cscq;	/* Cscope connection list. */
 	CHAR_T	*tag_last;		/* Saved last tag string. */
 
 	CHAR_T	*lastbcomm;		/* Last bang command. */

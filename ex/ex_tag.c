@@ -576,11 +576,10 @@ ex_tag_copy(SCR *orig, SCR *sp)
 	}
 
 	/* Copy list of tag files. */
-	for (atfp = oexp->tagfq.tqh_first;
-	    atfp != NULL; atfp = atfp->q.tqe_next) {
+	TAILQ_FOREACH(atfp, oexp->tagfq, q) {
 		if (tagf_copy(sp, atfp, &tfp))
 			return (1);
-		TAILQ_INSERT_TAIL(&nexp->tagfq, tfp, q);
+		TAILQ_INSERT_TAIL(nexp->tagfq, tfp, q);
 	}
 
 	/* Copy the last tag. */
@@ -679,7 +678,7 @@ tagf_free(SCR *sp, TAGF *tfp)
 	EX_PRIVATE *exp;
 
 	exp = EXP(sp);
-	TAILQ_REMOVE(&exp->tagfq, tfp, q);
+	TAILQ_REMOVE(exp->tagfq, tfp, q);
 	free(tfp->name);
 	free(tfp);
 	return (0);
@@ -863,7 +862,7 @@ ex_tagf_alloc(SCR *sp, char *str)
 
 	/* Free current queue. */
 	exp = EXP(sp);
-	while ((tfp = exp->tagfq.tqh_first) != NULL)
+	while ((tfp = TAILQ_FIRST(exp->tagfq)) != NULL)
 		tagf_free(sp, tfp);
 
 	/* Create new queue. */
@@ -879,7 +878,7 @@ ex_tagf_alloc(SCR *sp, char *str)
 				memcpy(tfp->name, t, len);
 				tfp->name[len] = '\0';
 				tfp->flags = 0;
-				TAILQ_INSERT_TAIL(&exp->tagfq, tfp, q);
+				TAILQ_INSERT_TAIL(exp->tagfq, tfp, q);
 			}
 			t = p + 1;
 		}
@@ -906,7 +905,7 @@ ex_tag_free(SCR *sp)
 	exp = EXP(sp);
 	while ((tqp = exp->tq.cqh_first) != (void *)&exp->tq)
 		tagq_free(sp, tqp);
-	while ((tfp = exp->tagfq.tqh_first) != NULL)
+	while ((tfp = TAILQ_FIRST(exp->tagfq)) != NULL)
 		tagf_free(sp, tfp);
 	if (exp->tag_last != NULL)
 		free(exp->tag_last);
@@ -988,7 +987,7 @@ ctag_slist(SCR *sp, CHAR_T *tag)
 	TAGF *tfp;
 	TAGQ *tqp;
 	size_t len;
-	int echk;
+	int echk = 0;
 	char *np;
 	size_t nlen;
 
@@ -1006,8 +1005,7 @@ ctag_slist(SCR *sp, CHAR_T *tag)
 	 * Find the tag, only display missing file messages once, and
 	 * then only if we didn't find the tag.
 	 */
-	for (echk = 0,
-	    tfp = exp->tagfq.tqh_first; tfp != NULL; tfp = tfp->q.tqe_next)
+	TAILQ_FOREACH(tfp, exp->tagfq, q)
 		if (ctag_sfile(sp, tfp, tqp, tqp->tag)) {
 			echk = 1;
 			F_SET(tfp, TAGF_ERR);
@@ -1018,8 +1016,7 @@ ctag_slist(SCR *sp, CHAR_T *tag)
 	if (tqp->tagq.cqh_first == (void *)&tqp->tagq) {
 		msgq_str(sp, M_ERR, tqp->tag, "162|%s: tag not found");
 		if (echk)
-			for (tfp = exp->tagfq.tqh_first;
-			    tfp != NULL; tfp = tfp->q.tqe_next)
+			TAILQ_FOREACH(tfp, exp->tagfq, q)
 				if (F_ISSET(tfp, TAGF_ERR) &&
 				    !F_ISSET(tfp, TAGF_ERR_WARN)) {
 					errno = tfp->errnum;
