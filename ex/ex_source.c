@@ -85,7 +85,8 @@ err:		msgq_str(sp, M_SYSERR, name, "%s");
 
 	if (CHAR2INT(sp, bp, (size_t)sb.st_size + 1, wp, wlen))
 		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
-	if (dp) free(dp);
+	if (dp != NULL)
+		free(dp);
 	dp = v_wstrdup(sp, wp, wlen - 1);
 	free(bp);
 	/* Put it on the ex queue. */
