@@ -207,7 +207,7 @@ ex_cmd(SCR *sp)
 	int cnt, delim, isaddr, namelen;
 	int newscreen, notempty, tmp, vi_address;
 	CHAR_T *arg1, *s, *p, *t;
-	CHAR_T ch;
+	CHAR_T ch = L('\0');
 	CHAR_T *n;
 	char *np;
 

@@ -129,7 +129,7 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 	MARK rm;
 	int flags;
 	char *name;
-	CHAR_T *p;
+	CHAR_T *p = NULL;
 	size_t nlen;
 	char *n;
 	int rc;

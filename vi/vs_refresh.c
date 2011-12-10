@@ -171,7 +171,7 @@ vs_paint(
 	VI_PRIVATE *vip;
 	recno_t lastline, lcnt;
 	size_t cwtotal, cnt, len, notused, off, y;
-	int ch, didpaint, isempty, leftright_warp;
+	int ch = 0, didpaint, isempty, leftright_warp;
 	CHAR_T *p;
 
 #define	 LNO	sp->lno			/* Current file line. */
@@ -774,7 +774,7 @@ vs_modeline(SCR *sp)
 	};
 	GS *gp;
 	size_t cols, curcol, curlen, endpoint, len, midpoint;
-	const char *t;
+	const char *t = NULL;
 	int ellipsis;
 	char *p, buf[20];
 

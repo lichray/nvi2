@@ -98,7 +98,7 @@ vs_screens(SCR *sp, recno_t lno, size_t *cnop)
 size_t
 vs_columns(SCR *sp, CHAR_T *lp, recno_t lno, size_t *cnop, size_t *diffp)
 {
-	size_t chlen, cno, curoff, last, len, scno;
+	size_t chlen, cno, curoff, last = 0, len, scno;
 	int ch, leftright, listset;
 	CHAR_T *p;
 
@@ -224,7 +224,7 @@ size_t
 vs_colpos(SCR *sp, recno_t lno, size_t cno)
 {
 	size_t chlen, curoff, len, llen, off, scno;
-	int ch, leftright, listset;
+	int ch = 0, leftright, listset;
 	CHAR_T *lp, *p;
 
 	/* Need the line to go any further. */

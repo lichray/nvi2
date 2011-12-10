@@ -72,7 +72,7 @@ cut(
 	int flags)
 {
 	CB *cbp;
-	CHAR_T name;
+	CHAR_T name = L('\0');
 	recno_t lno;
 	int append, copy_one, copy_def;
 

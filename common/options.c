@@ -303,7 +303,7 @@ opts_init(
 	ARGS *argv[2], a, b;
 	OPTLIST const *op;
 	u_long isset, v;
-	int cnt, optindx;
+	int cnt, optindx = 0;
 	char *s;
 	CHAR_T b2[1024];
 	CHAR_T *wp;

@@ -250,12 +250,12 @@ v_txt(
 	u_long rcount,		/* Replay count. */
 	u_int32_t flags)	/* TXT_* flags. */
 {
-	EVENT ev, *evp;		/* Current event. */
+	EVENT ev, *evp = NULL;	/* Current event. */
 	EVENT fc;		/* File name completion event. */
 	GS *gp;
 	TEXT *ntp, *tp;		/* Input text structures. */
 	TEXT ait;		/* Autoindent text structure. */
-	TEXT wmt;		/* Wrapmargin text structure. */
+	TEXT wmt = { 0 };	/* Wrapmargin text structure. */
 	TEXTH *tiqh;
 	VI_PRIVATE *vip;
 	abb_t abb;		/* State of abbreviation checks. */

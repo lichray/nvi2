@@ -1046,9 +1046,10 @@ ctag_sfile(SCR *sp, TAGF *tfp, TAGQ *tqp, char *tname)
 {
 	struct stat sb;
 	TAG *tp;
-	size_t dlen, nlen, slen;
+	size_t dlen, nlen = 0, slen;
 	int fd, i, nf1, nf2;
-	char *back, *cname, *dname, *front, *map, *name, *p, *search, *t;
+	char *back, *front, *map, *p, *search, *t;
+	char *cname = NULL, *dname = NULL, *name = NULL;
 	CHAR_T *wp;
 	size_t wlen;
 	long tl;

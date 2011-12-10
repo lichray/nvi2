@@ -54,7 +54,7 @@ cl_event(SCR *sp, EVENT *evp, u_int32_t flags, int ms)
 	struct timeval t, *tp;
 	CL_PRIVATE *clp;
 	size_t lines, columns;
-	int changed, nr;
+	int changed, nr = 0;
 	CHAR_T *wp;
 	size_t wlen;
 	int rc;

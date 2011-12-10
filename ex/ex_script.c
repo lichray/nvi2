@@ -301,7 +301,7 @@ sscr_exec(SCR *sp, recno_t lno)
 	recno_t last_lno;
 	size_t blen, len, last_len, tlen;
 	int isempty, matchprompt, nw, rval;
-	CHAR_T *bp;
+	CHAR_T *bp = NULL;
 	CHAR_T *p;
 
 	/* If there's a prompt on the last line, append the command. */
@@ -466,7 +466,7 @@ sscr_insert(SCR *sp)
 	SCRIPT *sc;
 	fd_set rdfd;
 	recno_t lno;
-	size_t blen, len, tlen;
+	size_t blen, len = 0, tlen;
 	e_key_t value;
 	int nr, rval;
 	CHAR_T *bp;

@@ -44,8 +44,8 @@ ex_read(SCR *sp, EXCMD *cmdp)
 {
 	enum { R_ARG, R_EXPANDARG, R_FILTER } which;
 	struct stat sb;
-	CHAR_T *arg;
-	char *name;
+	CHAR_T *arg = NULL;
+	char *name = NULL;
 	size_t nlen;
 	EX_PRIVATE *exp;
 	FILE *fp;
@@ -53,7 +53,7 @@ ex_read(SCR *sp, EXCMD *cmdp)
 	GS *gp;
 	MARK rm;
 	recno_t nlines;
-	size_t arglen;
+	size_t arglen = 0;
 	int argc, rval;
 	char *p;
 	char *np;

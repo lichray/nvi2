@@ -597,7 +597,7 @@ rcv_read(
 	DIR *dirp;
 	EXF *ep;
 	time_t rec_mtime;
-	int fd, found, locked, requested, sv_fd;
+	int fd, found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
 	char file[MAXPATHLEN], path[MAXPATHLEN], recpath[MAXPATHLEN];
 

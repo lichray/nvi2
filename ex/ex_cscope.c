@@ -654,10 +654,10 @@ static int
 parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 {
 	TAG *tp;
-	recno_t slno;
-	size_t dlen, nlen, slen;
-	int ch, i, isolder, nlines;
-	char *dname, *name, *search, *p, *t, dummy[2], buf[2048];
+	recno_t slno = 0;
+	size_t dlen, nlen = 0, slen = 0;
+	int ch, i, isolder = 0, nlines;
+	char *dname = NULL, *name = NULL, *search, *p, *t, dummy[2], buf[2048];
 
 	for (;;) {
 		if (!fgets(buf, sizeof(buf), csc->from_fp))
