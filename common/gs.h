@@ -19,7 +19,7 @@
  * The read-only bit follows the file name, not the file itself.
  */
 struct _fref {
-	CIRCLEQ_ENTRY(_fref) q;		/* Linked list of file references. */
+	TAILQ_ENTRY(_fref) q;		/* Linked list of file references. */
 	char	*name;			/* File name. */
 	char	*tname;			/* Backing temporary file name. */
 
@@ -65,7 +65,7 @@ struct _gs {
 	void	*ip_private;		/* IP support private area. */
 
 					/* File references. */
-	CIRCLEQ_HEAD(_frefh, _fref) frefq;
+	TAILQ_HEAD(_frefh, _fref) frefq[1];
 
 #define	GO_COLUMNS	0		/* Global options: columns. */
 #define	GO_LINES	1		/* Global options: lines. */

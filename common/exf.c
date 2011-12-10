@@ -77,11 +77,10 @@ file_add(
 	 */
 	gp = sp->gp;
 	if (name != NULL)
-		for (frp = gp->frefq.cqh_first;
-		    frp != (void *)&gp->frefq; frp = frp->q.cqe_next) {
+		TAILQ_FOREACH(frp, gp->frefq, q) {
 			if (frp->name == NULL) {
-				tfrp = frp->q.cqe_next;
-				CIRCLEQ_REMOVE(&gp->frefq, frp, q);
+				tfrp = TAILQ_NEXT(frp, q);
+				TAILQ_REMOVE(gp->frefq, frp, q);
 				if (frp->name != NULL)
 					free(frp->name);
 				free(frp);
@@ -110,7 +109,7 @@ file_add(
 	}
 
 	/* Append into the chain of file names. */
-	CIRCLEQ_INSERT_TAIL(&gp->frefq, frp, q);
+	TAILQ_INSERT_TAIL(gp->frefq, frp, q);
 
 	return (frp);
 }
@@ -672,7 +671,7 @@ file_end(
 		free(frp->tname);
 		frp->tname = NULL;
 		if (F_ISSET(frp, FR_TMPFILE)) {
-			CIRCLEQ_REMOVE(&sp->gp->frefq, frp, q);
+			TAILQ_REMOVE(sp->gp->frefq, frp, q);
 			if (frp->name != NULL)
 				free(frp->name);
 			free(frp);

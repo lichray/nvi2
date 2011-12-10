@@ -83,7 +83,7 @@ editor(
 	gp->noprint = DEFAULT_NOPRINT;
 
 	/* Structures shared by screens so stored in the GS structure. */
-	CIRCLEQ_INIT(&gp->frefq);
+	TAILQ_INIT(gp->frefq);
 	CIRCLEQ_INIT(&gp->dcb_store.textq);
 	LIST_INIT(&gp->cutq);
 	LIST_INIT(&gp->seqq);
@@ -460,8 +460,8 @@ v_end(gp)
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
 	{ FREF *frp;
 		/* Free FREF's. */
-		while ((frp = gp->frefq.cqh_first) != (void *)&gp->frefq) {
-			CIRCLEQ_REMOVE(&gp->frefq, frp, q);
+		while ((frp = TAILQ_FIRST(gp->frefq)) != NULL) {
+			TAILQ_REMOVE(gp->frefq, frp, q);
 			if (frp->name != NULL)
 				free(frp->name);
 			if (frp->tname != NULL)
