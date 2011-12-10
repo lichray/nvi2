@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.14 2011/11/19 17:07:21 zy Exp $
+ *	$Id: mem.h,v 10.15 2011/12/10 03:45:09 zy Exp $
  */
 
 #ifdef DEBUG
@@ -225,3 +225,7 @@ p2roundup(size_t n)
 	n++;
 	return (n);
 }
+
+/* Additional TAILQ helper. */
+#define TAILQ_ENTRY_ISVALID(elm, field)					\
+	((elm)->field.tqe_prev != NULL)
