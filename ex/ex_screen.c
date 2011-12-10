@@ -105,14 +105,14 @@ ex_sdisplay(SCR *sp)
 	int cnt, col, len, sep;
 
 	gp = sp->gp;
-	if ((tsp = gp->hq.cqh_first) == (void *)&gp->hq) {
+	if ((tsp = TAILQ_FIRST(gp->hq)) == NULL) {
 		msgq(sp, M_INFO, "149|No background screens to display");
 		return (0);
 	}
 
 	col = len = sep = 0;
-	for (cnt = 1; tsp != (void *)&gp->hq && !INTERRUPTED(sp);
-	    tsp = tsp->q.cqe_next) {
+	for (cnt = 1; tsp != NULL && !INTERRUPTED(sp);
+	    tsp = TAILQ_NEXT(tsp, q)) {
 		col += len = strlen(tsp->frp->name) + sep;
 		if (col >= sp->cols - 1) {
 			col = len;

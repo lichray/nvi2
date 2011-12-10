@@ -76,8 +76,8 @@ editor(
 		gp->scr_msg = vs_msg;
 
 	/* Common global structure initialization. */
-	CIRCLEQ_INIT(&gp->dq);
-	CIRCLEQ_INIT(&gp->hq);
+	TAILQ_INIT(gp->dq);
+	TAILQ_INIT(gp->hq);
 	LIST_INIT(&gp->ecq);
 	LIST_INSERT_HEAD(&gp->ecq, &gp->excmd, q);
 	gp->noprint = DEFAULT_NOPRINT;
@@ -238,11 +238,11 @@ editor(
 	 */
 	if (screen_init(gp, NULL, &sp)) {
 		if (sp != NULL)
-			CIRCLEQ_INSERT_HEAD(&gp->dq, sp, q);
+			TAILQ_INSERT_HEAD(gp->dq, sp, q);
 		goto err;
 	}
 	F_SET(sp, SC_EX);
-	CIRCLEQ_INSERT_HEAD(&gp->dq, sp, q);
+	TAILQ_INSERT_HEAD(gp->dq, sp, q);
 
 	if (v_key_init(sp))		/* Special key initialization. */
 		goto err;
@@ -452,9 +452,9 @@ v_end(gp)
 		(void)file_end(gp->ccl_sp, NULL, 1);
 		(void)screen_end(gp->ccl_sp);
 	}
-	while ((sp = gp->dq.cqh_first) != (void *)&gp->dq)
+	while ((sp = TAILQ_FIRST(gp->dq)) != NULL)
 		(void)screen_end(sp);
-	while ((sp = gp->hq.cqh_first) != (void *)&gp->hq)
+	while ((sp = TAILQ_FIRST(gp->hq)) != NULL)
 		(void)screen_end(sp);
 
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)

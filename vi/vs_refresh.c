@@ -68,7 +68,7 @@ vs_refresh(
 {
 	GS *gp;
 	SCR *tsp;
-	int need_refresh;
+	int need_refresh = 0;
 	u_int priv_paint, pub_paint;
 
 	gp = sp->gp;
@@ -80,8 +80,7 @@ vs_refresh(
 	 * that we can find, including status lines.
 	 */
 	if (F_ISSET(sp, SC_SCR_REDRAW))
-		for (tsp = gp->dq.cqh_first;
-		    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
+		TAILQ_FOREACH(tsp, gp->dq, q)
 			if (tsp != sp)
 				F_SET(tsp, SC_SCR_REDRAW | SC_STATUS);
 
@@ -98,8 +97,7 @@ vs_refresh(
 	priv_paint = VIP_CUR_INVALID | VIP_N_REFRESH;
 	if (O_ISSET(sp, O_NUMBER))
 		priv_paint |= VIP_N_RENUMBER;
-	for (tsp = gp->dq.cqh_first;
-	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
+	TAILQ_FOREACH(tsp, gp->dq, q)
 		if (tsp != sp && !F_ISSET(tsp, SC_EXIT | SC_EXIT_FORCE) &&
 		    (F_ISSET(tsp, pub_paint) ||
 		    F_ISSET(VIP(tsp), priv_paint))) {
@@ -134,8 +132,7 @@ vs_refresh(
 	 * And, finally, if we updated any status lines, make sure the cursor
 	 * gets back to where it belongs.
 	 */
-	for (need_refresh = 0, tsp = gp->dq.cqh_first;
-	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
+	TAILQ_FOREACH(tsp, gp->dq, q)
 		if (F_ISSET(tsp, SC_STATUS)) {
 			need_refresh = 1;
 			vs_resolve(tsp, sp, 0);

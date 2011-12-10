@@ -146,8 +146,8 @@ screen_end(SCR *sp)
 	 * If a created screen failed during initialization, it may not
 	 * be linked into the chain.
 	 */
-	if (sp->q.cqe_next != NULL)
-		CIRCLEQ_REMOVE(&sp->gp->dq, sp, q);
+	if (TAILQ_ENTRY_ISVALID(sp, q))
+		TAILQ_REMOVE(sp->gp->dq, sp, q);
 
 	/* The screen is no longer real. */
 	F_CLR(sp, SC_SCR_EX | SC_SCR_VI);
@@ -215,18 +215,17 @@ screen_next(SCR *sp)
 
 	/* Try the display queue, without returning the current screen. */
 	gp = sp->gp;
-	for (next = gp->dq.cqh_first;
-	    next != (void *)&gp->dq; next = next->q.cqe_next)
+	TAILQ_FOREACH(next, gp->dq, q)
 		if (next != sp)
 			break;
-	if (next != (void *)&gp->dq)
+	if (next != NULL)
 		return (next);
 
 	/* Try the hidden queue; if found, move screen to the display queue. */
-	if (gp->hq.cqh_first != (void *)&gp->hq) {
-		next = gp->hq.cqh_first;
-		CIRCLEQ_REMOVE(&gp->hq, next, q);
-		CIRCLEQ_INSERT_HEAD(&gp->dq, next, q);
+	if (!TAILQ_EMPTY(gp->hq)) {
+		next = TAILQ_FIRST(gp->hq);
+		TAILQ_REMOVE(gp->hq, next, q);
+		TAILQ_INSERT_HEAD(gp->dq, next, q);
 		return (next);
 	}
 	return (NULL);

@@ -32,7 +32,7 @@
  */
 struct _scr {
 /* INITIALIZED AT SCREEN CREATE. */
-	CIRCLEQ_ENTRY(_scr) q;		/* Screens. */
+	TAILQ_ENTRY(_scr) q;		/* Screens. */
 
 	int	 id;			/* Screen id #. */
 	int	 refcnt;		/* Reference count. */

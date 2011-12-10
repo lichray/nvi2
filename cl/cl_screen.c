@@ -97,7 +97,7 @@ cl_screen(SCR *sp, u_int32_t flags)
 	if (F_ISSET(sp, SC_SCR_VI)) {
 		F_CLR(sp, SC_SCR_VI);
 
-		if (sp->q.cqe_next != (void *)&gp->dq) {
+		if (TAILQ_NEXT(sp, q) != NULL) {
 			(void)wmove(win, RLNO(sp, sp->rows), 0);
 			wclrtobot(win);
 		}

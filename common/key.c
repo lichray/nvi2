@@ -738,9 +738,9 @@ v_sync(
 	GS *gp;
 
 	gp = sp->gp;
-	for (sp = gp->dq.cqh_first; sp != (void *)&gp->dq; sp = sp->q.cqe_next)
+	TAILQ_FOREACH(sp, gp->dq, q)
 		rcv_sync(sp, flags);
-	for (sp = gp->hq.cqh_first; sp != (void *)&gp->hq; sp = sp->q.cqe_next)
+	TAILQ_FOREACH(sp, gp->hq, q)
 		rcv_sync(sp, flags);
 }
 

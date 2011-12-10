@@ -680,8 +680,7 @@ scr_update(
 
 	ep = sp->ep;
 	if (ep->refcnt != 1)
-		for (tsp = sp->gp->dq.cqh_first;
-		    tsp != (void *)&sp->gp->dq; tsp = tsp->q.cqe_next)
+		TAILQ_FOREACH(tsp, sp->gp->dq, q)
 			if (sp != tsp && tsp->ep == ep)
 				if (vs_change(tsp, lno, op))
 					return (1);

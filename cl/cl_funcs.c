@@ -578,11 +578,9 @@ cl_refresh(SCR *sp, int repaint)
 	 */
 	if (repaint || F_ISSET(clp, CL_LAYOUT)) {
 		getyx(stdscr, y, x);
-		for (psp = sp; 
-		    psp != (void *)&sp->gp->dq; psp = psp->q.cqe_next)
-			for (tsp = psp->q.cqe_next;
-			    tsp != (void *)&sp->gp->dq; 
-			    tsp = tsp->q.cqe_next)
+		for (psp = sp; psp != NULL; psp = TAILQ_NEXT(psp, q))
+			for (tsp = TAILQ_NEXT(psp, q); tsp != NULL;
+			    tsp = TAILQ_NEXT(tsp, q))
 				if (psp->roff == tsp->roff) {
 				    if (psp->coff + psp->cols + 1 == tsp->coff)
 					cl_rdiv(psp);

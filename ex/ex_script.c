@@ -377,8 +377,7 @@ sscr_check_input(SCR *sp, fd_set *fdset, int maxfd)
 
 loop:	memcpy(&rdfd, fdset, sizeof(fd_set));
 
-	for (tsp = gp->dq.cqh_first; 
-	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
+	TAILQ_FOREACH(tsp, gp->dq, q)
 		if (F_ISSET(sp, SC_SCRIPT)) {
 			FD_SET(sp->script->sh_master, &rdfd);
 			if (sp->script->sh_master > maxfd)
@@ -392,8 +391,7 @@ loop:	memcpy(&rdfd, fdset, sizeof(fd_set));
 	default:
 		break;
 	}
-	for (tsp = gp->dq.cqh_first; 
-	    tsp != (void *)&gp->dq; tsp = tsp->q.cqe_next)
+	TAILQ_FOREACH(tsp, gp->dq, q)
 		if (F_ISSET(sp, SC_SCRIPT) &&
 		    FD_ISSET(sp->script->sh_master, &rdfd)) {
 			if (sscr_input(sp))
@@ -425,8 +423,7 @@ loop:	maxfd = 0;
 	poll.tv_usec = 0;
 
 	/* Set up the input mask. */
-	for (sp = gp->dq.cqh_first; sp != (void *)&gp->dq; 
-	    sp = sp->q.cqe_next)
+	TAILQ_FOREACH(sp, gp->dq, q)
 		if (F_ISSET(sp, SC_SCRIPT)) {
 			FD_SET(sp->script->sh_master, &rdfd);
 			if (sp->script->sh_master > maxfd)
@@ -445,10 +442,9 @@ loop:	maxfd = 0;
 	}
 
 	/* Read the input. */
-	for (sp = gp->dq.cqh_first; sp != (void *)&gp->dq; 
-	    sp = sp->q.cqe_next)
+	TAILQ_FOREACH(sp, gp->dq, q)
 		if (F_ISSET(sp, SC_SCRIPT) &&
-		    FD_ISSET(sp->script->sh_master, &rdfd) && 
+		    FD_ISSET(sp->script->sh_master, &rdfd) &&
 		    sscr_insert(sp))
 			return (1);
 	goto loop;
@@ -651,8 +647,7 @@ sscr_check(SCR *sp)
 	GS *gp;
 
 	gp = sp->gp;
-	for (sp = gp->dq.cqh_first; sp != (void *)&gp->dq; 
-	    sp = sp->q.cqe_next)
+	TAILQ_FOREACH(sp, gp->dq, q)
 		if (F_ISSET(sp, SC_SCRIPT)) {
 			F_SET(gp, G_SCRWIN);
 			return;

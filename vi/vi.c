@@ -1009,18 +1009,18 @@ v_dtoh(SCR *sp)
 
 	/* Move all screens to the hidden queue, tossing screen maps. */
 	for (hidden = 0, gp = sp->gp;
-	    (tsp = gp->dq.cqh_first) != (void *)&gp->dq; ++hidden) {
+	    (tsp = TAILQ_FIRST(gp->dq)) != NULL; ++hidden) {
 		if (_HMAP(tsp) != NULL) {
 			free(_HMAP(tsp));
 			_HMAP(tsp) = NULL;
 		}
-		CIRCLEQ_REMOVE(&gp->dq, tsp, q);
-		CIRCLEQ_INSERT_TAIL(&gp->hq, tsp, q);
+		TAILQ_REMOVE(gp->dq, tsp, q);
+		TAILQ_INSERT_TAIL(gp->hq, tsp, q);
 	}
 
 	/* Move current screen back to the display queue. */
-	CIRCLEQ_REMOVE(&gp->hq, sp, q);
-	CIRCLEQ_INSERT_TAIL(&gp->dq, sp, q);
+	TAILQ_REMOVE(gp->hq, sp, q);
+	TAILQ_INSERT_TAIL(gp->dq, sp, q);
 
 	if (hidden > 1)
 		msgq(sp, M_INFO,

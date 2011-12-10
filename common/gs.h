@@ -56,8 +56,8 @@ struct _gs {
 	char	*progname;		/* Programe name. */
 
 	int	 id;			/* Last allocated screen id. */
-	CIRCLEQ_HEAD(_dqh, _scr) dq;	/* Displayed screens. */
-	CIRCLEQ_HEAD(_hqh, _scr) hq;	/* Hidden screens. */
+	TAILQ_HEAD(_dqh, _scr) dq[1];	/* Displayed screens. */
+	TAILQ_HEAD(_hqh, _scr) hq[1];	/* Hidden screens. */
 
 	SCR	*ccl_sp;		/* Colon command-line screen. */
 

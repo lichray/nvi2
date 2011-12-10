@@ -586,7 +586,7 @@ vs_ex_resolve(SCR *sp, int *continuep)
 	 * If we're not the bottom of the split screen stack, the screen
 	 * image itself is wrong, so redraw everything.
 	 */
-	if (sp->q.cqe_next != (void *)&sp->gp->dq)
+	if (TAILQ_NEXT(sp, q) != NULL)
 		F_SET(sp, SC_SCR_REDRAW);
 
 	/* If ex changed the underlying file, the map itself is wrong. */
@@ -762,7 +762,7 @@ vs_scroll(SCR *sp, int *continuep, sw_t wtype)
 		(void)gp->scr_deleteln(sp);
 
 		/* If there are screens below us, push them back into place. */
-		if (sp->q.cqe_next != (void *)&sp->gp->dq) {
+		if (TAILQ_NEXT(sp, q) != NULL) {
 			(void)gp->scr_move(sp, LASTLINE(sp), 0);
 			(void)gp->scr_insertln(sp);
 		}
