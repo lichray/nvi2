@@ -58,7 +58,7 @@ if(NOT HAVE_LOCK_FLOCK)
 	int main(void) { flock(0, F_SETLK, 0); }" HAVE_LOCK_FCNTL)
 endif(NOT HAVE_LOCK_FLOCK)
 
-include_directories(. .. ../include)
+include_directories(. ..)
 check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 
