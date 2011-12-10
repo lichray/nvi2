@@ -74,7 +74,7 @@ struct _tagf {			/* Tag files. */
  * tagtop:	discard all Q
  */
 struct _tag {			/* Tag list. */
-	CIRCLEQ_ENTRY(_tag) q;	/* Linked list of tags. */
+	TAILQ_ENTRY(_tag) q;	/* Linked list of tags. */
 
 				/* Tag pop/return information. */
 	FREF	*frp;		/* Saved file. */
@@ -93,9 +93,9 @@ struct _tag {			/* Tag list. */
 };
 
 struct _tagq {			/* Tag queue. */
-	CIRCLEQ_ENTRY(_tagq) q;	/* Linked list of tag queues. */
+	TAILQ_ENTRY(_tagq) q;	/* Linked list of tag queues. */
 				/* This queue's tag list. */
-	CIRCLEQ_HEAD(_tagqh, _tag) tagq;
+	TAILQ_HEAD(_tagqh, _tag) tagq[1];
 
 	TAG	*current;	/* Current TAG within the queue. */
 

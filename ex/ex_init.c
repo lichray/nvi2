@@ -51,7 +51,7 @@ ex_screen_copy(SCR *orig, SCR *sp)
 	sp->ex_private = nexp;
 
 	/* Initialize queues. */
-	CIRCLEQ_INIT(&nexp->tq);
+	TAILQ_INIT(nexp->tq);
 	TAILQ_INIT(nexp->tagfq);
 	LIST_INIT(&nexp->cscq);
 

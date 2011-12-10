@@ -459,14 +459,14 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	 */
 	rtp = NULL;
 	rtqp = NULL;
-	if (exp->tq.cqh_first == (void *)&exp->tq) {
+	if (TAILQ_EMPTY(exp->tq)) {
 		/* Initialize the `local context' tag queue structure. */
 		CALLOC_GOTO(sp, rtqp, TAGQ *, 1, sizeof(TAGQ));
-		CIRCLEQ_INIT(&rtqp->tagq);
+		TAILQ_INIT(rtqp->tagq);
 
 		/* Initialize and link in its tag structure. */
 		CALLOC_GOTO(sp, rtp, TAG *, 1, sizeof(TAG));
-		CIRCLEQ_INSERT_HEAD(&rtqp->tagq, rtp, q);
+		TAILQ_INSERT_HEAD(rtqp->tagq, rtp, q);
 		rtqp->current = rtp; 
 	}
 
@@ -514,7 +514,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 		return (0);
 	}
 
-	tqp->current = tqp->tagq.cqh_first;
+	tqp->current = TAILQ_FIRST(tqp->tagq);
 
 	/* Try to switch to the first tag. */
 	force = FL_ISSET(cmdp->iflags, E_C_FORCE);
@@ -534,13 +534,13 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	 * in place, so we can pop all the way back to the current mark.
 	 * Note, it doesn't point to much of anything, it's a placeholder.
 	 */
-	if (exp->tq.cqh_first == (void *)&exp->tq) {
-		CIRCLEQ_INSERT_HEAD(&exp->tq, rtqp, q);
+	if (TAILQ_EMPTY(exp->tq)) {
+		TAILQ_INSERT_HEAD(exp->tq, rtqp, q);
 	} else
-		rtqp = exp->tq.cqh_first;
+		rtqp = TAILQ_FIRST(exp->tq);
 
 	/* Link the current TAGQ structure into place. */
-	CIRCLEQ_INSERT_HEAD(&exp->tq, tqp, q);
+	TAILQ_INSERT_HEAD(exp->tq, tqp, q);
 
 	(void)cscope_search(sp, tqp, tqp->current);
 
@@ -634,7 +634,7 @@ usage:		(void)csc_help(sp, "find");
 	CALLOC(sp, tqp, TAGQ *, 1, sizeof(TAGQ) + tlen + 3);
 	if (tqp == NULL)
 		return (NULL);
-	CIRCLEQ_INIT(&tqp->tagq);
+	TAILQ_INIT(tqp->tagq);
 	tqp->tag = tqp->buf;
 	tqp->tag[0] = pattern[0];
 	tqp->tag[1] = ' ';
@@ -748,7 +748,7 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 			tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
 			MEMCPYW(tp->search, search, (tp->slen = slen) + 1);
 		}
-		CIRCLEQ_INSERT_TAIL(&tqp->tagq, tp, q);
+		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
 
 		++*matchesp;
 	}
