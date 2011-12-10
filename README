@@ -1,4 +1,4 @@
-#	$Id: README,v 8.157 2011/12/03 02:58:16 zy Exp $
+#	$Id: README,v 8.158 2011/12/10 04:16:33 zy Exp $
 
 This is version 2.0.2 (2011-12-03) of nex/nvi, a reimplementation of the ex/vi
 text editors originally distributed as part of the Fourth Berkeley
@@ -14,7 +14,6 @@ The directory layout is as follows:
     common ........ Code shared by ex and vi.
     docs .......... Ex/vi documentation, both current and historic.
     ex ............ Ex source code.
-    include ....... Replacement include files.
     regex ......... Modified regex library with wide character support.
     vi ............ Vi source code.
 
