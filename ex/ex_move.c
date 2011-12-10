@@ -33,7 +33,7 @@ static const char sccsid[] = "$Id: ex_move.c,v 10.15 2001/06/25 15:19:17 skimo E
 int
 ex_copy(SCR *sp, EXCMD *cmdp)
 {
-	CB cb = { 0 };
+	CB cb = {{ 0 }};
 	MARK fm1, fm2, m, tm;
 	recno_t cnt;
 	int rval;

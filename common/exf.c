@@ -130,7 +130,7 @@ file_init(
 	int flags)
 {
 	EXF *ep;
-	RECNOINFO oinfo;
+	RECNOINFO oinfo = { 0 };
 	struct stat sb;
 	size_t psize;
 	int fd, exists, open_err, readonly;
@@ -236,7 +236,6 @@ file_init(
 	}
 
 	/* Set up recovery. */
-	memset(&oinfo, 0, sizeof(RECNOINFO));
 	oinfo.bval = '\n';			/* Always set. */
 	oinfo.psize = psize;
 	oinfo.flags = F_ISSET(sp->gp, G_SNAPSHOT) ? R_SNAPSHOT : 0;

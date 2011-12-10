@@ -66,7 +66,7 @@ vi(SCR **spp)
 	GS *gp;
 	MARK abs;
 	SCR *next, *sp;
-	VICMD cmd, *vp;
+	VICMD cmd = { 0 }, *vp;
 	VI_PRIVATE *vip;
 	int comcount, mapped, rval;
 
@@ -74,9 +74,8 @@ vi(SCR **spp)
 	sp = *spp;
 	gp = sp->gp;
 
-	/* Initialize the command structure. */
+	/* Point to the command structure. */
 	vp = &cmd;
-	memset(vp, 0, sizeof(VICMD));
 
 	/* Reset strange attraction. */
 	F_SET(vp, VM_RCM_SET);

@@ -344,7 +344,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 {
 	EVENT ev;
 	MARK from, to;
-	TEXTH tiq[1] = { 0 };
+	TEXTH tiq[] = {{ 0 }};
 	recno_t elno, lno, slno;
 	u_long ul;
 	regmatch_t match[10];

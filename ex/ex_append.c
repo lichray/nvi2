@@ -76,7 +76,7 @@ ex_aci(SCR *sp, EXCMD *cmdp, enum which cmd)
 	CHAR_T *p, *t;
 	GS *gp;
 	TEXT *tp;
-	TEXTH tiq[1] = { 0 };
+	TEXTH tiq[] = {{ 0 }};
 	recno_t cnt, lno;
 	size_t len;
 	u_int32_t flags;
