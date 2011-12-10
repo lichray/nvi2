@@ -287,7 +287,7 @@ v_filter(SCR *sp, VICMD *vp)
 	 * Entering <escape> on an empty line was historically an error,
 	 * this implementation doesn't bother.
 	 */
-	tp = sp->tiq.cqh_first;
+	tp = TAILQ_FIRST(sp->tiq);
 	if (tp->term != TERM_OK) {
 		vp->m_final.lno = sp->lno;
 		vp->m_final.cno = sp->cno;
@@ -379,7 +379,7 @@ v_ex(SCR *sp, VICMD *vp)
 			if (v_tcmd(sp, vp, ':',
 			    TXT_BS | TXT_CEDIT | TXT_FILEC | TXT_PROMPT))
 				return (1);
-			tp = sp->tiq.cqh_first;
+			tp = TAILQ_FIRST(sp->tiq);
 
 			/*
 			 * If the user entered a single <esc>, they want to

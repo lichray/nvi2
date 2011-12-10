@@ -10,12 +10,12 @@
  */
 
 typedef struct _texth TEXTH;		/* TEXT list head structure. */
-CIRCLEQ_HEAD(_texth, _text);
+TAILQ_HEAD(_texth, _text);
 
 /* Cut buffers. */
 struct _cb {
 	LIST_ENTRY(_cb) q;		/* Linked list of cut buffers. */
-	TEXTH	 textq;			/* Linked list of TEXT structures. */
+	TEXTH	 textq[1];		/* Linked list of TEXT structures. */
 	/* XXXX Needed ? Can non ascii-chars be cut buffer names ? */
 	CHAR_T	 name;			/* Cut buffer name. */
 	size_t	 len;			/* Total length of cut text. */
@@ -26,7 +26,7 @@ struct _cb {
 
 /* Lines/blocks of text. */
 struct _text {				/* Text: a linked list of lines. */
-	CIRCLEQ_ENTRY(_text) q;		/* Linked list of text structures. */
+	TAILQ_ENTRY(_text) q;		/* Linked list of text structures. */
 	CHAR_T	*lb;			/* Line buffer. */
 	size_t	 lb_len;		/* Line buffer length. */
 	size_t	 len;			/* Line length. */

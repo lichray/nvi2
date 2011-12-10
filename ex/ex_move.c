@@ -33,7 +33,7 @@ static const char sccsid[] = "$Id: ex_move.c,v 10.15 2001/06/25 15:19:17 skimo E
 int
 ex_copy(SCR *sp, EXCMD *cmdp)
 {
-	CB cb;
+	CB cb = { 0 };
 	MARK fm1, fm2, m, tm;
 	recno_t cnt;
 	int rval;
@@ -49,8 +49,7 @@ ex_copy(SCR *sp, EXCMD *cmdp)
 	 */
 	fm1 = cmdp->addr1;
 	fm2 = cmdp->addr2;
-	memset(&cb, 0, sizeof(cb));
-	CIRCLEQ_INIT(&cb.textq);
+	TAILQ_INIT(cb.textq);
 	for (cnt = fm1.lno; cnt <= fm2.lno; ++cnt)
 		if (cut_line(sp, cnt, 0, 0, &cb)) {
 			rval = 1;
@@ -73,7 +72,7 @@ ex_copy(SCR *sp, EXCMD *cmdp)
 		sp->lno = m.lno + (cnt - 1);
 		sp->cno = 0;
 	}
-err:	text_lfree(&cb.textq);
+err:	text_lfree(cb.textq);
 	return (rval);
 }
 

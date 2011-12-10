@@ -625,8 +625,8 @@ usage:		(void)csc_help(sp, "find");
 	if (p[0] == '"' && p[1] != '\0' && p[2] == '\0')
 		CBNAME(sp, cbp, p[1]);
 	if (cbp != NULL) {
-		INT2CHAR(sp, cbp->textq.cqh_first->lb,
-			cbp->textq.cqh_first->len, p, tlen);
+		INT2CHAR(sp, TAILQ_FIRST(cbp->textq)->lb,
+			TAILQ_FIRST(cbp->textq)->len, p, tlen);
 	} else
 		tlen = strlen(p);
 

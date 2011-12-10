@@ -91,7 +91,7 @@ bdisplay(SCR *sp)
 	for (cbp = sp->gp->cutq.lh_first; cbp != NULL; cbp = cbp->q.le_next) {
 		if (isdigit(cbp->name))
 			continue;
-		if (cbp->textq.cqh_first != (void *)&cbp->textq)
+		if (!TAILQ_EMPTY(cbp->textq))
 			db(sp, cbp, NULL);
 		if (INTERRUPTED(sp))
 			return (0);
@@ -100,7 +100,7 @@ bdisplay(SCR *sp)
 	for (cbp = sp->gp->cutq.lh_first; cbp != NULL; cbp = cbp->q.le_next) {
 		if (!isdigit(cbp->name))
 			continue;
-		if (cbp->textq.cqh_first != (void *)&cbp->textq)
+		if (!TAILQ_EMPTY(cbp->textq))
 			db(sp, cbp, NULL);
 		if (INTERRUPTED(sp))
 			return (0);
@@ -127,8 +127,7 @@ db(SCR *sp, CB *cbp, u_char *name)
 	(void)ex_printf(sp, "********** %s%s\n",
 	    name == NULL ? KEY_NAME(sp, cbp->name) : name,
 	    F_ISSET(cbp, CB_LMODE) ? " (line mode)" : " (character mode)");
-	for (tp = cbp->textq.cqh_first;
-	    tp != (void *)&cbp->textq; tp = tp->q.cqe_next) {
+	TAILQ_FOREACH(tp, cbp->textq, q) {
 		for (len = tp->len, p = tp->lb; len--; ++p) {
 			(void)ex_puts(sp, KEY_NAME(sp, *p));
 			if (INTERRUPTED(sp))

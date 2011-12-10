@@ -41,7 +41,7 @@ ex_at(SCR *sp, EXCMD *cmdp)
 	EXCMD *ecp;
 	RANGE *rp;
 	TEXT *tp;
-	size_t len;
+	size_t len = 0;
 	CHAR_T *p;
 
 	/*
@@ -102,8 +102,7 @@ ex_at(SCR *sp, EXCMD *cmdp)
 	 * Build two copies of the command.  We need two copies because the
 	 * ex parser may step on the command string when it's parsing it.
 	 */
-	for (len = 0, tp = cbp->textq.cqh_last;
-	    tp != (void *)&cbp->textq; tp = tp->q.cqe_prev)
+	TAILQ_FOREACH_REVERSE(tp, cbp->textq, _texth, q)
 		len += tp->len + 1;
 
 	MALLOC_RET(sp, ecp->cp, CHAR_T *, len * 2 * sizeof(CHAR_T));
@@ -112,8 +111,8 @@ ex_at(SCR *sp, EXCMD *cmdp)
 	ecp->cp[len] = '\0';
 
 	/* Copy the buffer into the command space. */
-	for (p = ecp->cp + len, tp = cbp->textq.cqh_last;
-	    tp != (void *)&cbp->textq; tp = tp->q.cqe_prev) {
+	p = ecp->cp + len;
+	TAILQ_FOREACH_REVERSE(tp, cbp->textq, _texth, q) {
 		MEMCPYW(p, tp->lb, tp->len);
 		p += tp->len;
 		*p++ = '\n';

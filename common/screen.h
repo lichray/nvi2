@@ -75,7 +75,7 @@ struct _scr {
 	recno_t	 rptlchange;		/* Ex/vi: last L_CHANGED lno. */
 	recno_t	 rptlines[L_YANKED + 1];/* Ex/vi: lines changed by last op. */
 
-	TEXTH	 tiq;			/* Ex/vi: text input queue. */
+	TEXTH	 tiq[1];		/* Ex/vi: text input queue. */
 
 	SCRIPT	*script;		/* Vi: script mode information .*/
 

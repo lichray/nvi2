@@ -84,7 +84,7 @@ editor(
 
 	/* Structures shared by screens so stored in the GS structure. */
 	TAILQ_INIT(gp->frefq);
-	CIRCLEQ_INIT(&gp->dcb_store.textq);
+	TAILQ_INIT(gp->dcb_store.textq);
 	LIST_INIT(&gp->cutq);
 	LIST_INIT(&gp->seqq);
 
@@ -481,7 +481,7 @@ v_end(gp)
 	seq_close(gp);
 
 	/* Free default buffer storage. */
-	(void)text_lfree(&gp->dcb_store.textq);
+	(void)text_lfree(gp->dcb_store.textq);
 
 	/* Close message catalogs. */
 	msg_close(gp);

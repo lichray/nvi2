@@ -344,7 +344,7 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 {
 	EVENT ev;
 	MARK from, to;
-	TEXTH tiq;
+	TEXTH tiq[1] = { 0 };
 	recno_t elno, lno, slno;
 	u_long ul;
 	regmatch_t match[10];
@@ -437,10 +437,8 @@ s(SCR *sp, EXCMD *cmdp, CHAR_T *s, regex_t *re, u_int flags)
 			sp->c_suffix = !sp->c_suffix;
 
 			/* Ex text structure initialization. */
-			if (F_ISSET(sp, SC_EX)) {
-				memset(&tiq, 0, sizeof(TEXTH));
-				CIRCLEQ_INIT(&tiq);
-			}
+			if (F_ISSET(sp, SC_EX))
+				TAILQ_INIT(tiq);
 			break;
 		case 'g':
 			sp->g_suffix = !sp->g_suffix;
@@ -653,9 +651,9 @@ nextmatch:	match[0].rm_so = 0;
 				if (ex_print(sp, cmdp, &from, &to, 0) ||
 				    ex_scprint(sp, &from, &to))
 					goto lquit;
-				if (ex_txt(sp, &tiq, 0, TXT_CR))
+				if (ex_txt(sp, tiq, 0, TXT_CR))
 					goto err;
-				ev.e_c = tiq.cqh_first->lb[0];
+				ev.e_c = TAILQ_FIRST(tiq)->lb[0];
 			}
 
 			switch (ev.e_c) {

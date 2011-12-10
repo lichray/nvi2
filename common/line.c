@@ -116,14 +116,14 @@ db_get(
 	 * is there.
 	 */
 	if (F_ISSET(sp, SC_TINPUT)) {
-		l1 = ((TEXT *)sp->tiq.cqh_first)->lno;
-		l2 = ((TEXT *)sp->tiq.cqh_last)->lno;
+		l1 = ((TEXT *)TAILQ_FIRST(sp->tiq))->lno;
+		l2 = ((TEXT *)TAILQ_LAST(sp->tiq, _texth))->lno;
 		if (l1 <= lno && l2 >= lno) {
 #if defined(DEBUG) && 0
 	TRACE(sp, "retrieve TEXT buffer line %lu\n", (u_long)lno);
 #endif
-			for (tp = sp->tiq.cqh_first;
-			    tp->lno != lno; tp = tp->q.cqe_next);
+			for (tp = TAILQ_FIRST(sp->tiq);
+			    tp->lno != lno; tp = TAILQ_NEXT(tp, q));
 			if (lenp != NULL)
 				*lenp = tp->len;
 			if (pp != NULL)
@@ -498,8 +498,8 @@ db_exist(
 	 */
 	if (ep->c_nlines != OOBLNO)
 		return (lno <= (F_ISSET(sp, SC_TINPUT) ?
-		    ep->c_nlines + (((TEXT *)sp->tiq.cqh_last)->lno -
-		    ((TEXT *)sp->tiq.cqh_first)->lno) : ep->c_nlines));
+		    ep->c_nlines + (((TEXT *)TAILQ_LAST(sp->tiq, _texth))->lno -
+		    ((TEXT *)TAILQ_FIRST(sp->tiq))->lno) : ep->c_nlines));
 
 	/* Go get the line. */
 	return (!db_get(sp, lno, 0, NULL, NULL));
@@ -535,8 +535,8 @@ db_last(
 	if (ep->c_nlines != OOBLNO) {
 		*lnop = ep->c_nlines;
 		if (F_ISSET(sp, SC_TINPUT))
-			*lnop += ((TEXT *)sp->tiq.cqh_last)->lno -
-			    ((TEXT *)sp->tiq.cqh_first)->lno;
+			*lnop += ((TEXT *)TAILQ_LAST(sp->tiq, _texth))->lno -
+			    ((TEXT *)TAILQ_FIRST(sp->tiq))->lno;
 		return (0);
 	}
 
@@ -574,8 +574,8 @@ alloc_err:
 
 	/* Return the value. */
 	*lnop = (F_ISSET(sp, SC_TINPUT) &&
-	    ((TEXT *)sp->tiq.cqh_last)->lno > lno ?
-	    ((TEXT *)sp->tiq.cqh_last)->lno : lno);
+	    ((TEXT *)TAILQ_LAST(sp->tiq, _texth))->lno > lno ?
+	    ((TEXT *)TAILQ_LAST(sp->tiq, _texth))->lno : lno);
 	return (0);
 }
 

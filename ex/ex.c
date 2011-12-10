@@ -104,7 +104,7 @@ ex(SCR **spp)
 
 		/* Clear any current interrupts, and get a command. */
 		CLR_INTERRUPT(sp);
-		if (ex_txt(sp, &sp->tiq, ':', flags))
+		if (ex_txt(sp, sp->tiq, ':', flags))
 			return (1);
 		if (INTERRUPTED(sp)) {
 			(void)ex_puts(sp, "\n");
@@ -119,7 +119,7 @@ ex(SCR **spp)
 		 * If the user entered a single carriage return, send
 		 * ex_cmd() a separator -- it discards single newlines.
 		 */
-		tp = sp->tiq.cqh_first;
+		tp = TAILQ_FIRST(sp->tiq);
 		if (tp->len == 0) {
 			static CHAR_T space = ' ';
 			gp->excmd.cp = &space;	/* __TK__ why not |? */

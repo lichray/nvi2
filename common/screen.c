@@ -61,7 +61,7 @@ screen_init(
 	 * we don't have the option information yet.
 	 */
 
-	CIRCLEQ_INIT(&sp->tiq);
+	TAILQ_INIT(sp->tiq);
 
 /* PARTIALLY OR COMPLETELY COPIED FROM PREVIOUS SCREEN. */
 	if (orig == NULL) {
@@ -168,8 +168,8 @@ screen_end(SCR *sp)
 	}
 
 	/* Free any text input. */
-	if (sp->tiq.cqh_first != NULL)
-		text_lfree(&sp->tiq);
+	if (!TAILQ_EMPTY(sp->tiq))
+		text_lfree(sp->tiq);
 
 	/* Free alternate file name. */
 	if (sp->alt_name != NULL)

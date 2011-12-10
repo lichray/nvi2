@@ -89,7 +89,7 @@ v_exaddr(SCR *sp, VICMD *vp, dir_t dir)
 	    (O_ISSET(sp, O_SEARCHINCR) ? TXT_SEARCHINCR : 0)))
 		return (1);
 
-	tp = sp->tiq.cqh_first;
+	tp = TAILQ_FIRST(sp->tiq);
 
 	/* If the user backspaced over the prompt, do nothing. */
 	if (tp->term == TERM_BS)
