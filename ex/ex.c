@@ -2100,15 +2100,15 @@ ex_load(SCR *sp)
 		 */
 		if (FL_ISSET(ecp->agv_flags, AGV_ALL)) {
 			/* Discard any exhausted ranges. */
-			while ((rp = ecp->rq.cqh_first) != (void *)&ecp->rq)
+			while ((rp = TAILQ_FIRST(ecp->rq)) != NULL)
 				if (rp->start > rp->stop) {
-					CIRCLEQ_REMOVE(&ecp->rq, rp, q);
+					TAILQ_REMOVE(ecp->rq, rp, q);
 					free(rp);
 				} else
 					break;
 
 			/* If there's another range, continue with it. */
-			if (rp != (void *)&ecp->rq)
+			if (rp != NULL)
 				break;
 
 			/* If it's a global/v command, fix up the last line. */
@@ -2163,8 +2163,8 @@ ex_discard(SCR *sp)
 	 */
 	for (gp = sp->gp; (ecp = gp->ecq.lh_first) != &gp->excmd;) {
 		if (FL_ISSET(ecp->agv_flags, AGV_ALL)) {
-			while ((rp = ecp->rq.cqh_first) != (void *)&ecp->rq) {
-				CIRCLEQ_REMOVE(&ecp->rq, rp, q);
+			while ((rp = TAILQ_FIRST(ecp->rq)) != NULL) {
+				TAILQ_REMOVE(ecp->rq, rp, q);
 				free(rp);
 			}
 			free(ecp->o_cp);

@@ -82,7 +82,7 @@ ex_at(SCR *sp, EXCMD *cmdp)
 	 * means @ buffers are still useful in a multi-screen environment.
 	 */
 	CALLOC_RET(sp, ecp, EXCMD *, 1, sizeof(EXCMD));
-	CIRCLEQ_INIT(&ecp->rq);
+	TAILQ_INIT(ecp->rq);
 	CALLOC_RET(sp, rp, RANGE *, 1, sizeof(RANGE));
 	rp->start = cmdp->addr1.lno;
 	if (F_ISSET(cmdp, E_ADDR_DEF)) {
@@ -92,7 +92,7 @@ ex_at(SCR *sp, EXCMD *cmdp)
 		rp->stop = cmdp->addr2.lno;
 		FL_SET(ecp->agv_flags, AGV_AT);
 	}
-	CIRCLEQ_INSERT_HEAD(&ecp->rq, rp, q);
+	TAILQ_INSERT_HEAD(ecp->rq, rp, q);
 
 	/*
 	 * Buffers executed in ex mode or from the colon command line in vi
