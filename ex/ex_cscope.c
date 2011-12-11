@@ -467,7 +467,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 		/* Initialize and link in its tag structure. */
 		CALLOC_GOTO(sp, rtp, TAG *, 1, sizeof(TAG));
 		TAILQ_INSERT_HEAD(rtqp->tagq, rtp, q);
-		rtqp->current = rtp; 
+		rtqp->current = rtp;
 	}
 
 	/* Create the cscope command. */
@@ -503,17 +503,18 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 		(void)fflush(csc->to_fp);
 
 		/* Read the output. */
-		if (parse(sp, csc, tqp, &matches)) {
-			if (rtqp != NULL)
-				free(rtqp);
-			tagq_free(sp, tqp);
-			return (1);
-		}
+		if (parse(sp, csc, tqp, &matches))
+			goto nomatch;
 	}
 
 	if (matches == 0) {
 		msgq(sp, M_INFO, "278|No matches for query");
-		return (0);
+nomatch:	if (rtp != NULL)
+			free(rtp);
+		if (rtqp != NULL)
+			free(rtqp);
+		tagq_free(sp, tqp);
+		return (1);
 	}
 
 	tqp->current = TAILQ_FIRST(tqp->tagq);
@@ -843,9 +844,13 @@ cscope_kill(SCR *sp, EXCMD *cmdp, CHAR_T *cn)
 {
 	char *np;
 	size_t nlen;
+	int n = 1;
 
-	INT2CHAR(sp, cn, STRLEN(cn) + 1, np, nlen);
-	return (terminate(sp, NULL, atoi(np)));
+	if (*cn) {
+		INT2CHAR(sp, cn, STRLEN(cn) + 1, np, nlen);
+		n = atoi(np);
+	}
+	return (terminate(sp, NULL, n));
 }
 
 /*
@@ -868,7 +873,8 @@ terminate(SCR *sp, CSC *csc, int n)
 	if (csc == NULL && n < 1)
 		goto badno;
 	SLIST_FOREACH(cp, exp->cscq, q) {
-		if (csc == NULL ? ++i != n : cp != csc) {
+		++i;
+		if (csc == NULL ? i != n : cp != csc) {
 			pre_cp = cp;
 			continue;
 		}
@@ -888,14 +894,15 @@ badno:		msgq(sp, M_ERR, "312|%d: no such cscope session", n);
 	 * XXX
 	 * Theoretically, we have the only file descriptors to the process,
 	 * so closing them should let it exit gracefully, deleting temporary
-	 * files, etc.  The original vi cscope integration sent the cscope
-	 * connection a SIGTERM signal, so I'm not sure if closing the file
-	 * descriptors is sufficient.
+	 * files, etc.  However, the earlier created cscope processes seems
+	 * to refuse to quit unless we send a SIGTERM signal.
 	 */
 	if (csc->from_fp != NULL)
 		(void)fclose(csc->from_fp);
 	if (csc->to_fp != NULL)
 		(void)fclose(csc->to_fp);
+	if (i > 1)
+		(void)kill(csc->pid, SIGTERM);
 	(void)waitpid(csc->pid, &pstat, 0);
 
 	/* Discard cscope connection information. */
@@ -914,13 +921,23 @@ badno:		msgq(sp, M_ERR, "312|%d: no such cscope session", n);
 static int
 cscope_reset(SCR *sp, EXCMD *cmdp, CHAR_T *notusedp)
 {
+	return cscope_end(sp);
+}
+
+/*
+ * cscope_end --
+ *	End all cscope connections.
+ *
+ * PUBLIC: int cscope_end __P((SCR *));
+ */
+int
+cscope_end(SCR *sp)
+{
 	EX_PRIVATE *exp;
 
-	for (exp = EXP(sp); !SLIST_EMPTY(exp->cscq);) {
-		static CHAR_T one[] = {'1', 0};
-		if (cscope_kill(sp, cmdp, one))
+	for (exp = EXP(sp); !SLIST_EMPTY(exp->cscq);)
+		if (terminate(sp, NULL, 1))
 			return (1);
-	}
 	return (0);
 }
 

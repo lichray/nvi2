@@ -107,6 +107,9 @@ ex_screen_end(SCR *sp)
 	if (ex_tag_free(sp))
 		rval = 1;
 
+	if (cscope_end(sp))
+		rval = 1;
+
 	/* Free private memory. */
 	free(exp);
 	sp->ex_private = NULL;
