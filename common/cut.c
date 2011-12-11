@@ -194,7 +194,7 @@ cut_line_err:
 static void
 cb_rotate(SCR *sp)
 {
-	CB *cbp, *del_cbp = NULL, *pre_cbp;
+	CB *cbp, *del_cbp = NULL, *pre_cbp = NULL;
 
 	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
 		switch(cbp->name) {

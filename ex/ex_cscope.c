@@ -857,7 +857,7 @@ terminate(SCR *sp, CSC *csc, int n)
 {
 	EX_PRIVATE *exp;
 	int i = 0, pstat;
-	CSC *cp, *pre_cp;
+	CSC *cp, *pre_cp = NULL;
 
 	exp = EXP(sp);
 
