@@ -160,7 +160,7 @@ typedef struct _ex_private {
 					/* Tag file list. */
 	TAILQ_HEAD(_tagfh, _tagf) tagfq[1];
 	TAILQ_HEAD(_tqh, _tagq) tq[1];	/* Tag queue. */
-	LIST_HEAD(_csch, _csc) cscq;	/* Cscope connection list. */
+	SLIST_HEAD(_csch, _csc) cscq[1];/* Cscope connection list. */
 	CHAR_T	*tag_last;		/* Saved last tag string. */
 
 	CHAR_T	*lastbcomm;		/* Last bang command. */

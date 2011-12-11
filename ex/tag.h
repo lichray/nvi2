@@ -16,7 +16,7 @@
  * connection, linked from the EX_PRIVATE structure.
  */
 struct _csc {
-	LIST_ENTRY(_csc) q;	/* Linked list of cscope connections. */
+	SLIST_ENTRY(_csc) q;	/* Linked list of cscope connections. */
 
 	char	*dname;		/* Base directory of this cscope connection. */
 	size_t	 dlen;		/* Length of base directory. */

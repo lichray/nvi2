@@ -53,7 +53,7 @@ ex_screen_copy(SCR *orig, SCR *sp)
 	/* Initialize queues. */
 	TAILQ_INIT(nexp->tq);
 	TAILQ_INIT(nexp->tagfq);
-	LIST_INIT(&nexp->cscq);
+	SLIST_INIT(nexp->cscq);
 
 	if (orig == NULL) {
 	} else {

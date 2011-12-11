@@ -277,7 +277,7 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 	 * on error, we have to call terminate, which expects the csc to
 	 * be on the chain.
 	 */
-	LIST_INSERT_HEAD(&exp->cscq, csc, q);
+	SLIST_INSERT_HEAD(exp->cscq, csc, q);
 
 	/* Read the initial prompt from the cscope to make sure it's okay. */
 	return read_prompt(sp, csc);
@@ -447,7 +447,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	exp = EXP(sp);
 
 	/* Check for connections. */
-	if (exp->cscq.lh_first == NULL) {
+	if (SLIST_EMPTY(exp->cscq)) {
 		msgq(sp, M_ERR, "310|No cscope connections running");
 		return (1);
 	}
@@ -475,6 +475,8 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	np = strdup(np);
 	if ((tqp = create_cs_cmd(sp, np, &search)) == NULL)
 		goto err;
+	if (np != NULL)
+		free(np);
 
 	/*
 	 * Stick the current context in a convenient place, we'll lose it
@@ -487,9 +489,9 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 
 	/* Search all open connections for a match. */
 	matches = 0;
-	for (csc = exp->cscq.lh_first; csc != NULL; csc = csc_next) {
-		/* Copy csc->q.lh_next here in case csc is killed. */
-		csc_next = csc->q.le_next;
+	for (csc = SLIST_FIRST(exp->cscq); csc != NULL; csc = csc_next) {
+		/* Copy next connect here in case csc is killed. */
+		csc_next = SLIST_NEXT(csc, q);
 
 		/*
 		 * Send the command to the cscope program.  (We skip the
@@ -854,25 +856,32 @@ static int
 terminate(SCR *sp, CSC *csc, int n)
 {
 	EX_PRIVATE *exp;
-	int i, pstat;
+	int i = 0, pstat;
+	CSC *cp, *pre_cp;
 
 	exp = EXP(sp);
 
 	/*
-	 * We either get a csc structure or a number.  If not provided a
-	 * csc structure, find the right one.
+	 * We either get a csc structure or a number.  Locate and remove
+	 * the candidate which matches the structure or the number.
 	 */
-	if (csc == NULL) {
-		if (n < 1)
-			goto badno;
-		for (i = 1, csc = exp->cscq.lh_first;
-		    csc != NULL; csc = csc->q.le_next, i++)
-			if (i == n)
-				break;
-		if (csc == NULL) {
-badno:			msgq(sp, M_ERR, "312|%d: no such cscope session", n);
-			return (1);
+	if (csc == NULL && n < 1)
+		goto badno;
+	SLIST_FOREACH(cp, exp->cscq, q) {
+		if (csc == NULL ? ++i != n : cp != csc) {
+			pre_cp = cp;
+			continue;
 		}
+		if (cp == SLIST_FIRST(exp->cscq))
+			SLIST_REMOVE_HEAD(exp->cscq, q);
+		else
+			SLIST_REMOVE_AFTER(pre_cp, q);
+		csc = cp;
+		break;
+	}
+	if (csc == NULL) {
+badno:		msgq(sp, M_ERR, "312|%d: no such cscope session", n);
+		return (1);
 	}
 
 	/*
@@ -890,7 +899,6 @@ badno:			msgq(sp, M_ERR, "312|%d: no such cscope session", n);
 	(void)waitpid(csc->pid, &pstat, 0);
 
 	/* Discard cscope connection information. */
-	LIST_REMOVE(csc, q);
 	if (csc->pbuf != NULL)
 		free(csc->pbuf);
 	if (csc->paths != NULL)
@@ -908,7 +916,7 @@ cscope_reset(SCR *sp, EXCMD *cmdp, CHAR_T *notusedp)
 {
 	EX_PRIVATE *exp;
 
-	for (exp = EXP(sp); exp->cscq.lh_first != NULL;) {
+	for (exp = EXP(sp); !SLIST_EMPTY(exp->cscq);) {
 		static CHAR_T one[] = {'1', 0};
 		if (cscope_kill(sp, cmdp, one))
 			return (1);
@@ -927,17 +935,16 @@ cscope_display(SCR *sp)
 {
 	EX_PRIVATE *exp;
 	CSC *csc;
-	int i;
+	int i = 0;
 
 	exp = EXP(sp);
-	if (exp->cscq.lh_first == NULL) {
+	if (SLIST_EMPTY(exp->cscq)) {
 		ex_printf(sp, "No cscope connections.\n");
 		return (0);
 	}
-	for (i = 1,
-	    csc = exp->cscq.lh_first; csc != NULL; ++i, csc = csc->q.le_next)
-		ex_printf(sp,
-		    "%2d %s (process %lu)\n", i, csc->dname, (u_long)csc->pid);
+	SLIST_FOREACH(csc, exp->cscq, q)
+		ex_printf(sp, "%2d %s (process %lu)\n",
+		    ++i, csc->dname, (u_long)csc->pid);
 	return (0);
 }
 
