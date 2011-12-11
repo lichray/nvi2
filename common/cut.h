@@ -14,7 +14,7 @@ TAILQ_HEAD(_texth, _text);
 
 /* Cut buffers. */
 struct _cb {
-	LIST_ENTRY(_cb) q;		/* Linked list of cut buffers. */
+	SLIST_ENTRY(_cb) q;		/* Linked list of cut buffers. */
 	TEXTH	 textq[1];		/* Linked list of TEXT structures. */
 	/* XXXX Needed ? Can non ascii-chars be cut buffer names ? */
 	CHAR_T	 name;			/* Cut buffer name. */
@@ -66,8 +66,7 @@ struct _text {				/* Text: a linked list of lines. */
 #define	CBNAME(sp, cbp, nch) {						\
 	CHAR_T L__name;							\
 	L__name = isupper(nch) ? tolower(nch) : (nch);			\
-	for (cbp = sp->gp->cutq.lh_first;				\
-	    cbp != NULL; cbp = cbp->q.le_next)				\
+	SLIST_FOREACH(cbp, sp->gp->cutq, q)				\
 		if (cbp->name == L__name)				\
 			break;						\
 }

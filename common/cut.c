@@ -129,7 +129,7 @@ copyloop:
 		CALLOC_RET(sp, cbp, CB *, 1, sizeof(CB));
 		cbp->name = name;
 		TAILQ_INIT(cbp->textq);
-		LIST_INSERT_HEAD(&sp->gp->cutq, cbp, q);
+		SLIST_INSERT_HEAD(sp->gp->cutq, cbp, q);
 	} else if (!append) {
 		text_lfree(cbp->textq);
 		cbp->len = 0;
@@ -194,41 +194,26 @@ cut_line_err:
 static void
 cb_rotate(SCR *sp)
 {
-	CB *cbp, *del_cbp;
+	CB *cbp, *del_cbp = NULL, *pre_cbp;
 
-	del_cbp = NULL;
-	for (cbp = sp->gp->cutq.lh_first; cbp != NULL; cbp = cbp->q.le_next)
+	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
 		switch(cbp->name) {
-		case '1':
-			cbp->name = '2';
-			break;
-		case '2':
-			cbp->name = '3';
-			break;
-		case '3':
-			cbp->name = '4';
-			break;
-		case '4':
-			cbp->name = '5';
-			break;
-		case '5':
-			cbp->name = '6';
-			break;
-		case '6':
-			cbp->name = '7';
-			break;
-		case '7':
-			cbp->name = '8';
-			break;
-		case '8':
-			cbp->name = '9';
+		case '1': case '2': case '3':
+		case '4': case '5': case '6':
+		case '7': case '8':
+			cbp->name += 1;
 			break;
 		case '9':
+			if (cbp == SLIST_FIRST(sp->gp->cutq))
+				SLIST_REMOVE_HEAD(sp->gp->cutq, q);
+			else
+				SLIST_REMOVE_AFTER(pre_cbp, q);
 			del_cbp = cbp;
 			break;
 		}
+		pre_cbp = cbp;
+	}
 	if (del_cbp != NULL) {
-		LIST_REMOVE(del_cbp, q);
 		text_lfree(del_cbp->textq);
 		free(del_cbp);
 	}
@@ -290,10 +275,10 @@ cut_close(GS *gp)
 	CB *cbp;
 
 	/* Free cut buffer list. */
-	while ((cbp = gp->cutq.lh_first) != NULL) {
+	while ((cbp = SLIST_FIRST(gp->cutq)) != NULL) {
 		if (!TAILQ_EMPTY(cbp->textq))
 			text_lfree(cbp->textq);
-		LIST_REMOVE(cbp, q);
+		SLIST_REMOVE_HEAD(gp->cutq, q);
 		free(cbp);
 	}
 

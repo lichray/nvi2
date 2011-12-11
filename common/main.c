@@ -85,7 +85,7 @@ editor(
 	/* Structures shared by screens so stored in the GS structure. */
 	TAILQ_INIT(gp->frefq);
 	TAILQ_INIT(gp->dcb_store.textq);
-	LIST_INIT(&gp->cutq);
+	SLIST_INIT(gp->cutq);
 	LIST_INIT(&gp->seqq);
 
 	/* Set initial screen type and mode based on the program name. */

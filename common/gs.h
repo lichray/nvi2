@@ -105,7 +105,7 @@ struct _gs {
 
 	CB	*dcbp;			/* Default cut buffer pointer. */
 	CB	 dcb_store;		/* Default cut buffer storage. */
-	LIST_HEAD(_cuth, _cb) cutq;	/* Linked list of cut buffers. */
+	SLIST_HEAD(_cuth, _cb) cutq[1];	/* Linked list of cut buffers. */
 
 #define	MAX_BIT_SEQ	0x7f		/* Max + 1 fast check character. */
 	LIST_HEAD(_seqh, _seq) seqq;	/* Linked list of maps, abbrevs. */

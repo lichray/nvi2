@@ -82,13 +82,13 @@ bdisplay(SCR *sp)
 {
 	CB *cbp;
 
-	if (sp->gp->cutq.lh_first == NULL && sp->gp->dcbp == NULL) {
+	if (SLIST_EMPTY(sp->gp->cutq) && sp->gp->dcbp == NULL) {
 		msgq(sp, M_INFO, "123|No cut buffers to display");
 		return (0);
 	}
 
 	/* Display regular cut buffers. */
-	for (cbp = sp->gp->cutq.lh_first; cbp != NULL; cbp = cbp->q.le_next) {
+	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
 		if (isdigit(cbp->name))
 			continue;
 		if (!TAILQ_EMPTY(cbp->textq))
@@ -97,7 +97,7 @@ bdisplay(SCR *sp)
 			return (0);
 	}
 	/* Display numbered buffers. */
-	for (cbp = sp->gp->cutq.lh_first; cbp != NULL; cbp = cbp->q.le_next) {
+	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
 		if (!isdigit(cbp->name))
 			continue;
 		if (!TAILQ_EMPTY(cbp->textq))
