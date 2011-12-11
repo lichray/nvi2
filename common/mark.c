@@ -28,7 +28,7 @@ static const char sccsid[] = "$Id: mark.c,v 10.14 2011/07/04 14:42:58 zy Exp $";
 static LMARK *mark_find __P((SCR *, ARG_CHAR_T));
 
 /*
- * Marks are maintained in a key sorted doubly linked list.  We can't
+ * Marks are maintained in a key sorted singly linked list.  We can't
  * use arrays because we have no idea how big an index key could be.
  * The underlying assumption is that users don't have more than, say,
  * 10 marks at any one time, so this will be is fast enough.
@@ -75,7 +75,7 @@ mark_init(
 	 *
 	 * Set up the marks.
 	 */
-	LIST_INIT(&ep->marks);
+	SLIST_INIT(ep->marks);
 	return (0);
 }
 
@@ -96,8 +96,8 @@ mark_end(
 	 * !!!
 	 * ep MAY NOT BE THE SAME AS sp->ep, DON'T USE THE LATTER.
 	 */
-	while ((lmp = ep->marks.lh_first) != NULL) {
-		LIST_REMOVE(lmp, q);
+	while ((lmp = SLIST_FIRST(ep->marks)) != NULL) {
+		SLIST_REMOVE_HEAD(ep->marks, q);
 		free(lmp);
 	}
 	return (0);
@@ -176,9 +176,9 @@ mark_set(
 	if (lmp == NULL || lmp->name != key) {
 		MALLOC_RET(sp, lmt, LMARK *, sizeof(LMARK));
 		if (lmp == NULL) {
-			LIST_INSERT_HEAD(&sp->ep->marks, lmt, q);
+			SLIST_INSERT_HEAD(sp->ep->marks, lmt, q);
 		} else
-			LIST_INSERT_AFTER(lmp, lmt, q);
+			SLIST_INSERT_AFTER(lmp, lmt, q);
 		lmp = lmt;
 	} else if (!userset &&
 	    !F_ISSET(lmp, MARK_DELETED) && F_ISSET(lmp, MARK_USERSET))
@@ -201,16 +201,17 @@ mark_find(
 	SCR *sp,
 	ARG_CHAR_T key)
 {
-	LMARK *lmp, *lastlmp;
+	LMARK *lmp, *lastlmp = NULL;
 
 	/*
 	 * Return the requested mark or the slot immediately before
 	 * where it should go.
 	 */
-	for (lastlmp = NULL, lmp = sp->ep->marks.lh_first;
-	    lmp != NULL; lastlmp = lmp, lmp = lmp->q.le_next)
+	SLIST_FOREACH(lmp, sp->ep->marks, q) {
 		if (lmp->name >= key)
 			return (lmp->name == key ? lmp : lastlmp);
+		lastlmp = lmp;
+	}
 	return (lastlmp);
 }
 
@@ -234,8 +235,7 @@ mark_insdel(
 		/* All insert/append operations are done as inserts. */
 		abort();
 	case LINE_DELETE:
-		for (lmp = sp->ep->marks.lh_first;
-		    lmp != NULL; lmp = lmp->q.le_next)
+		SLIST_FOREACH(lmp, sp->ep->marks, q)
 			if (lmp->lno >= lno)
 				if (lmp->lno == lno) {
 					F_SET(lmp, MARK_DELETED);
@@ -265,8 +265,7 @@ mark_insdel(
 				return (0);
 		}
 
-		for (lmp = sp->ep->marks.lh_first;
-		    lmp != NULL; lmp = lmp->q.le_next)
+		SLIST_FOREACH(lmp, sp->ep->marks, q)
 			if (lmp->lno >= lno)
 				++lmp->lno;
 		break;

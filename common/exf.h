@@ -32,7 +32,8 @@ struct _exf {
 	MARK	 l_cursor;		/* Log cursor position. */
 	dir_t	 lundo;			/* Last undo direction. */
 
-	LIST_HEAD(_markh, _lmark) marks;/* Linked list of file MARK's. */
+					/* Linked list of file MARK's. */
+	SLIST_HEAD(_markh, _lmark) marks[1];
 
 	/*
 	 * XXX

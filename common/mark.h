@@ -28,7 +28,7 @@ struct _mark {
 };
 
 struct _lmark {
-	LIST_ENTRY(_lmark) q;		/* Linked list of marks. */
+	SLIST_ENTRY(_lmark) q;		/* Linked list of marks. */
 	recno_t	 lno;			/* Line number. */
 	size_t	 cno;			/* Column number. */
 	/* XXXX Needed ? Can non ascii-chars be mark names ? */
