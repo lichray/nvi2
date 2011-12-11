@@ -85,8 +85,9 @@ struct _gs {
 	 * Ex command structures (EXCMD).  Defined here because ex commands
 	 * exist outside of any particular screen or file.
 	 */
-#define	EXCMD_RUNNING(gp)	((gp)->ecq.lh_first->clen != 0)
-	LIST_HEAD(_excmdh, _excmd) ecq;	/* Ex command linked list. */
+#define	EXCMD_RUNNING(gp)	(SLIST_FIRST((gp)->ecq)->clen != 0)
+					/* Ex command linked list. */
+	SLIST_HEAD(_excmdh, _excmd) ecq[1];
 	EXCMD	 excmd;			/* Default ex command structure. */
 	char	 *if_name;		/* Current associated file. */
 	recno_t	  if_lno;		/* Current associated line number. */

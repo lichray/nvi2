@@ -279,7 +279,7 @@ ex_run_str(SCR *sp, char *name, CHAR_T *str, size_t len, int ex_flags, int nocop
 	gp = sp->gp;
 	if (EXCMD_RUNNING(gp)) {
 		CALLOC_RET(sp, ecp, EXCMD *, 1, sizeof(EXCMD));
-		LIST_INSERT_HEAD(&gp->ecq, ecp, q);
+		SLIST_INSERT_HEAD(gp->ecq, ecp, q);
 	} else
 		ecp = &gp->excmd;
 

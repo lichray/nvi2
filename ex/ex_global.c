@@ -178,7 +178,7 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 	MEMCPYW(ecp->cp + len, p, len);
 	ecp->range_lno = OOBLNO;
 	FL_SET(ecp->agv_flags, cmd == GLOBAL ? AGV_GLOBAL : AGV_V);
-	LIST_INSERT_HEAD(&sp->gp->ecq, ecp, q);
+	SLIST_INSERT_HEAD(sp->gp->ecq, ecp, q);
 
 	/*
 	 * For each line...  The semantics of global matching are that we first
@@ -198,7 +198,7 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 	    end = cmdp->addr2.lno; start <= end; ++start) {
 		if (cnt-- == 0) {
 			if (INTERRUPTED(sp)) {
-				LIST_REMOVE(ecp, q);
+				SLIST_REMOVE_HEAD(sp->gp->ecq, q);
 				free(ecp->cp);
 				free(ecp);
 				break;
@@ -263,7 +263,7 @@ ex_g_insdel(SCR *sp, lnop_t op, recno_t lno)
 	if (op == LINE_RESET)
 		return (0);
 
-	for (ecp = sp->gp->ecq.lh_first; ecp != NULL; ecp = ecp->q.le_next) {
+	SLIST_FOREACH(ecp, sp->gp->ecq, q) {
 		if (!FL_ISSET(ecp->agv_flags, AGV_AT | AGV_GLOBAL | AGV_V))
 			continue;
 		for (rp = TAILQ_FIRST(ecp->rq); rp != NULL; rp = nrp) {

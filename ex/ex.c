@@ -219,7 +219,7 @@ ex_cmd(SCR *sp)
 	 * This means that *everything* must be resolved when we leave
 	 * this function for any reason.
 	 */
-loop:	ecp = gp->ecq.lh_first;
+loop:	ecp = SLIST_FIRST(gp->ecq);
 
 	/* If we're reading a command from a file, set up error information. */
 	if (ecp->if_name != NULL) {
@@ -323,7 +323,7 @@ loop:	ecp = gp->ecq.lh_first;
 	    (!notempty || F_ISSET(sp, SC_VI) || F_ISSET(ecp, E_BLIGNORE))) {
 		if (ex_load(sp))
 			goto rfail;
-		ecp = gp->ecq.lh_first;
+		ecp = SLIST_FIRST(gp->ecq);
 		if (ecp->clen == 0)
 			goto rsuccess;
 		goto loop;
@@ -1530,8 +1530,7 @@ addr_verify:
 	 */
 	if (F_ISSET(sp, SC_EXIT | SC_EXIT_FORCE | SC_FSWITCH | SC_SSWITCH)) {
 		at_found = gv_found = 0;
-		for (ecp = sp->gp->ecq.lh_first;
-		    ecp != NULL; ecp = ecp->q.le_next)
+		SLIST_FOREACH(ecp, sp->gp->ecq, q)
 			switch (ecp->agv_flags) {
 			case 0:
 			case AGV_AT_NORANGE:
@@ -1583,7 +1582,7 @@ err:	/*
 				break;
 			}
 		}
-	if (ecp->save_cmdlen != 0 || gp->ecq.lh_first != &gp->excmd) {
+	if (ecp->save_cmdlen != 0 || SLIST_FIRST(gp->ecq) != &gp->excmd) {
 discard:	msgq(sp, M_BERR,
 		    "092|Ex command failed: pending commands discarded");
 		ex_discard(sp);
@@ -2076,7 +2075,7 @@ ex_load(SCR *sp)
 		 * but discard any allocated source name, we've returned to
 		 * the beginning of the command stack.
 		 */
-		if ((ecp = gp->ecq.lh_first) == &gp->excmd) {
+		if ((ecp = SLIST_FIRST(gp->ecq)) == &gp->excmd) {
 			if (F_ISSET(ecp, E_NAMEDISCARD)) {
 				free(ecp->if_name);
 				ecp->if_name = NULL;
@@ -2126,7 +2125,7 @@ ex_load(SCR *sp)
 		}
 
 		/* Discard the EXCMD. */
-		LIST_REMOVE(ecp, q);
+		SLIST_REMOVE_HEAD(gp->ecq, q);
 		free(ecp);
 	}
 
@@ -2161,7 +2160,7 @@ ex_discard(SCR *sp)
 	 * We know the first command can't be an AGV command, so we don't
 	 * process it specially.  We do, however, nail the command itself.
 	 */
-	for (gp = sp->gp; (ecp = gp->ecq.lh_first) != &gp->excmd;) {
+	for (gp = sp->gp; (ecp = SLIST_FIRST(gp->ecq)) != &gp->excmd;) {
 		if (FL_ISSET(ecp->agv_flags, AGV_ALL)) {
 			while ((rp = TAILQ_FIRST(ecp->rq)) != NULL) {
 				TAILQ_REMOVE(ecp->rq, rp, q);
@@ -2169,10 +2168,10 @@ ex_discard(SCR *sp)
 			}
 			free(ecp->o_cp);
 		}
-		LIST_REMOVE(ecp, q);
+		SLIST_REMOVE_HEAD(gp->ecq, q);
 		free(ecp);
 	}
-	gp->ecq.lh_first->clen = 0;
+	SLIST_FIRST(gp->ecq)->clen = 0;
 	return (0);
 }
 

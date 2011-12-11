@@ -118,6 +118,6 @@ ex_at(SCR *sp, EXCMD *cmdp)
 		*p++ = '\n';
 	}
 
-	LIST_INSERT_HEAD(&sp->gp->ecq, ecp, q);
+	SLIST_INSERT_HEAD(sp->gp->ecq, ecp, q);
 	return (0);
 }

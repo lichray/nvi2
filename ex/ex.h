@@ -70,7 +70,7 @@ struct _range {				/* Global command range. */
 
 /* Ex command structure. */
 struct _excmd {
-	LIST_ENTRY(_excmd) q;		/* Linked list of commands. */
+	SLIST_ENTRY(_excmd) q;		/* Linked list of commands. */
 
 	char	 *if_name;		/* Associated file. */
 	recno_t	  if_lno;		/* Associated line number. */

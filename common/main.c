@@ -78,8 +78,8 @@ editor(
 	/* Common global structure initialization. */
 	TAILQ_INIT(gp->dq);
 	TAILQ_INIT(gp->hq);
-	LIST_INIT(&gp->ecq);
-	LIST_INSERT_HEAD(&gp->ecq, &gp->excmd, q);
+	SLIST_INIT(gp->ecq);
+	SLIST_INSERT_HEAD(gp->ecq, &gp->excmd, q);
 	gp->noprint = DEFAULT_NOPRINT;
 
 	/* Structures shared by screens so stored in the GS structure. */
