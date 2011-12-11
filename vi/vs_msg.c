@@ -682,12 +682,12 @@ vs_resolve(SCR *sp, SCR *csp, int forcewait)
 	 * messages.)  Once this is done, don't trust the cursor.  That
 	 * extra refresh screwed the pooch.
 	 */
-	if (gp->msgq.lh_first != NULL) {
+	if (!SLIST_EMPTY(gp->msgq)) {
 		if (!F_ISSET(sp, SC_SCR_VI) && vs_refresh(sp, 1))
 			return (1);
-		while ((mp = gp->msgq.lh_first) != NULL) {
+		while ((mp = SLIST_FIRST(gp->msgq)) != NULL) {
 			gp->scr_msg(sp, mp->mtype, mp->buf, mp->len);
-			LIST_REMOVE(mp, q);
+			SLIST_REMOVE_HEAD(gp->msgq, q);
 			free(mp->buf);
 			free(mp);
 		}
@@ -887,11 +887,11 @@ vs_msgsave(SCR *sp, mtype_t mt, char *p, size_t len)
 	mp_n->mtype = mt;
 
 	gp = sp->gp;
-	if ((mp_c = gp->msgq.lh_first) == NULL) {
-		LIST_INSERT_HEAD(&gp->msgq, mp_n, q);
+	if (SLIST_EMPTY(gp->msgq)) {
+		SLIST_INSERT_HEAD(gp->msgq, mp_n, q);
 	} else {
-		for (; mp_c->q.le_next != NULL; mp_c = mp_c->q.le_next);
-		LIST_INSERT_AFTER(mp_c, mp_n, q);
+		SLIST_FOREACH(mp_c, gp->msgq, q);
+		SLIST_INSERT_AFTER(mp_c, mp_n, q);
 	}
 	return;
 

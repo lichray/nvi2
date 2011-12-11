@@ -66,9 +66,9 @@ ex(SCR **spp)
 		return (1);
 
 	/* Flush any saved messages. */
-	while ((mp = gp->msgq.lh_first) != NULL) {
+	while ((mp = SLIST_FIRST(gp->msgq)) != NULL) {
 		gp->scr_msg(sp, mp->mtype, mp->buf, mp->len);
-		LIST_REMOVE(mp, q);
+		SLIST_REMOVE_HEAD(gp->msgq, q);
 		free(mp->buf);
 		free(mp);
 	}

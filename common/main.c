@@ -497,10 +497,10 @@ v_end(gp)
 	 * it's possible that the user is sourcing a file that exits from the
 	 * editor).
 	 */
-	while ((mp = gp->msgq.lh_first) != NULL) {
+	while ((mp = SLIST_FIRST(gp->msgq)) != NULL) {
 		(void)fprintf(stderr, "%s%.*s",
 		    mp->mtype == M_ERR ? "ex/vi: " : "", (int)mp->len, mp->buf);
-		LIST_REMOVE(mp, q);
+		SLIST_REMOVE_HEAD(gp->msgq, q);
 #if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
 		free(mp->buf);
 		free(mp);

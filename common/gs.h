@@ -74,7 +74,7 @@ struct _gs {
 	OPTION	 opts[GO_TERM + 1];
 
 	DB	*msg;			/* Message catalog DB. */
-	MSGH	 msgq;			/* User message list. */
+	MSGH	 msgq[1];		/* User message list. */
 #define	DEFAULT_NOPRINT	'\1'		/* Emergency non-printable character. */
 	int	 noprint;		/* Cached, unprintable character. */
 
