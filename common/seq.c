@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: seq.c,v 10.17 2011/12/02 18:49:24 zy Exp $";
+static const char sccsid[] = "$Id: seq.c,v 10.18 2011/12/11 23:13:00 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -119,9 +119,9 @@ mem1:		errno = sv_errno;
 
 	/* Link into the chain. */
 	if (lastqp == NULL) {
-		LIST_INSERT_HEAD(&sp->gp->seqq, qp, q);
+		SLIST_INSERT_HEAD(sp->gp->seqq, qp, q);
 	} else {
-		LIST_INSERT_AFTER(lastqp, qp, q);
+		SLIST_INSERT_AFTER(lastqp, qp, q);
 	}
 
 	/* Set the fast lookup bit. */
@@ -144,26 +144,42 @@ seq_delete(
 	size_t ilen,
 	seq_t stype)
 {
-	SEQ *qp;
+	SEQ *qp, *pre_qp = NULL;
+	int diff;
 
-	if ((qp = seq_find(sp, NULL, NULL, input, ilen, stype, NULL)) == NULL)
-		return (1);
-	return (seq_mdel(qp));
+	SLIST_FOREACH(qp, sp->gp->seqq, q) {
+		if (qp->stype == stype && qp->ilen == ilen) {
+			diff = MEMCMP(qp->input, input, ilen);
+			if (!diff) {
+				if (F_ISSET(qp, SEQ_FUNCMAP))
+					break;
+				if (qp == SLIST_FIRST(sp->gp->seqq))
+					SLIST_REMOVE_HEAD(sp->gp->seqq, q);
+				else
+					SLIST_REMOVE_AFTER(pre_qp, q);
+				return (seq_free(qp));
+			}
+			if (diff > 0)
+				break;
+		}
+		pre_qp = qp;
+	}
+	return (1);
 }
 
 /*
- * seq_mdel --
- *	Delete a map entry, without lookup.
+ * seq_free --
+ *	Free a map entry.
  *
- * PUBLIC: int seq_mdel __P((SEQ *));
+ * PUBLIC: int seq_free __P((SEQ *));
  */
 int
-seq_mdel(SEQ *qp)
+seq_free(SEQ *qp)
 {
-	LIST_REMOVE(qp, q);
 	if (qp->name != NULL)
 		free(qp->name);
-	free(qp->input);
+	if (qp->input != NULL)
+		free(qp->input);
 	if (qp->output != NULL)
 		free(qp->output);
 	free(qp);
@@ -188,7 +204,7 @@ seq_find(
 	seq_t stype,
 	int *ispartialp)
 {
-	SEQ *lqp, *qp;
+	SEQ *lqp = NULL, *qp;
 	int diff;
 
 	/*
@@ -203,8 +219,8 @@ seq_find(
 	 */
 	if (ispartialp != NULL)
 		*ispartialp = 0;
-	for (lqp = NULL, qp = sp->gp->seqq.lh_first;
-	    qp != NULL; lqp = qp, qp = qp->q.le_next) {
+	for (qp = SLIST_FIRST(sp->gp->seqq); qp != NULL;
+	    lqp = qp, qp = SLIST_NEXT(qp, q)) {
 		/*
 		 * Fast checks on the first character and type, and then
 		 * a real comparison.
@@ -268,15 +284,9 @@ seq_close(GS *gp)
 {
 	SEQ *qp;
 
-	while ((qp = gp->seqq.lh_first) != NULL) {
-		if (qp->name != NULL)
-			free(qp->name);
-		if (qp->input != NULL)
-			free(qp->input);
-		if (qp->output != NULL)
-			free(qp->output);
-		LIST_REMOVE(qp, q);
-		free(qp);
+	while ((qp = SLIST_FIRST(gp->seqq)) != NULL) {
+		SLIST_REMOVE_HEAD(gp->seqq, q);
+		(void)seq_free(qp);
 	}
 }
 
@@ -299,7 +309,7 @@ seq_dump(
 
 	cnt = 0;
 	gp = sp->gp;
-	for (qp = gp->seqq.lh_first; qp != NULL; qp = qp->q.le_next) {
+	SLIST_FOREACH(qp, sp->gp->seqq, q) {
 		if (stype != qp->stype || F_ISSET(qp, SEQ_FUNCMAP))
 			continue;
 		++cnt;
@@ -347,7 +357,7 @@ seq_save(
 	int ch;
 
 	/* Write a sequence command for all keys the user defined. */
-	for (qp = sp->gp->seqq.lh_first; qp != NULL; qp = qp->q.le_next) {
+	SLIST_FOREACH(qp, sp->gp->seqq, q) {
 		if (stype != qp->stype || !F_ISSET(qp, SEQ_USERDEF))
 			continue;
 		if (prefix)

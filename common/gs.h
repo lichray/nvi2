@@ -108,7 +108,7 @@ struct _gs {
 	SLIST_HEAD(_cuth, _cb) cutq[1];	/* Linked list of cut buffers. */
 
 #define	MAX_BIT_SEQ	0x7f		/* Max + 1 fast check character. */
-	LIST_HEAD(_seqh, _seq) seqq;	/* Linked list of maps, abbrevs. */
+	SLIST_HEAD(_seqh, _seq) seqq[1];/* Linked list of maps, abbrevs. */
 	bitstr_t bit_decl(seqb, MAX_BIT_SEQ + 1);
 
 #define	MAX_FAST_KEY	0xff		/* Max fast check character.*/

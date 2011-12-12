@@ -168,7 +168,7 @@ cl_term_init(SCR *sp)
 	 * Rework any function key mappings that were set before the
 	 * screen was initialized.
 	 */
-	for (qp = sp->gp->seqq.lh_first; qp != NULL; qp = qp->q.le_next)
+	SLIST_FOREACH(qp, sp->gp->seqq, q)
 		if (F_ISSET(qp, SEQ_FUNCMAP))
 			(void)cl_pfmap(sp, qp->stype,
 			    qp->input, qp->ilen, qp->output, qp->olen);
@@ -184,13 +184,14 @@ cl_term_init(SCR *sp)
 int
 cl_term_end(GS *gp)
 {
-	SEQ *qp, *nqp;
+	SEQ *qp;
 
 	/* Delete screen specific mappings. */
-	for (qp = gp->seqq.lh_first; qp != NULL; qp = nqp) {
-		nqp = qp->q.le_next;
-		if (F_ISSET(qp, SEQ_SCREEN))
-			(void)seq_mdel(qp);
+	while ((qp = SLIST_FIRST(gp->seqq)) != NULL) {
+		if (F_ISSET(qp, SEQ_SCREEN)) {
+			SLIST_REMOVE_HEAD(gp->seqq, q);
+			(void)seq_free(qp);
+		}
 	}
 	return (0);
 }

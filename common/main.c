@@ -86,7 +86,7 @@ editor(
 	TAILQ_INIT(gp->frefq);
 	TAILQ_INIT(gp->dcb_store.textq);
 	SLIST_INIT(gp->cutq);
-	LIST_INIT(&gp->seqq);
+	SLIST_INIT(gp->seqq);
 
 	/* Set initial screen type and mode based on the program name. */
 	readonly = 0;
