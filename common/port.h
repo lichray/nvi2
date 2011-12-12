@@ -3,7 +3,7 @@
  *	The Regents of the University of California.  All rights reserved.
  * Copyright (c) 1993, 1994, 1995, 1996
  *	Keith Bostic.  All rights reserved.
- * Copyright (c) 2011
+ * Copyright (c) 2011, 2012
  *	Zhihao Yuan.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
