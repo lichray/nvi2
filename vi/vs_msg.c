@@ -890,7 +890,9 @@ vs_msgsave(SCR *sp, mtype_t mt, char *p, size_t len)
 	if (SLIST_EMPTY(gp->msgq)) {
 		SLIST_INSERT_HEAD(gp->msgq, mp_n, q);
 	} else {
-		SLIST_FOREACH(mp_c, gp->msgq, q);
+		SLIST_FOREACH(mp_c, gp->msgq, q)
+			if (SLIST_NEXT(mp_c, q) == NULL)
+				break;
 		SLIST_INSERT_AFTER(mp_c, mp_n, q);
 	}
 	return;
