@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_print.c,v 10.24 2001/07/29 19:07:29 skimo Exp $";
+static const char sccsid[] = "$Id: ex_print.c,v 10.25 2011/12/12 22:12:20 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -100,8 +100,6 @@ ex_print(SCR *sp, EXCMD *cmdp, MARK *fp, MARK *tp, u_int32_t flags)
 	size_t col, len;
 	CHAR_T *p;
 	CHAR_T buf[10];
-	CHAR_T *wp;
-	size_t wlen;
 
 	NEEDFILE(sp, cmdp);
 
@@ -228,15 +226,8 @@ ex_prchars(SCR *sp, const CHAR_T *p, size_t *colp, size_t len,
 					goto intr;
 			}
 		else {
-			/* XXXX */
-			if (INTISWIDE(ch)) {
-			    CHAR_T str[2] = {0, 0};
-			    str[0] = ch;
-			    INT2CHAR(sp, str, 2, kp, tlen);
-			} else {
-			    kp = KEY_NAME(sp, ch);
-			    tlen = KEY_LEN(sp, ch);
-			}
+			kp = KEY_NAME(sp, ch);
+			tlen = KEY_LEN(sp, ch);
 			if (!repeatc  && col + tlen < sp->cols) {
 				(void)ex_puts(sp, kp);
 				col += tlen;
@@ -275,7 +266,6 @@ ex_printf(sp, fmt, va_alist)
 	EX_PRIVATE *exp;
 	va_list ap;
 	size_t n;
-	CHAR_T *kp;
 
 	exp = EXP(sp);
 
