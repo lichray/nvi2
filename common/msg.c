@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: msg.c,v 10.50 2011/08/22 20:30:52 zy Exp $";
+static const char sccsid[] = "$Id: msg.c,v 10.51 2011/12/14 23:26:19 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -157,8 +157,12 @@ retry:		FREE_SPACE(sp, bp, blen);
 	 */
 	if ((mt == M_ERR || mt == M_SYSERR) &&
 	    sp != NULL && gp != NULL && gp->if_name != NULL) {
-		for (p = gp->if_name; *p != '\0'; ++p) {
-			len = snprintf(mp, REM, "%s", KEY_NAME(sp, *p));
+		CHAR_T *wp;
+		size_t wlen;
+
+		CHAR2INT(sp, gp->if_name, strlen(gp->if_name) + 1, wp, wlen);
+		for (; *wp != L('\0'); ++wp) {
+			len = snprintf(mp, REM, "%s", KEY_NAME(sp, *wp));
 			mp += len;
 			if ((mlen += len) > blen)
 				goto retry;
@@ -546,16 +550,21 @@ msgq_status(
 	int cnt, needsep;
 	const char *t;
 	char **ap, *bp, *np, *p, *s;
+	CHAR_T *wp;
+	size_t wlen;
 
 	/* Get sufficient memory. */
 	len = strlen(sp->frp->name);
 	GET_SPACE_GOTOC(sp, bp, blen, len * MAX_CHARACTER_COLUMNS + 128);
 	p = bp;
 
+	/* Convert the filename. */
+	CHAR2INT(sp, sp->frp->name, len + 1, wp, wlen);
+
 	/* Copy in the filename. */
-	for (p = bp, t = sp->frp->name; *t != '\0'; ++t) {
-		len = KEY_LEN(sp, *t);
-		memcpy(p, KEY_NAME(sp, *t), len);
+	for (; *wp != L('\0'); ++wp) {
+		len = KEY_LEN(sp, *wp);
+		memcpy(p, KEY_NAME(sp, *wp), len);
 		p += len;
 	}
 	np = p;
@@ -879,15 +888,18 @@ msg_print(
 	int *needfree)
 {
 	size_t blen, nlen;
-	const char *cp;
 	char *bp, *ep, *p, *t;
+	static CONVWIN cw;
+	CHAR_T *wp, *cp;
+	size_t wlen;
 
 	*needfree = 0;
 
-	for (cp = s; *cp != '\0'; ++cp)
-		if (!isprint(*cp))
+	CHAR2INT5(sp, cw, s, strlen(s) + 1, wp, wlen);
+	for (cp = wp; *cp != L('\0'); ++cp)
+		if (!ISPRINT(*cp))
 			break;
-	if (*cp == '\0')
+	if (*cp == L('\0'))
 		return ((char *)s);	/* SAFE: needfree set to 0. */
 
 	nlen = 0;
@@ -909,8 +921,8 @@ alloc_err:	return ("");
 	}
 	*needfree = 1;
 
-	for (p = bp, ep = (bp + blen) - 1, cp = s; *cp != '\0' && p < ep; ++cp)
-		for (t = KEY_NAME(sp, *cp); *t != '\0' && p < ep; *p++ = *t++);
+	for (p = bp, ep = (bp + blen) - 1; *wp != L('\0') && p < ep; ++wp)
+		for (t = KEY_NAME(sp, *wp); *t != '\0' && p < ep; *p++ = *t++);
 	if (p == ep)
 		goto retry;
 	*p = '\0';
