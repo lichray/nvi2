@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_msg.c,v 10.85 2001/07/29 19:07:31 skimo Exp $";
+static const char sccsid[] = "$Id: vs_msg.c,v 10.86 2011/12/12 21:51:50 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -390,11 +390,10 @@ ret:	(void)gp->scr_move(sp, oldy, oldx);
 static void
 vs_output(SCR *sp, mtype_t mtype, const char *line, int llen)
 {
-	char *kp;
 	GS *gp;
 	VI_PRIVATE *vip;
-	size_t chlen, notused;
-	int ch, len, rlen, tlen;
+	size_t notused;
+	int len, rlen, tlen;
 	const char *p, *t;
 	char *cbp, *ecbp, cbuf[128];
 
@@ -462,7 +461,6 @@ vs_output(SCR *sp, mtype_t mtype, const char *line, int llen)
 }
 		ecbp = (cbp = cbuf) + sizeof(cbuf) - 1;
 		for (t = line, tlen = len; tlen--; ++t) {
-			ch = *t;
 			/*
 			 * Replace tabs with spaces, there are places in
 			 * ex that do column calculations without looking
@@ -470,13 +468,9 @@ vs_output(SCR *sp, mtype_t mtype, const char *line, int llen)
 			 * <tabs> do their own expansions.  This catches
 			 * <tabs> in things like tag search strings.
 			 */
-			if (ch == '\t')
-				ch = ' ';
-			chlen = KEY_LEN(sp, ch);
-			if (cbp + chlen >= ecbp)
+			if (cbp + 1 >= ecbp)
 				FLUSH;
-			for (kp = KEY_NAME(sp, ch); chlen--;)
-				*cbp++ = *kp++;
+			*cbp++ = *t == '\t' ? ' ' : *t;
 		}
 		if (cbp > cbuf)
 			FLUSH;
