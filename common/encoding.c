@@ -55,8 +55,9 @@ static char text_chars[256] = {
  * PUBLIC: int looks_utf8 __P((const char *, size_t));
  */
 int
-looks_utf8(const char *buf, size_t nbytes)
+looks_utf8(const char *ibuf, size_t nbytes)
 {
+	const unsigned char *buf = ibuf;
 	size_t i;
 	int n;
 	int gotone = 0, ctrl = 0;
@@ -68,21 +69,21 @@ looks_utf8(const char *buf, size_t nbytes)
 			 * still reject it if it uses weird control characters.
 			 */
 
-			if (text_chars[(u_char)buf[i]] != T)
+			if (text_chars[buf[i]] != T)
 				ctrl = 1;
 		} else if ((buf[i] & 0x40) == 0) { /* 10xxxxxx never 1st byte */
 			return -1;
 		} else {			   /* 11xxxxxx begins UTF-8 */
 			int following;
 
-			if ((buf[i] & 0x20) == 0)		/* 110xxxxx */
-				if (buf[i] > '\xC1')	/* C0, C1 */
+			if ((buf[i] & 0x20) == 0)	/* 110xxxxx */
+				if (buf[i] > 0xC1)	/* C0, C1 */
 					following = 1;
 				else return -1;
 			else if ((buf[i] & 0x10) == 0)	/* 1110xxxx */
 				following = 2;
 			else if ((buf[i] & 0x08) == 0)	/* 11110xxx */
-				if (buf[i] < '\xF5')
+				if (buf[i] < 0xF5)
 					following = 3;
 				else return -1;		/* F5, F6, F7 */
 			else
@@ -115,8 +116,9 @@ done:
  * PUBLIC: int looks_utf16 __P((const char *, size_t));
  */
 int
-looks_utf16(const char *buf, size_t nbytes)
+looks_utf16(const char *ibuf, size_t nbytes)
 {
+	const unsigned char *buf = ibuf;
 	int bigend;
 	size_t i;
 	unsigned int c;
@@ -126,7 +128,7 @@ looks_utf16(const char *buf, size_t nbytes)
 	if (nbytes < 2)
 		return 0;
 
-	bom = (u_char)buf[0] << 8 ^ (u_char)buf[1];
+	bom = buf[0] << 8 ^ buf[1];
 	if (bom == 0xFFFE)
 		bigend = 0;
 	else if (bom == 0xFEFF)
@@ -136,23 +138,23 @@ looks_utf16(const char *buf, size_t nbytes)
 
 	for (i = 2; i + 1 < nbytes; i += 2) {
 		if (bigend)
-			c = (u_char)buf[i] << 8 ^ (u_char)buf[i + 1];
+			c = buf[i] << 8 ^ buf[i + 1];
 		else
-			c = (u_char)buf[i] ^ (u_char)buf[i + 1] << 8;
+			c = buf[i] ^ buf[i + 1] << 8;
 
 		if (!following)
 			if (c < 0xD800 || c > 0xDFFF)
-				if (c < 128 && text_chars[(size_t)c] != T)
+				if (c < 128 && text_chars[c] != T)
 					return 0;
 				else
 					following = 0;
-			else if (!(0xD800 <= c && c <= 0xDBFF))
+			else if (c > 0xDBFF)
 				return 0;
 			else {
 				following = 1;
 				continue;
 			}
-		else if (!(0xDC00 <= c && c <= 0xDFFF))
+		else if (c < 0xDC00 || c > 0xDFFF)
 			return 0;
 	}
 
