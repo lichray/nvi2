@@ -227,22 +227,27 @@ v_key_name(
 {
 	static const char hexdigit[] = "0123456789abcdef";
 	static const char octdigit[] = "01234567";
-	CHAR_T ch, mask;
+	int ch;
 	size_t len;
-	int cnt, shift;
 	char *chp;
 
-	ch = ach;
+#ifdef USE_WIDECHAR
+	len = wcrtomb(sp->cname, ach, NULL);
+	len = len > MB_CUR_MAX ? 1 : len;
+#else
+	sp->cname[0] = (unsigned char)ach;
+	len = 1;
+#endif
+	ch = sp->cname[0];
+	sp->cname[len] = '\0';
 
 	/* See if the character was explicitly declared printable or not. */
 	if ((chp = O_STR(sp, O_PRINT)) != NULL)
-		for (; *chp != '\0'; ++chp)
-			if (*chp == ch)
-				goto pr;
+		if (strstr(chp, sp->cname) != NULL)
+			goto done;
 	if ((chp = O_STR(sp, O_NOPRINT)) != NULL)
-		for (; *chp != '\0'; ++chp)
-			if (*chp == ch)
-				goto nopr;
+		if (strstr(chp, sp->cname) != NULL)
+			goto nopr;
 
 	/*
 	 * Historical (ARPA standard) mappings.  Printable characters are left
@@ -256,45 +261,53 @@ v_key_name(
 	 * told that this is a reasonable assumption...
 	 *
 	 * XXX
-	 * This code will only work with CHAR_T's that are multiples of 8-bit
-	 * bytes.
-	 *
-	 * XXX
-	 * NB: There's an assumption here that all printable characters take
-	 * up a single column on the screen.  This is not always correct.
+	 * The code prints non-printable wide characters in 4 or 5 digits
+	 * Unicode escape sequences, so only supports plane 0 to 15.
 	 */
-	if (ISPRINT(ch)) {
-pr:		sp->cname[0] = ch;
-		len = 1;
+	if (ISPRINT(ach))
 		goto done;
-	}
-nopr:	if (ISCNTRL(ch) && (ch < 0x20 || ch == 0x7f)) {
+nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 		sp->cname[0] = '^';
 		sp->cname[1] = ch == 0x7f ? '?' : '@' + ch;
 		len = 2;
-	} else if (O_ISSET(sp, O_OCTAL)) {
-#define	BITS	(/*sizeof(CHAR_T) **/8)
-#define	SHIFT	(BITS - BITS % 3)
-#define	TOPMASK	(BITS % 3 == 2 ? 3 : 1) << (BITS - BITS % 3)
+		goto done;
+	}
+	if (INTISWIDE(ach)) {
+		int uc = -1;
+
+		if (!strcmp(codeset(), "UTF-8"))
+			uc = decode_utf8(sp->cname);
+#ifdef USE_ICONV
+		else {
+			char buf[sizeof(sp->cname)];
+			size_t left = sizeof(sp->cname);
+			char *in = sp->cname;
+			char *out = buf;
+			iconv(sp->conv.id[IC_IE_TO_UTF16],
+			    &in, &len, &out, &left);
+			iconv(sp->conv.id[IC_IE_TO_UTF16],
+			    NULL, NULL, NULL, NULL);
+			uc = decode_utf16(buf, 1);
+		}
+#endif
+		if (uc >= 0) {
+			len = snprintf(sp->cname, sizeof(sp->cname),
+			    uc < 0x10000 ? "\\u%04x" : "\\U%05X", uc);
+			goto done;
+		}
+	}
+	if (O_ISSET(sp, O_OCTAL)) {
 		sp->cname[0] = '\\';
-		sp->cname[1] = octdigit[(ch & TOPMASK) >> SHIFT];
-		shift = SHIFT - 3;
-		for (len = 2, mask = 7 << (SHIFT - 3),
-		    cnt = BITS / 3; cnt-- > 0; mask >>= 3, shift -= 3)
-			sp->cname[len++] = octdigit[(ch & mask) >> shift];
+		sp->cname[1] = octdigit[(ch & 0300) >> 6];
+		sp->cname[2] = octdigit[(ch &  070) >> 3];
+		sp->cname[3] = octdigit[ ch &   07      ];
 	} else {
 		sp->cname[0] = '\\';
 		sp->cname[1] = 'x';
-		for (len = 2, chp = (u_int8_t *)&ch,
-		    /* sizeof(CHAR_T) conflict with MAX_CHARACTER_COLUMNS
-		     * and code depends on big endian
-		     * and might not be needed in the long run
-		     */
-		    cnt = /*sizeof(CHAR_T)*/1; cnt-- > 0; ++chp) {
-			sp->cname[len++] = hexdigit[(*chp & 0xf0) >> 4];
-			sp->cname[len++] = hexdigit[*chp & 0x0f];
-		}
+		sp->cname[2] = hexdigit[(ch & 0xf0) >> 4];
+		sp->cname[3] = hexdigit[ ch & 0x0f      ];
 	}
+	len = 4;
 done:	sp->cname[sp->clen = len] = '\0';
 	return (sp->cname);
 }

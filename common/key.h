@@ -51,7 +51,7 @@
     memmove(to, from, (n) * sizeof(CHAR_T))
 
 /* The maximum number of columns any character can take up on a screen. */
-#define	MAX_CHARACTER_COLUMNS	4
+#define	MAX_CHARACTER_COLUMNS	7
 
 /*
  * Event types.
