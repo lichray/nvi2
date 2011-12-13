@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: screen.h,v 10.25 2011/06/02 22:06:47 zy Exp $
+ *	$Id: screen.h,v 10.26 2011/12/12 22:31:36 zy Exp $
  */
 
 /*
@@ -84,6 +84,7 @@ struct _scr {
 					/* Display character. */
 	u_char	 cname[MAX_CHARACTER_COLUMNS + 1];
 	size_t	 clen;			/* Length of display character. */
+	ARG_CHAR_T lastc;		/* The last display character. */
 
 	enum {				/* Vi editor mode. */
 	    SM_APPEND = 0, SM_CHANGE, SM_COMMAND, SM_INSERT,

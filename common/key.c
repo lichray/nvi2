@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.51 2011/12/02 18:52:34 zy Exp $";
+static const char sccsid[] = "$Id: key.c,v 10.52 2011/12/12 23:38:51 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -230,6 +230,14 @@ v_key_name(
 	int ch;
 	size_t len;
 	char *chp;
+
+	/*
+	 * Cache the last checked character.  It won't be a problem
+	 * since nvi will rescan the mapping when settings changed.
+	 */
+	if (ach && sp->lastc == ach)
+		return (sp->cname);
+	sp->lastc = ach;
 
 #ifdef USE_WIDECHAR
 	len = wcrtomb(sp->cname, ach, NULL);
