@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.33 2011/12/04 04:06:45 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.34 2011/12/13 19:43:24 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -22,6 +22,8 @@ static const char sccsid[] = "$Id: conv.c,v 2.33 2011/12/04 04:06:45 zy Exp $";
 #include <bitstring.h>
 #include <errno.h>
 #include <limits.h>
+#include <langinfo.h>
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,14 +32,20 @@ static const char sccsid[] = "$Id: conv.c,v 2.33 2011/12/04 04:06:45 zy Exp $";
 
 #include "common.h"
 
-#ifdef USE_ICONV
-#include <langinfo.h>
-#define LANGCODESET	nl_langinfo(CODESET)
-#else
-#define LANGCODESET	""
-#endif
+/*
+ * codeset --
+ *	Get the locale encoding.
+ *
+ * PUBLIC: char * codeset __P((void));
+ */
+char *
+codeset(void) {
+    static char *cs;
 
-#include <locale.h>
+    if (cs == NULL)
+	cs = nl_langinfo(CODESET);
+    return cs;
+}
 
 #ifdef USE_WIDECHAR
 static int 
@@ -345,9 +353,10 @@ conv_init (SCR *orig, SCR *sp)
 	setlocale(LC_CTYPE, "");
 #endif
 #ifdef USE_ICONV
-	o_set(sp, O_INPUTENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
+	o_set(sp, O_INPUTENCODING, OS_STRDUP, codeset(), 0);
 #endif
 	sp->conv.id[IC_IE_CHAR2INT] = (iconv_t)-1;
+	sp->conv.id[IC_IE_TO_UTF16] = (iconv_t)-1;
     }
     /* XXX
      * Do not inherit file encoding from the old screen,
@@ -355,7 +364,7 @@ conv_init (SCR *orig, SCR *sp)
      */
 #ifdef USE_ICONV
     conv_enc(sp, O_INPUTENCODING, 0);
-    o_set(sp, O_FILEENCODING, OS_STRDUP, nl_langinfo(CODESET), 0);
+    o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 #endif
     sp->conv.id[IC_FE_CHAR2INT] = (iconv_t)-1;
     sp->conv.id[IC_FE_INT2CHAR] = (iconv_t)-1;
@@ -382,22 +391,28 @@ conv_enc (SCR *sp, int option, char *enc)
 	    iconv_close(*c2w);
 	if (*w2c != (iconv_t)-1)
 	    iconv_close(*w2c);
-	if (strcasecmp(LANGCODESET, enc)) {
-	    if ((*c2w = iconv_open(LANGCODESET, enc)) == (iconv_t)-1)
+	if (strcasecmp(codeset(), enc)) {
+	    if ((*c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
 		goto err;
-	    if ((*w2c = iconv_open(enc, LANGCODESET)) == (iconv_t)-1)
+	    if ((*w2c = iconv_open(enc, codeset())) == (iconv_t)-1)
 		goto err;
 	} else *c2w = *w2c = (iconv_t)-1;
 	break;
     case O_INPUTENCODING:
 	c2w = sp->conv.id + IC_IE_CHAR2INT;
+	w2c = sp->conv.id + IC_IE_TO_UTF16;
 	if (!enc) enc = O_STR(sp, O_INPUTENCODING);
 	if (*c2w != (iconv_t)-1)
 	    iconv_close(*c2w);
-	if (strcasecmp(LANGCODESET, enc)) {
-	    if ((*c2w = iconv_open(LANGCODESET, enc)) == (iconv_t)-1)
+	if (*w2c != (iconv_t)-1)
+	    iconv_close(*w2c);
+	if (strcasecmp(codeset(), enc)) {
+	    if ((*c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
 		goto err;
 	} else *c2w = (iconv_t)-1;
+	/* UTF-16 can not be locale and can not be inputed. */
+	if ((*w2c = iconv_open("utf-16be", enc)) == (iconv_t)-1)
+	    goto err;
 	break;
     }
 
@@ -431,7 +446,7 @@ conv_end (SCR *sp)
 {
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
     int i;
-    for (i = 0; i <= IC_IE_CHAR2INT; ++i)
+    for (i = 0; i <= IC_IE_TO_UTF16; ++i)
 	if (sp->conv.id[i] != (iconv_t)-1)
 	    iconv_close(sp->conv.id[i]);
 	if (sp->cw.bp1.c != NULL)
