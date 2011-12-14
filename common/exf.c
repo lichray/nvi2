@@ -1104,7 +1104,7 @@ file_backup(
 	 */
 	if (version) {
 		GET_SPACE_GOTOC(sp, bp, blen, cmd.argv[0]->len * 2 + 50);
-		INT2SYS(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
+		INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
 			 p, nlen); 
 		d = strdup(p);
 		p = d;
@@ -1130,7 +1130,7 @@ file_backup(
 			p = slash + 1;
 		}
 		if (dirp == NULL) {
-			INT2SYS(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
+			INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
 				estr, nlen);
 			goto err;
 		}
@@ -1145,7 +1145,7 @@ file_backup(
 		wfname = bp;
 	} else {
 		bp = NULL;
-		INT2SYS(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
+		INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
 			wfname, nlen);
 	}
 	

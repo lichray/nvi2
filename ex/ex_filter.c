@@ -138,7 +138,7 @@ err:		if (input[0] != -1)
 		else
 			++name;
 
-		INT2SYS(sp, cmd, STRLEN(cmd)+1, np, nlen);
+		INT2CHAR(sp, cmd, STRLEN(cmd)+1, np, nlen);
 		execl(O_STR(sp, O_SHELL), name, "-c", np, (char *)NULL);
 		msgq_str(sp, M_SYSERR, O_STR(sp, O_SHELL), "execl: %s");
 		_exit (127);

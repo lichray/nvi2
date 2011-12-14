@@ -20,8 +20,6 @@
     sp->conv.sys2int(sp, n, nlen, &buf, &wlen, &w)
 #define INT2CHAR(sp,w,wlen,n,nlen) 					    \
     sp->conv.int2sys(sp, w, wlen, &sp->cw, &nlen, &n)
-#define INT2SYS(sp,w,wlen,n,nlen) 					    \
-    sp->conv.int2sys(sp, w, wlen, &sp->cw, &nlen, &n)
 #define INPUT2INT5(sp,cw,n,nlen,w,wlen)					    \
     sp->conv.input2int(sp, n, nlen, &(cw), &wlen, &w)
 #define CONST
@@ -35,8 +33,6 @@
 #define CHAR2INT5(sp,buf,n,nlen,w,wlen) \
     (w = n, wlen = nlen, 0)
 #define INT2CHAR(sp,w,wlen,n,nlen) \
-    (n = w, nlen = wlen, 0)
-#define INT2SYS(sp,w,wlen,n,nlen) \
     (n = w, nlen = wlen, 0)
 #define INPUT2INT5(sp,buf,n,nlen,w,wlen) \
     (w = n, wlen = nlen, 0)
