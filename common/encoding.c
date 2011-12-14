@@ -6,13 +6,15 @@
  */
 
 #ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.3 2011/12/03 02:22:20 zy Exp $";
+static const char sccsid[] = "$Id: encoding.c,v 1.4 2011/12/13 19:40:52 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
 
 int looks_utf8 __P((const char *, size_t));
 int looks_utf16 __P((const char *, size_t));
+int decode_utf8 __P((const char *));
+int decode_utf16 __P((const char *, int));
 
 #define F 0   /* character never appears in text */
 #define T 1   /* character appears in plain ASCII text */
@@ -165,3 +167,64 @@ looks_utf16(const char *ibuf, size_t nbytes)
 #undef T
 #undef I
 #undef X
+
+/*
+ * decode_utf8 --
+ *  Decode a UTF-8 character from byte string to Unicode.
+ *  Returns -1 if the first byte is a not UTF-8 leader.
+ *
+ *  Based on RFC 3629, but without error detection.
+ *
+ * PUBLIC: int decode_utf8 __P((const char *));
+ */
+int decode_utf8(const char *ibuf) {
+	const unsigned char *buf = ibuf;
+	int u = -1;
+
+	if ((buf[0] & 0x80) == 0)
+		u = buf[0];
+	else if ((buf[0] & 0x40) == 0);
+	else {
+		if ((buf[0] & 0x20) == 0)
+			u = (buf[0] ^ 0xC0) <<  6 ^ (buf[1] ^ 0x80);
+		else if ((buf[0] & 0x10) == 0)
+			u = (buf[0] ^ 0xE0) << 12 ^ (buf[1] ^ 0x80) <<  6
+			  ^ (buf[2] ^ 0x80);
+		else if (((buf[0] & 0x08) == 0))
+			u = (buf[0] ^ 0xF0) << 18 ^ (buf[1] ^ 0x80) << 12
+			  ^ (buf[2] ^ 0x80) <<  6 ^ (buf[3] ^ 0x80);
+	}
+	return u;
+}
+
+/*
+ * decode_utf16 --
+ *  Decode a UTF-16 character from byte string to Unicode.
+ *  Returns -1 if the first unsigned integer is invalid.
+ *
+ *  No error detection on supplementary bytes.
+ *
+ * PUBLIC: int decode_utf16 __P((const char *, int));
+ */
+int decode_utf16(const char* ibuf, int bigend) {
+	const unsigned char *buf = ibuf;
+	int u = -1;
+	unsigned int w1, w2;
+
+	if (bigend)
+		w1 = buf[0] << 8 ^ buf[1];
+	else
+		w1 = buf[0] ^ buf[1] << 8;
+
+	if (w1 < 0xD800 || w1 > 0xDFFF)
+		u = w1;
+	else if (w1 > 0xDBFF);
+	else {
+		if (bigend)
+			w2 = buf[2] << 8 ^ buf[3];
+		else
+			w2 = buf[2] ^ buf[3] << 8;
+		u = ((w1 ^ 0xD800) << 10 ^ (w2 ^ 0xDC00)) + 0x10000;
+	}
+	return u;
+}
