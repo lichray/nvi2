@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_line.c,v 10.38 2002/01/19 21:59:07 skimo Exp $";
+static const char sccsid[] = "$Id: vs_line.c,v 10.39 2011/12/14 14:58:15 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -40,7 +40,7 @@ static const char sccsid[] = "$Id: vs_line.c,v 10.38 2002/01/19 21:59:07 skimo E
 int
 vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 {
-	char *kp;
+	u_char *kp;
 	GS *gp;
 	SMAP *tsmp;
 	size_t chlen = 0, cno_cnt, cols_per_screen, len, nlen;
@@ -50,7 +50,7 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 	int list_tab, list_dollar;
 	CHAR_T *p;
 	CHAR_T *cbp, *ecbp, cbuf[128];
-	CHAR_T ch = L('\0');
+	ARG_CHAR_T ch = L('\0');
 
 #if defined(DEBUG) && 0
 	TRACE(sp, "vs_line: row %u: line: %u off: %u\n",
@@ -434,16 +434,12 @@ display:
 				break;
 			}
 
-			/* XXXX this needs some rethinking */
-			if (INTISWIDE(ch)) {
-				/* Put a space before non-spacing char. */
-				if (!CHAR_WIDTH(sp, ch))
-					*cbp++ = L(' ');
+			if (KEY_NEEDSWIDE(sp, ch))
 				*cbp++ = ch;
-			} else
+			else
 				for (kp = KEY_NAME(sp, ch) + offset_in_char; 
 				     chlen--;)
-					*cbp++ = (u_char)*kp++;
+					*cbp++ = *kp++;
 		}
 	}
 

@@ -8,7 +8,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: conv.h,v 2.30 2011/12/13 19:01:53 zy Exp $
+ *	$Id: conv.h,v 2.31 2011/12/14 14:58:15 zy Exp $
  */
 
 #ifdef USE_ICONV
@@ -17,10 +17,15 @@
 typedef int	iconv_t;
 #endif
 
+/*
+ * XXX
+ * We can not use MB_CUR_MAX here, since UTF-8 may report it as 6, but
+ * a sequence longer than 4 is deprecated by RFC 3629.
+ */
+#define KEY_NEEDSWIDE(sp, ch)						\
+	(INTISWIDE(ch) && KEY_LEN(sp, ch) <= 4)
 #define KEY_COL(sp, ch)							\
-	(INTISWIDE(ch) ? CHAR_WIDTH(sp, ch) > 0 ? CHAR_WIDTH(sp, ch) : 	\
-					      1 : /* extra space */	\
-			 KEY_LEN(sp,ch))
+	(KEY_NEEDSWIDE(sp, ch) ? CHAR_WIDTH(sp, ch) : KEY_LEN(sp, ch))
 
 enum { IC_FE_CHAR2INT, IC_FE_INT2CHAR, IC_IE_CHAR2INT, IC_IE_TO_UTF16 };
 
