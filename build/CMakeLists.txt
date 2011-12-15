@@ -25,6 +25,7 @@ if(DEBUG)
 		"-fstrict-aliasing -Wstrict-aliasing"
 		"-Wformat"
 		"-Wmissing-prototypes"
+		"-Wmissing-braces"
 		"-Wno-pointer-sign")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)

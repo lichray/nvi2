@@ -255,7 +255,7 @@ v_txt(
 	GS *gp;
 	TEXT *ntp, *tp;		/* Input text structures. */
 	TEXT ait;		/* Autoindent text structure. */
-	TEXT wmt = { 0 };	/* Wrapmargin text structure. */
+	TEXT wmt = {{ 0 }};	/* Wrapmargin text structure. */
 	TEXTH *tiqh;
 	VI_PRIVATE *vip;
 	abb_t abb;		/* State of abbreviation checks. */

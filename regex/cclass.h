@@ -56,28 +56,28 @@ static struct cclass {
 	char *chars;
 	char *multis;
 } cclasses[] = {
-	ALNUM,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
-0123456789",				"",
-	ALPHA,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-					"",
-	BLANK,	" \t",		"",
-	CNTRL,	"\007\b\t\n\v\f\r\1\2\3\4\5\6\16\17\20\21\22\23\24\
-\25\26\27\30\31\32\33\34\35\36\37\177",	"",
-	DIGIT,	"0123456789",	"",
-	GRAPH,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+	{ ALNUM,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+0123456789",				"" },
+	{ ALPHA,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+					"" },
+	{ BLANK,	" \t",		"" },
+	{ CNTRL,	"\007\b\t\n\v\f\r\1\2\3\4\5\6\16\17\20\21\22\23\24\
+\25\26\27\30\31\32\33\34\35\36\37\177",	"" },
+	{ DIGIT,	"0123456789",	"" },
+	{ GRAPH,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-					"",
-	LOWER,	"abcdefghijklmnopqrstuvwxyz",
-					"",
-	PRINT,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
+					"" },
+	{ LOWER,	"abcdefghijklmnopqrstuvwxyz",
+					"" },
+	{ PRINT,	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\
 0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ",
-					"",
-	PUNCT,	"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-					"",
-	SPACE,	"\t\n\v\f\r ",	"",
-	UPPER,	"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-					"",
-	XDIGIT,	"0123456789ABCDEFabcdef",
-					"",
-	NULL,		0,		""
+					"" },
+	{ PUNCT,	"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+					"" },
+	{ SPACE,	"\t\n\v\f\r ",	"" },
+	{ UPPER,	"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+					"" },
+	{ XDIGIT,	"0123456789ABCDEFabcdef",
+					"" },
+	{ NULL,		0,		"" },
 };
