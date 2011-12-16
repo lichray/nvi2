@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.34 2011/12/13 19:43:24 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.35 2011/12/15 21:24:49 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -311,6 +311,8 @@ cs_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 void
 conv_init (SCR *orig, SCR *sp)
 {
+    int i;
+
     if (orig != NULL)
 	MEMCPY(&sp->conv, &orig->conv, 1);
     else {
@@ -355,19 +357,17 @@ conv_init (SCR *orig, SCR *sp)
 #ifdef USE_ICONV
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, codeset(), 0);
 #endif
-	sp->conv.id[IC_IE_CHAR2INT] = (iconv_t)-1;
-	sp->conv.id[IC_IE_TO_UTF16] = (iconv_t)-1;
     }
     /* XXX
      * Do not inherit file encoding from the old screen,
      * but overwrite the fileencoding option in .exrc
      */
+    for (i = 0; i <= IC_IE_TO_UTF16; ++i)
+	sp->conv.id[i] = (iconv_t)-1;
 #ifdef USE_ICONV
     conv_enc(sp, O_INPUTENCODING, 0);
     o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 #endif
-    sp->conv.id[IC_FE_CHAR2INT] = (iconv_t)-1;
-    sp->conv.id[IC_FE_INT2CHAR] = (iconv_t)-1;
 }
 
 /*
