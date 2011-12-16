@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_args.c,v 10.18 2001/06/25 15:19:14 skimo Exp $";
+static const char sccsid[] = "$Id: ex_args.c,v 10.19 2011/12/16 16:18:10 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -321,8 +321,7 @@ ex_buildargv(SCR *sp, EXCMD *cmdp, char *name)
 		++ap;
 	} else
 		for (argv = cmdp->argv; argv[0]->len != 0; ++ap, ++argv) {
-			INT2CHAR(sp, cmdp->argv[0]->bp, cmdp->argv[0]->len, 
-				 np, nlen);
+			INT2CHAR(sp, argv[0]->bp, argv[0]->len, np, nlen);
 			if ((*ap = v_strdup(sp, np, nlen)) == NULL)
 				return (NULL);
 		}
