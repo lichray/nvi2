@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_refresh.c,v 10.51 2011/07/15 03:32:07 zy Exp $";
+static const char sccsid[] = "$Id: vs_refresh.c,v 10.52 2011/12/16 11:06:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -773,7 +773,7 @@ vs_modeline(SCR *sp)
 	size_t cols, curcol, curlen, endpoint, len, midpoint;
 	const char *t = NULL;
 	int ellipsis;
-	char *p, buf[20];
+	char buf[20];
 
 	gp = sp->gp;
 
@@ -795,19 +795,23 @@ vs_modeline(SCR *sp)
 	/* If more than one screen in the display, show the file name. */
 	curlen = 0;
 	if (IS_SPLIT(sp)) {
-		for (p = sp->frp->name; *p != '\0'; ++p);
-		for (ellipsis = 0, cols = sp->cols / 2; --p > sp->frp->name;) {
-			if (*p == '/') {
+		CHAR_T *wp, *p;
+		size_t l;
+
+		CHAR2INT(sp, sp->frp->name, strlen(sp->frp->name) + 1, wp, l);
+		p = wp + l;
+		for (ellipsis = 0, cols = sp->cols / 2; --p > wp;) {
+			if (*p == L('/')) {
 				++p;
 				break;
 			}
-			if ((curlen += KEY_LEN(sp, *p)) > cols) {
+			if ((curlen += KEY_COL(sp, *p)) > cols) {
 				ellipsis = 3;
 				curlen +=
 				    KEY_LEN(sp, '.') * 3 + KEY_LEN(sp, ' ');
 				while (curlen > cols) {
 					++p;
-					curlen -= KEY_LEN(sp, *p);
+					curlen -= KEY_COL(sp, *p);
 				}
 				break;
 			}
@@ -819,9 +823,9 @@ vs_modeline(SCR *sp)
 			(void)gp->scr_addstr(sp,
 			    KEY_NAME(sp, ' '), KEY_LEN(sp, ' '));
 		}
-		for (; *p != '\0'; ++p)
+		for (; *p != L('\0'); ++p)
 			(void)gp->scr_addstr(sp,
-			    KEY_NAME(sp, *p), KEY_LEN(sp, *p));
+			    KEY_NAME(sp, *p), KEY_COL(sp, *p));
 	}
 
 	/* Clear the rest of the line. */
