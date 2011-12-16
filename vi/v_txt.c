@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.109 2011/07/10 12:22:01 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 10.110 2011/12/15 00:46:43 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1313,7 +1313,7 @@ insl_ch:	if (txt_insch(sp, tp, &evp->e_c, flags))
 		 * number of hex bytes.  Offset by one, we use 0 to mean
 		 * that we've found <CH_HEX>.
 		 */
-		if (hexcnt != 0 && hexcnt++ == sizeof(CHAR_T) * 2 + 1) {
+		if (hexcnt != 0 && hexcnt++ == 3) {
 			hexcnt = 0;
 			if (txt_hex(sp, tp))
 				goto err;
@@ -1874,7 +1874,7 @@ txt_backup(SCR *sp, TEXTH *tiqh, TEXT *tp, u_int32_t *flagsp)
  * Technically, txt_dent should be part of the screen interface, as it requires
  * knowledge of character sizes, including <space>s, on the screen.  It's here
  * because it's a complicated little beast, and I didn't want to shove it down
- * into the screen.  It's probable that KEY_LEN will call into the screen once
+ * into the screen.  It's probable that KEY_COL will call into the screen once
  * there are screens with different character representations.
  *
  * txt_dent --
@@ -2177,7 +2177,7 @@ txt_fc_col(SCR *sp, int argc, ARGS **argv)
 	 */
 	for (ac = argc, av = argv, colwidth = 0; ac > 0; --ac, ++av) {
 		for (col = 0, p = av[0]->bp + prefix; *p != '\0'; ++p)
-			col += KEY_LEN(sp, *p);
+			col += KEY_COL(sp, *p);
 		if (col > colwidth)
 			colwidth = col;
 	}
@@ -2271,11 +2271,11 @@ txt_emark(SCR *sp, TEXT *tp, size_t cno)
 	 * The end mark may not be the same size as the current character.
 	 * Don't let the line shift.
 	 */
-	nlen = KEY_LEN(sp, ch);
+	nlen = KEY_COL(sp, ch);
 	if (tp->lb[cno] == '\t')
 		(void)vs_columns(sp, tp->lb, tp->lno, &cno, &olen);
 	else
-		olen = KEY_LEN(sp, tp->lb[cno]);
+		olen = KEY_COL(sp, tp->lb[cno]);
 
 	/*
 	 * If the line got longer, well, it's weird, but it's easy.  If
@@ -2292,7 +2292,8 @@ txt_emark(SCR *sp, TEXT *tp, size_t cno)
 		tp->len += chlen;
 		tp->owrite += chlen;
 		p = tp->lb + cno;
-		if (tp->lb[cno] == '\t')
+		if (tp->lb[cno] == '\t' ||
+		    KEY_NEEDSWIDE(sp, tp->lb[cno]))
 			for (cno += chlen; chlen--;)
 				*p++ = ' ';
 		else
@@ -2453,7 +2454,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 			(void)vs_columns(sp, tp->lb, tp->lno, &cno, &nlen);
 			tp->lb[cno] = savech;
 		} else
-			nlen = KEY_LEN(sp, *chp);
+			nlen = KEY_COL(sp, *chp);
 
 		/*
 		 * Eat overwrite characters until we run out of them or we've
@@ -2468,7 +2469,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 				(void)vs_columns(sp,
 				    tp->lb, tp->lno, &cno, &olen);
 			else
-				olen = KEY_LEN(sp, tp->lb[cno]);
+				olen = KEY_COL(sp, tp->lb[cno]);
 
 			if (olen == nlen) {
 				nlen = 0;
@@ -2487,7 +2488,8 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 
 				tp->len += chlen;
 				tp->owrite += chlen;
-				if (tp->lb[cno] == '\t')
+				if (tp->lb[cno] == '\t' ||
+				   KEY_NEEDSWIDE(sp, tp->lb[cno]))
 					for (p = tp->lb + cno + 1; chlen--;)
 						*p++ = ' ';
 				else

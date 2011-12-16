@@ -241,11 +241,10 @@ v_key_name(
 
 #ifdef USE_WIDECHAR
 	len = wcrtomb(sp->cname, ach, NULL);
-	len = len > MB_CUR_MAX ? 1 : len;
-#else
-	sp->cname[0] = (unsigned char)ach;
-	len = 1;
+	if (len > MB_CUR_MAX)
 #endif
+	sp->cname[(len = 1)-1] = (u_char)ach;
+
 	ch = sp->cname[0];
 	sp->cname[len] = '\0';
 

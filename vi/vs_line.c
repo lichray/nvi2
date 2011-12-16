@@ -445,7 +445,7 @@ display:
 
 	if (scno < cols_per_screen) {
 		/* If didn't paint the whole line, update the cache. */
-		smp->c_ecsize = smp->c_eclen = KEY_LEN(sp, ch);
+		smp->c_ecsize = smp->c_eclen = KEY_COL(sp, ch);
 		smp->c_eboff = len - 1;
 
 		/*
