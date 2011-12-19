@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex.c,v 10.76 2011/08/23 00:48:23 14:13:35 skimo Exp $";
+static const char sccsid[] = "$Id: ex.c,v 10.77 2011/12/18 23:33:17 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -2070,16 +2070,18 @@ ex_load(SCR *sp)
 	 * can't be an AGV command, which makes things a bit easier.
 	 */
 	for (gp = sp->gp;;) {
+		ecp = SLIST_FIRST(gp->ecq);
+
+		/* Discard the allocated source name as requested. */
+		if (F_ISSET(ecp, E_NAMEDISCARD))
+			free(ecp->if_name);
+
 		/*
 		 * If we're back to the original structure, leave it around,
-		 * but discard any allocated source name, we've returned to
-		 * the beginning of the command stack.
+		 * since we've returned to the beginning of the command stack.
 		 */
-		if ((ecp = SLIST_FIRST(gp->ecq)) == &gp->excmd) {
-			if (F_ISSET(ecp, E_NAMEDISCARD)) {
-				free(ecp->if_name);
-				ecp->if_name = NULL;
-			}
+		if (ecp == &gp->excmd) {
+			ecp->if_name = NULL;
 			return (0);
 		}
 
@@ -2160,7 +2162,13 @@ ex_discard(SCR *sp)
 	 * We know the first command can't be an AGV command, so we don't
 	 * process it specially.  We do, however, nail the command itself.
 	 */
-	for (gp = sp->gp; (ecp = SLIST_FIRST(gp->ecq)) != &gp->excmd;) {
+	for (gp = sp->gp;;) {
+		ecp = SLIST_FIRST(gp->ecq);
+		if (F_ISSET(ecp, E_NAMEDISCARD))
+			free(ecp->if_name);
+		/* Reset the last command without dropping it. */
+		if (ecp == &gp->excmd)
+			break;
 		if (FL_ISSET(ecp->agv_flags, AGV_ALL)) {
 			while ((rp = TAILQ_FIRST(ecp->rq)) != NULL) {
 				TAILQ_REMOVE(ecp->rq, rp, q);
@@ -2171,7 +2179,9 @@ ex_discard(SCR *sp)
 		SLIST_REMOVE_HEAD(gp->ecq, q);
 		free(ecp);
 	}
-	SLIST_FIRST(gp->ecq)->clen = 0;
+
+	ecp->if_name = NULL;
+	ecp->clen = 0;
 	return (0);
 }
 
