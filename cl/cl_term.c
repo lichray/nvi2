@@ -184,10 +184,11 @@ cl_term_init(SCR *sp)
 int
 cl_term_end(GS *gp)
 {
-	SEQ *qp;
+	SEQ *qp, *nqp;
 
 	/* Delete screen specific mappings. */
-	while ((qp = SLIST_FIRST(gp->seqq)) != NULL) {
+	for (qp = SLIST_FIRST(gp->seqq); qp != NULL; qp = nqp) {
+		nqp = SLIST_NEXT(qp, q);
 		if (F_ISSET(qp, SEQ_SCREEN)) {
 			SLIST_REMOVE_HEAD(gp->seqq, q);
 			(void)seq_free(qp);
