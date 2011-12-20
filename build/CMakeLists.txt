@@ -63,16 +63,19 @@ include_directories(. ..)
 check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 
-# XXX CMakeCache.txt needs to be removed by hand
+find_library(_curses_lib NAMES ncurses curses)
+find_library(_cursesw_lib NAMES ncursesw cursesw)
+mark_as_advanced(_curses_lib _cursesw_lib)
+
 if(USE_WIDECHAR)
-	find_library(CURSES_LIBRARY NAMES ncursesw cursesw)
+	set(CURSES_LIBRARY ${_cursesw_lib})
 
 	# link to the wchar_t awared BSD libregex.a
 	add_definitions(-D__REGEX_PRIVATE)
 	include_directories(../regex)
 	add_library(regex STATIC ${REGEX_SRCS})
 else(USE_WIDECHAR)
-	find_library(CURSES_LIBRARY NAMES ncurses curses)
+	set(CURSES_LIBRARY ${_curses_lib})
 endif(USE_WIDECHAR)
 
 if(USE_ICONV)
