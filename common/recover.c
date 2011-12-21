@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 10.32 2011/07/04 20:10:23 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 10.33 2011/12/21 12:39:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -576,7 +576,7 @@ rcv_list(SCR *sp)
 next:		(void)fclose(fp);
 	}
 	if (found == 0)
-		(void)printf("vi: no files to recover.\n");
+		(void)printf("%s: No files to recover\n", sp->gp->progname);
 	(void)closedir(dirp);
 	return (0);
 }
