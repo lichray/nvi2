@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vi.c,v 10.60 2011/12/01 14:36:07 zy Exp $";
+static const char sccsid[] = "$Id: vi.c,v 10.61 2011/12/21 13:08:30 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1029,7 +1029,7 @@ v_dtoh(SCR *sp)
 
 /*
  * v_curword --
- *	Get the word (or non-word) the cursor is on.
+ *	Get the word (tagstring, actually) the cursor is on.
  *
  * PUBLIC: int v_curword __P((SCR *));
  */
@@ -1038,7 +1038,7 @@ v_curword(SCR *sp)
 {
 	VI_PRIVATE *vip;
 	size_t beg, end, len;
-	int moved, state;
+	int moved;
 	CHAR_T *p;
 
 	if (db_get(sp, sp->lno, DBG_FATAL, &p, &len))
@@ -1060,7 +1060,7 @@ v_curword(SCR *sp)
 	 * follow the same rule.
 	 */
 	for (moved = 0,
-	    beg = sp->cno; beg < len && isspace(p[beg]); moved = 1, ++beg);
+	    beg = sp->cno; beg < len && ISSPACE(p[beg]); moved = 1, ++beg);
 	if (beg >= len) {
 		msgq(sp, M_BERR, "212|Cursor not in a word");
 		return (1);
@@ -1070,9 +1070,14 @@ v_curword(SCR *sp)
 		(void)vs_refresh(sp, 0);
 	}
 
-	/* Find the end of the word. */
-	for (state = inword(p[beg]),
-	    end = beg; ++end < len && state == inword(p[end]););
+	/*
+	 * Find the end of the word.
+	 *
+	 * !!!
+	 * Historically, vi accepted any non-blank as initial character
+	 * when building up a tagstring.  Required by IEEE 1003.1-2001.
+	 */
+	for (end = beg; ++end < len && inword(p[end]););
 
 	vip = VIP(sp);
 	vip->klen = len = (end - beg);
