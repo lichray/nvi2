@@ -25,6 +25,7 @@ static const char sccsid[] = "$Id: ex_display.c,v 10.15 2001/06/25 15:19:15 skim
 #include "../common/common.h"
 #include "tag.h"
 
+static int	is_prefix __P((ARGS *, CHAR_T *));
 static int	bdisplay __P((SCR *));
 static void	db __P((SCR *, CB *, u_char *));
 
@@ -38,38 +39,41 @@ static void	db __P((SCR *, CB *, u_char *));
 int
 ex_display(SCR *sp, EXCMD *cmdp)
 {
-	switch (cmdp->argv[0]->bp[0]) {
-	case 'b':
-#undef	ARG
-#define	ARG	"buffers"
-		if (cmdp->argv[0]->len >= sizeof(ARG) ||
-		    memcmp(cmdp->argv[0]->bp, ARG, cmdp->argv[0]->len))
+	ARGS *arg;
+
+	arg = cmdp->argv[0];
+
+	switch (arg->bp[0]) {
+	case L('b'):
+		if (!is_prefix(arg, L("buffers")))
 			break;
 		return (bdisplay(sp));
-	case 'c':
-#undef	ARG
-#define	ARG	"connections"
-		if (cmdp->argv[0]->len >= sizeof(ARG) ||
-		    memcmp(cmdp->argv[0]->bp, ARG, cmdp->argv[0]->len))
+	case L('c'):
+		if (!is_prefix(arg, L("connections")))
 			break;
 		return (cscope_display(sp));
-	case 's':
-#undef	ARG
-#define	ARG	"screens"
-		if (cmdp->argv[0]->len >= sizeof(ARG) ||
-		    memcmp(cmdp->argv[0]->bp, ARG, cmdp->argv[0]->len))
+	case L('s'):
+		if (!is_prefix(arg, L("screens")))
 			break;
 		return (ex_sdisplay(sp));
-	case 't':
-#undef	ARG
-#define	ARG	"tags"
-		if (cmdp->argv[0]->len >= sizeof(ARG) ||
-		    memcmp(cmdp->argv[0]->bp, ARG, cmdp->argv[0]->len))
+	case L('t'):
+		if (!is_prefix(arg, L("tags")))
 			break;
 		return (ex_tag_display(sp));
 	}
 	ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 	return (1);
+}
+
+/*
+ * is_prefix --
+ *
+ *	Check that a command argument matches a prefix of a given string.
+ */
+static int
+is_prefix(ARGS *arg, CHAR_T *str)
+{
+	return arg->len <= STRLEN(str) && !MEMCMP(arg->bp, str, arg->len);
 }
 
 /*
