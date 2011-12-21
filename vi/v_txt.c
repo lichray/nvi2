@@ -275,6 +275,7 @@ v_txt(
 	int showmatch;		/* Showmatch set on this character. */
 	int wm_set, wm_skip;	/* Wrapmargin happened, blank skip flags. */
 	int max, tmp;
+	int nochange;
 	CHAR_T *p;
 
 	gp = sp->gp;
@@ -458,6 +459,7 @@ newtp:		if ((tp = text_init(sp, lp, len, len + 32)) == NULL)
 	/* Other text input mode setup. */
 	quote = Q_NOTSET;
 	carat = C_NOTSET;
+	nochange = 0;
 	FL_INIT(is_flags,
 	    LF_ISSET(TXT_SEARCHINCR) ? IS_RESTART | IS_RUNNING : 0);
 	filec_redraw = hexcnt = showmatch = 0;
@@ -785,7 +787,8 @@ k_cr:		if (LF_ISSET(TXT_CR)) {
 		 * characters may have been erased.
 		 */
 		if (LF_ISSET(TXT_AUTOINDENT)) {
-			if (carat == C_NOCHANGE) {
+			if (nochange) {
+				nochange = 0;
 				if (v_txt_auto(sp, OOBLNO, &ait, ait.ai, ntp))
 					goto err;
 				FREE_SPACEW(sp, ait.lb, ait.lb_len);
@@ -958,7 +961,8 @@ k_escape:	LINE_RESOLVE;
 			MEMMOVEW(ait.lb, tp->lb, tp->ai);
 			ait.ai = ait.len = tp->ai;
 
-			carat = C_NOCHANGE;
+			carat = C_NOTSET;
+			nochange = 1;
 			goto leftmargin;
 		case C_ZEROSET:		/* 0^D */
 			if (tp->ai == 0 || tp->cno > tp->ai + tp->offset + 1)
