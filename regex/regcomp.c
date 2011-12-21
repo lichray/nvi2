@@ -818,7 +818,7 @@ p_b_cclass(register struct parse *p, register cset *cs)
 		NEXT();
 	len = p->next - sp;
 	for (cp = cclasses; cp->name != NULL; cp++)
-		if (STRLEN(cp->name) == len && MEMCMP(cp->name, sp, len))
+		if (STRLEN(cp->name) == len && !MEMCMP(cp->name, sp, len))
 			break;
 	if (cp->name == NULL) {
 		/* oops, didn't find it */
