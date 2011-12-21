@@ -1,3 +1,4 @@
+# $Id: CMakeLists.txt,v 1.0 2011/12/20 21:29:56 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -36,7 +37,34 @@ else(DEBUG)
 endif(DEBUG)
 
 # generate the public headers
-execute_process(COMMAND ./distrib WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+add_custom_target(headers ALL DEPENDS
+	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
+	../common/options_def.h ../ex/ex_def.h ../ex/version.h)
+
+set(extract_protos sed -n \"s/^ \\* PUBLIC: \\\(.*\\\)/\\1/p\")
+set(extract_version sed -n
+	\"s/^.*version \\\([^\)]*\)\\\).*/\#define VI_VERSION \\\"\\1\\\"/p\")
+add_custom_command(OUTPUT ../cl/extern.h
+	COMMAND sh -c '${extract_protos} ../cl/*.c > $@'
+	DEPENDS ../cl/*.c)
+add_custom_command(OUTPUT ../common/extern.h
+	COMMAND sh -c '${extract_protos} ../common/*.c > $@'
+	DEPENDS ../common/*.c)
+add_custom_command(OUTPUT ../ex/extern.h
+	COMMAND sh -c '${extract_protos} ../ex/*.c > $@'
+	DEPENDS ../ex/*.c)
+add_custom_command(OUTPUT ../vi/extern.h
+	COMMAND sh -c '${extract_protos} ../vi/*.c > $@'
+	DEPENDS ../vi/*.c)
+add_custom_command(OUTPUT ../common/options_def.h
+	COMMAND sh -c 'awk -f ../common/options.awk ../common/options.c > $@'
+	DEPENDS ../common/options.c)
+add_custom_command(OUTPUT ../ex/ex_def.h
+	COMMAND sh -c 'awk -f ../ex/ex.awk ../ex/ex_cmd.c > $@'
+	DEPENDS ../ex/ex_cmd.c)
+add_custom_command(OUTPUT ../ex/version.h
+	COMMAND sh -c '${extract_version}  ../README > $@'
+	DEPENDS ../README)
 
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
