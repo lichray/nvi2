@@ -103,7 +103,7 @@ static int
 default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
 		size_t *tolen, CHAR_T **dst, iconv_t id)
 {
-    int i = 0, j;
+    size_t i = 0, j;
     CHAR_T **tostr = &cw->bp1.wc;
     size_t  *blen = &cw->blen1;
     mbstate_t mbs;
