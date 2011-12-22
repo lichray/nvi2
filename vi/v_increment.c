@@ -90,7 +90,7 @@ v_increment(SCR *sp, VICMD *vp)
 	 * implies moving the cursor to its beginning, if we moved, refresh
 	 * now.
 	 */
-	for (beg = vp->m_start.cno; beg < len && isspace(p[beg]); ++beg);
+	for (beg = vp->m_start.cno; beg < len && ISSPACE(p[beg]); ++beg);
 	if (beg >= len)
 		goto nonum;
 	if (beg != vp->m_start.cno) {
