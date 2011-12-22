@@ -106,7 +106,7 @@ cut(
 			copy_one = 1;
 			cb_rotate(sp);
 		}
-		if ((append = isupper(name)) == 1) {
+		if ((append = isupper(name))) {
 			if (!copy_one)
 				copy_def = 1;
 			name = tolower(name);
