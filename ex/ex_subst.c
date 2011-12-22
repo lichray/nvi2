@@ -898,7 +898,7 @@ re_compile(SCR *sp, CHAR_T *ptrn, size_t plen, CHAR_T **ptrnp, size_t *lenp, reg
 			reflags |= REG_ICASE;
 		if (O_ISSET(sp, O_ICLOWER)) {
 			for (p = ptrn, len = plen; len > 0; ++p, --len)
-				if (isupper(*p))
+				if (ISUPPER(*p))
 					break;
 			if (len == 0)
 				reflags |= REG_ICASE;
@@ -1343,7 +1343,7 @@ re_sub(
 	 * all escaping characters.  This (hopefully) matches historic practice.
 	 */
 #define	OUTCH(ch, nltrans) {						\
-	CHAR_T __ch = (ch);						\
+	ARG_CHAR_T __ch = (ch);						\
 	e_key_t __value = KEY_VAL(sp, __ch);				\
 	if (nltrans && (__value == K_CR || __value == K_NL)) {		\
 		NEEDNEWLINE(sp);					\
@@ -1354,15 +1354,15 @@ re_sub(
 			conv = C_NOTSET;				\
 			/* FALLTHROUGH */				\
 		case C_LOWER:						\
-			if (isupper(__ch))				\
-				__ch = tolower(__ch);			\
+			if (ISUPPER(__ch))				\
+				__ch = TOLOWER(__ch);			\
 			break;						\
 		case C_ONEUPPER:					\
 			conv = C_NOTSET;				\
 			/* FALLTHROUGH */				\
 		case C_UPPER:						\
-			if (islower(__ch))				\
-				__ch = toupper(__ch);			\
+			if (ISLOWER(__ch))				\
+				__ch = TOUPPER(__ch);			\
 			break;						\
 		default:						\
 			abort();					\
