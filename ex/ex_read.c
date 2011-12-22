@@ -134,7 +134,7 @@ ex_read(SCR *sp, EXCMD *cmdp)
 		} else {
 			if (F_ISSET(cmdp, E_MODIFY))
 				(void)ex_printf(sp,
-				    "!%s\n", cmdp->argv[argc]->bp);
+				    "!"WS"\n", cmdp->argv[argc]->bp);
 			else
 				(void)ex_puts(sp, "!\n");
 			(void)ex_fflush(sp);

@@ -88,7 +88,7 @@ ex_bang(SCR *sp, EXCMD *cmdp)
 		if (F_ISSET(sp, SC_VI))
 			vs_update(sp, "!", ap->bp);
 		else {
-			(void)ex_printf(sp, "!%s\n", ap->bp);
+			(void)ex_printf(sp, "!"WS"\n", ap->bp);
 			(void)ex_fflush(sp);
 		}
 	}

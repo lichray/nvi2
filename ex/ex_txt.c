@@ -365,7 +365,7 @@ txt_prompt(SCR *sp, TEXT *tp, ARG_CHAR_T prompt, u_int32_t flags)
 
 	/* Print out autoindent string. */
 	if (LF_ISSET(TXT_AUTOINDENT))
-		(void)ex_printf(sp, "%.*s", (int)tp->ai, tp->lb);
+		(void)ex_printf(sp, WVS, (int)tp->ai, tp->lb);
 	(void)ex_fflush(sp);
 }
 
