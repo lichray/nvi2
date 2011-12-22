@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex.c,v 10.77 2011/12/18 23:33:17 zy Exp $";
+static const char sccsid[] = "$Id: ex.c,v 10.78 2011/12/21 20:40:35 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -390,7 +390,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 		} else {
 			for (p = ecp->cp;
 			    ecp->clen > 0; --ecp->clen, ++ecp->cp)
-				if (!ISALPHA(*ecp->cp))
+				if (!isascii(*ecp->cp) || !isalpha(*ecp->cp))
 					break;
 			if ((namelen = ecp->cp - p) == 0) {
 				msgq(sp, M_ERR, "080|Unknown command name");
@@ -734,7 +734,8 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 			if (!ISBLANK(ecp->cp[0]))
 				break;
 
-		if (ISALNUM(ecp->cp[0]) || ecp->cp[0] == '|') {
+		if (!isascii(ecp->cp[0]) ||
+		    isalnum(ecp->cp[0]) || ecp->cp[0] == '|') {
 			ecp->rcmd = cmds[C_SUBSTITUTE];
 			ecp->rcmd.fn = ex_subagain;
 			ecp->cmd = &ecp->rcmd;
