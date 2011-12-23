@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_edit.c,v 10.14 2001/08/28 13:29:15 skimo Exp $";
+static const char sccsid[] = "$Id: ex_edit.c,v 10.15 2011/12/22 23:26:50 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -134,6 +134,13 @@ ex_N_edit(SCR *sp, EXCMD *cmdp, FREF *frp, int attach)
 
 		new->lno = sp->lno;
 		new->cno = sp->cno;
+
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+		/* Synchronize the iconv environments. */
+		o_set(new, O_FILEENCODING, OS_STRDUP,
+		    O_STR(sp, O_FILEENCODING), 0);
+		conv_enc(new, O_FILEENCODING, 0);
+#endif
 	} else if (file_init(new, frp, NULL,
 	    (FL_ISSET(cmdp->iflags, E_C_FORCE) ? FS_FORCE : 0))) {
 		(void)vs_discard(new, NULL);
