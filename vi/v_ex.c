@@ -43,10 +43,9 @@ int
 v_again(SCR *sp, VICMD *vp)
 {
 	EXCMD cmd;
-	static CHAR_T nul[] = { 0 };
 
 	ex_cinit(sp, &cmd, C_SUBAGAIN, 2, vp->m_start.lno, vp->m_start.lno, 1);
-	argv_exp0(sp, &cmd, nul, 1);
+	argv_exp0(sp, &cmd, L(""), 1);
 	return (v_exec_ex(sp, vp, &cmd));
 }
 
@@ -125,10 +124,9 @@ int
 v_shiftl(SCR *sp, VICMD *vp)
 {
 	EXCMD cmd;
-	static CHAR_T lt[] = {'<', 0};
 
 	ex_cinit(sp, &cmd, C_SHIFTL, 2, vp->m_start.lno, vp->m_stop.lno, 0);
-	argv_exp0(sp, &cmd, lt, 2);
+	argv_exp0(sp, &cmd, L("<"), 2);
 	return (v_exec_ex(sp, vp, &cmd));
 }
 
@@ -142,10 +140,9 @@ int
 v_shiftr(SCR *sp, VICMD *vp)
 {
 	EXCMD cmd;
-	static CHAR_T gt[] = {'>', 0};
 
 	ex_cinit(sp, &cmd, C_SHIFTR, 2, vp->m_start.lno, vp->m_stop.lno, 0);
-	argv_exp0(sp, &cmd, gt, 2);
+	argv_exp0(sp, &cmd, L(">"), 2);
 	return (v_exec_ex(sp, vp, &cmd));
 }
 
@@ -159,10 +156,9 @@ int
 v_suspend(SCR *sp, VICMD *vp)
 {
 	EXCMD cmd;
-	static CHAR_T suspend[] = {'s', 'u', 's', 'p', 'e', 'n', 'd', 0};
 
 	ex_cinit(sp, &cmd, C_STOP, 0, OOBLNO, OOBLNO, 0);
-	argv_exp0(sp, &cmd, suspend, sizeof(suspend)/sizeof(CHAR_T));
+	argv_exp0(sp, &cmd, L("suspend"), sizeof(L("suspend"))/sizeof(CHAR_T));
 	return (v_exec_ex(sp, vp, &cmd));
 }
 
@@ -263,12 +259,11 @@ v_filter(SCR *sp, VICMD *vp)
 	 */
 	if (F_ISSET(vp, VC_ISDOT) ||
 	    ISCMD(vp->rkp, 'N') || ISCMD(vp->rkp, 'n')) {
-		static CHAR_T bang[] = {'!', 0};
 		ex_cinit(sp,
 		    &cmd, C_BANG, 2, vp->m_start.lno, vp->m_stop.lno, 0);
 		EXP(sp)->argsoff = 0;			/* XXX */
 
-		if (argv_exp1(sp, &cmd, bang, 1, 1))
+		if (argv_exp1(sp, &cmd, L("!"), 1, 1))
 			return (1);
 		cmd.argc = EXP(sp)->argsoff;		/* XXX */
 		cmd.argv = EXP(sp)->args;		/* XXX */

@@ -212,8 +212,7 @@ io(SCR *sp, VICMD *vp, enum which cmd)
 		len = 0;
 		ai_line = OOBLNO;
 	} else {
-		static CHAR_T nul = 0;
-insert:		p = &nul;
+insert:		p = L("");
 		sp->cno = 0;
 		LOG_CORRECT;
 

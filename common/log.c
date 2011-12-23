@@ -261,13 +261,12 @@ log_line(
 	 */
 	if (action == LOG_LINE_RESET_B) {
 		if (db_get(sp, lno, DBG_NOCACHE, &lp, &len)) {
-			static CHAR_T nul = 0;
 			if (lno != 1) {
 				db_err(sp, lno);
 				return (1);
 			}
 			len = 0;
-			lp = &nul;
+			lp = L("");
 		}
 	} else
 		if (db_get(sp, lno, DBG_FATAL, &lp, &len))

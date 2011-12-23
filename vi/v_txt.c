@@ -662,7 +662,6 @@ replay:	if (LF_ISSET(TXT_REPLAY)) {
 	case K_NL:				/* New line. */
 		/* Return in script windows and the command line. */
 k_cr:		if (LF_ISSET(TXT_CR)) {
-			static CHAR_T cr[] = { '\r', 0 };
 			/*
 			 * If this was a map, we may have not displayed
 			 * the line.  Display it, just in case.
@@ -674,7 +673,7 @@ k_cr:		if (LF_ISSET(TXT_CR)) {
 				if (vs_change(sp, tp->lno, LINE_RESET))
 					goto err;
 			} else if (F_ISSET(sp, SC_SCRIPT))
-				(void)v_event_push(sp, NULL, cr, 1, CH_NOMAP);
+				(void)v_event_push(sp, NULL, L("\r"), 1, CH_NOMAP);
 
 			/* Set term condition: if empty. */
 			if (tp->cno <= tp->offset)

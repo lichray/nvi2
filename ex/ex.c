@@ -121,8 +121,7 @@ ex(SCR **spp)
 		 */
 		tp = TAILQ_FIRST(sp->tiq);
 		if (tp->len == 0) {
-			static CHAR_T space = ' ';
-			gp->excmd.cp = &space;	/* __TK__ why not |? */
+			gp->excmd.cp = L(" ");	/* __TK__ why not |? */
 			gp->excmd.clen = 1;
 		} else {
 			gp->excmd.cp = tp->lb;

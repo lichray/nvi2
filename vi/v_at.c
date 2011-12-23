@@ -90,10 +90,9 @@ v_at(SCR *sp, VICMD *vp)
 	 * logging code to be available.
 	 */
 	TAILQ_FOREACH_REVERSE(tp, cbp->textq, _texth, q) {
-		static CHAR_T nl[] = { '\n', 0 };
 		if (((F_ISSET(cbp, CB_LMODE) ||
 		    TAILQ_NEXT(tp, q) != NULL) &&
-		    v_event_push(sp, NULL, nl, 1, 0)) ||
+		    v_event_push(sp, NULL, L("\n"), 1, 0)) ||
 		    v_event_push(sp, NULL, tp->lb, tp->len, 0))
 			return (1);
 	}
