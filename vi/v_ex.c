@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_ex.c,v 10.60 2003/07/19 21:04:00 skimo Exp $";
+static const char sccsid[] = "$Id: v_ex.c,v 10.61 2011/12/22 18:41:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -557,9 +557,6 @@ v_ecl(SCR *sp)
 	/* It's a special window. */
 	F_SET(new, SC_COMEDIT);
 
-	/* Don't encode on writing to DB. */
-	o_set(new, O_FILEENCODING, OS_STRDUP, "WCHAR_T", 0);
-
 	/* Set up the switch. */
 	sp->nextdisp = new;
 	F_SET(sp, SC_SSWITCH);
@@ -664,10 +661,9 @@ v_ecl_init(SCR *sp)
 	 */
 	if (screen_init(gp, sp, &gp->ccl_sp))
 		return (1);
-	conv_enc(gp->ccl_sp, O_FILEENCODING, "WCHAR_T");
 	if (file_init(gp->ccl_sp, frp, NULL, 0)) {
 		(void)screen_end(gp->ccl_sp);
-		gp->ccl_sp = 0;
+		gp->ccl_sp = NULL;
 		return (1);
 	}
 
