@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.69 2011/12/03 08:25:01 zy Exp $";
+static const char sccsid[] = "$Id: options.c,v 10.70 2011/12/23 01:12:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -359,6 +359,7 @@ opts_init(
 	    L("directory=%s"), (s = getenv("TMPDIR")) == NULL ? _PATH_TMP : s);
 	OI(O_TMPDIR, b2);
 	OI(O_ESCAPETIME, L("escapetime=6"));
+	OI(O_FILEC, L("filec=\t"));
 	OI(O_KEYTIME, L("keytime=6"));
 	OI(O_MATCHTIME, L("matchtime=7"));
 	(void)SPRINTF(b2, SIZE(b2), L("msgcat=%s"), _PATH_MSGCAT);
