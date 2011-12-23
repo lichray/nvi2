@@ -354,20 +354,18 @@ conv_init (SCR *orig, SCR *sp)
 #elif __linux__
 	setlocale(LC_CTYPE, "");
 #endif
-#ifdef USE_ICONV
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, codeset(), 0);
 #endif
     }
-    /* XXX
-     * Do not inherit file encoding from the old screen,
-     * but overwrite the fileencoding option in .exrc
-     */
+
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+    /* iconv descriptors must be distinct to screens. */
     for (i = 0; i <= IC_IE_TO_UTF16; ++i)
 	sp->conv.id[i] = (iconv_t)-1;
-#ifdef USE_ICONV
     conv_enc(sp, O_INPUTENCODING, 0);
-    o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 #endif
+    /* XXX Do not inherit fileencoding from the old screen. */
 }
 
 /*
