@@ -135,14 +135,10 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 
 	GET_SPACE_RETW(sp, bp, blen, 512);
 
-#define	SHELLECHO	"echo "
-#define	SHELLOFFSET	(sizeof(SHELLECHO) - 1)
-	p = bp;
-	*p++ = 'e'; 
-	*p++ = 'c'; 
-	*p++ = 'h'; 
-	*p++ = 'o'; 
-	*p++ = ' ';
+#define	SHELLECHO	L("echo ")
+#define	SHELLOFFSET	(sizeof(SHELLECHO)/sizeof(CHAR_T) - 1)
+	MEMCPY(bp, SHELLECHO, SHELLOFFSET);
+	p = bp + SHELLOFFSET;
 	len = SHELLOFFSET;
 
 #if defined(DEBUG) && 0
