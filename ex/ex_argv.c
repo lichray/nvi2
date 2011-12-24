@@ -559,13 +559,14 @@ argv_lexp(SCR *sp, EXCMD *excp, char *path)
 		if (dlen != 0) {
 			CHAR2INT(sp, dname, dlen, wp, wlen);
 			MEMCPY(n, wp, wlen);
-			n += dlen;
-			if (dlen > 1 || dname[0] != '/')
+			n += wlen;
+			if (wlen > 1 || dname[0] != '/')
 				*n++ = '/';
+			exp->args[exp->argsoff]->len = wlen + 1;
 		}
 		CHAR2INT(sp, dp->d_name, len + 1, wp, wlen);
 		MEMCPY(n, wp, wlen);
-		exp->args[exp->argsoff]->len = dlen + len + 1;
+		exp->args[exp->argsoff]->len += wlen - 1;
 		++exp->argsoff;
 		excp->argv = exp->args;
 		excp->argc = exp->argsoff;
