@@ -1254,20 +1254,24 @@ file_encinit(SCR *sp)
 				free(np);
 			}
 		}
-		if (st == 1) {
+		switch (st) {
 			DBT key, data;
 			recno_t lno;
+		case 1:
 			key.data = &lno;
 			key.size = sizeof(lno);
 			if (!ep->db->seq(ep->db, &key, &data, R_LAST) &&
 			   	*(char*)data.data == '\0')
 				ep->db->del(ep->db, &key, 0);
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
-		} else if (st == 2)
+			break;
+		case 2:
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
-		else
+			break;
+		default:
 			/* Fallback to the locale encoding. */
 			o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
+		}
 	}
 
 	conv_enc(sp, O_FILEENCODING, 0);

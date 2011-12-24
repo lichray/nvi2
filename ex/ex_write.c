@@ -353,19 +353,24 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 				goto err;
 			ccnt += len;
 			/* UTF-16 w/o BOM is big-endian */
-			if (isutf16 == 1) {	/* UTF-16BE */
+			switch (isutf16) {
+			case 1:		/* UTF-16BE */
 				if (fwrite("\0\x0a", 1, 2, fp) != 2)
-					break;
-			} else if (isutf16 == 2) {	/* UTF-16LE */
-				if (fwrite("\x0a\0", 1, 2, fp) != 2)
-					break;
-			} else if (putc('\n', fp) != '\n')
+					goto done;
 				break;
+			case 2:		/* UTF-16LE */
+				if (fwrite("\x0a\0", 1, 2, fp) != 2)
+					goto done;
+				break;
+			default:
+				if (putc('\n', fp) != '\n')
+					goto done;
+			}
 			++ccnt;
 		}
 	}
 
-	if (fflush(fp))
+done:	if (fflush(fp))
 		goto err;
 	/*
 	 * XXX
