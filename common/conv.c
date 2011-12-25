@@ -359,10 +359,10 @@ conv_init (SCR *orig, SCR *sp)
 #endif
     }
 
-#if defined(USE_WIDECHAR) && defined(USE_ICONV)
     /* iconv descriptors must be distinct to screens. */
     for (i = 0; i <= IC_IE_TO_UTF16; ++i)
 	sp->conv.id[i] = (iconv_t)-1;
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
     conv_enc(sp, O_INPUTENCODING, 0);
 #endif
     /* XXX Do not inherit fileencoding from the old screen. */
