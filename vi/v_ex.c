@@ -552,6 +552,11 @@ v_ecl(SCR *sp)
 	/* It's a special window. */
 	F_SET(new, SC_COMEDIT);
 
+#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+	/* Bypass iconv on writing to DB. */
+	o_set(new, O_FILEENCODING, OS_STRDUP, codeset(), 0);
+#endif
+
 	/* Set up the switch. */
 	sp->nextdisp = new;
 	F_SET(sp, SC_SSWITCH);
