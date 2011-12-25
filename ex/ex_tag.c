@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_tag.c,v 10.52 2011/07/14 14:48:42 zy Exp $";
+static const char sccsid[] = "$Id: ex_tag.c,v 10.53 2011/12/25 13:05:04 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -753,16 +753,16 @@ tagq_push(SCR *sp, TAGQ *tqp, int new_screen, int force)
 	istmp = frp == NULL ||
 	    (F_ISSET(frp, FR_TMPFILE) && !new_screen);
 
-	/* Try to switch to the tag. */
+	/* Try to switch to the preset tag. */
 	if (new_screen) {
-		if (ex_tag_Nswitch(sp, TAILQ_FIRST(tqp->tagq), force))
+		if (ex_tag_Nswitch(sp, tqp->current, force))
 			goto err;
 
 		/* Everything else gets done in the new screen. */
 		sp = sp->nextdisp;
 		exp = EXP(sp);
 	} else
-		if (ex_tag_nswitch(sp, TAILQ_FIRST(tqp->tagq), force))
+		if (ex_tag_nswitch(sp, tqp->current, force))
 			goto err;
 
 	/*
@@ -1022,7 +1022,6 @@ ctag_slist(SCR *sp, CHAR_T *tag)
 		return (NULL);
 	}
 
-	tqp->current = TAILQ_FIRST(tqp->tagq);
 	return (tqp);
 
 alloc_err:
@@ -1163,7 +1162,15 @@ corrupt:		p = msg_print(sp, tname, &nf1);
 		CHAR2INT(sp, search, slen + 1, wp, wlen);
 		MEMCPYW(tp->search, wp, (tp->slen = slen) + 1);
 		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
+
+		/* Try to preset the tag within the current file. */
+		if (sp->frp != NULL && sp->frp->name != NULL &&
+		    tqp->current == NULL && !strcmp(tp->fname, sp->frp->name))
+			tqp->current = tp;
 	}
+
+	if (tqp->current == NULL)
+		tqp->current = TAILQ_FIRST(tqp->tagq);
 
 alloc_err:
 done:	if (munmap(map, (size_t)sb.st_size))
