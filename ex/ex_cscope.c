@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cscope.c,v 10.21 2003/11/05 17:11:54 skimo Exp $";
+static const char sccsid[] = "$Id: ex_cscope.c,v 10.22 2011/12/25 22:38:06 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -517,8 +517,6 @@ nomatch:	if (rtp != NULL)
 		return (1);
 	}
 
-	tqp->current = TAILQ_FIRST(tqp->tagq);
-
 	/* Try to switch to the first tag. */
 	force = FL_ISSET(cmdp->iflags, E_C_FORCE);
 	if (F_ISSET(cmdp, E_NEWSCREEN)) {
@@ -745,6 +743,8 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 			++dlen;
 		}
 		memcpy(tp->fname + dlen, name, nlen + 1);
+		if (!strncmp(tp->fname, "./", 2))
+			tp->fname += 2;
 		tp->fnlen = dlen + nlen;
 		tp->slno = slno;
 		if (slen != 0) {
@@ -753,8 +753,16 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 		}
 		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
 
+		/* Try to preset the tag within the current file. */
+		if (sp->frp != NULL && sp->frp->name != NULL &&
+		    tqp->current == NULL && !strcmp(tp->fname, sp->frp->name))
+			tqp->current = tp;
+
 		++*matchesp;
 	}
+
+	if (tqp->current == NULL)
+		tqp->current = TAILQ_FIRST(tqp->tagq);
 
 	return read_prompt(sp, csc);
 
