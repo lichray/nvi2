@@ -1157,6 +1157,8 @@ corrupt:		p = msg_print(sp, tname, &nf1);
 			++dlen;
 		}
 		memcpy(tp->fname + dlen, name, nlen + 1);
+		if (!strncmp(tp->fname, "./", 2))
+			tp->fname += 2;
 		tp->fnlen = dlen + nlen;
 		tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
 		CHAR2INT(sp, search, slen + 1, wp, wlen);
