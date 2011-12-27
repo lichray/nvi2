@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.110 2011/12/15 00:46:43 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 10.111 2011/12/27 15:18:38 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1078,7 +1078,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		}
 
 		/* Skip over trailing space characters. */
-		while (tp->cno > max && isblank(tp->lb[tp->cno - 1])) {
+		while (tp->cno > max && ISBLANK(tp->lb[tp->cno - 1])) {
 			--tp->cno;
 			++tp->owrite;
 		}
@@ -1111,7 +1111,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 				++tp->owrite;
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
-				if (isblank(tp->lb[tp->cno - 1]))
+				if (ISBLANK(tp->lb[tp->cno - 1]))
 					break;
 			}
 		else {
@@ -1120,7 +1120,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 				++tp->owrite;
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
-				if (isblank(tp->lb[tp->cno - 1]))
+				if (ISBLANK(tp->lb[tp->cno - 1]))
 					break;
 			}
 			if (tp->cno > max)
@@ -1131,7 +1131,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
 				if (tmp != inword(tp->lb[tp->cno - 1])
-				    || isblank(tp->lb[tp->cno - 1]))
+				    || ISBLANK(tp->lb[tp->cno - 1]))
 					break;
 			}
 		}
