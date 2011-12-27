@@ -27,7 +27,7 @@ static const char sccsid[] = "$Id: ex_display.c,v 10.15 2001/06/25 15:19:15 skim
 
 static int	is_prefix __P((ARGS *, CHAR_T *));
 static int	bdisplay __P((SCR *));
-static void	db __P((SCR *, CB *, u_char *));
+static void	db __P((SCR *, CB *, const char *));
 
 /*
  * ex_display -- :display b[uffers] | c[onnections] | s[creens] | t[ags]
@@ -120,7 +120,7 @@ bdisplay(SCR *sp)
  *	Display a buffer.
  */
 static void
-db(SCR *sp, CB *cbp, u_char *name)
+db(SCR *sp, CB *cbp, const char *name)
 {
 	CHAR_T *p;
 	GS *gp;

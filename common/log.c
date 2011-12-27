@@ -68,7 +68,7 @@ static void	log_err __P((SCR *, char *, int));
 static void	log_trace __P((SCR *, char *, recno_t, u_char *));
 #endif
 static int	apply_with __P((int (*)(SCR *, recno_t, CHAR_T *, size_t),
-					SCR *, recno_t, char *, size_t));
+					SCR *, recno_t, u_char *, size_t));
 
 /* Try and restart the log on failure, i.e. if we run out of memory. */
 #define	LOG_ERR {							\
@@ -732,7 +732,7 @@ apply_with(
 	int (*db_func)(SCR *, recno_t, CHAR_T *, size_t),
 	SCR *sp,
 	recno_t lno,
-	char *p,
+	u_char *p,
 	size_t len)
 {
 #ifdef USE_WIDECHAR
@@ -759,7 +759,7 @@ apply_with(
 #else
 			bp[i] = (lp[i] >> offl) ^ (lp[i+1] << offr);
 #endif
-		p = (char *)bp;
+		p = (u_char *)bp;
 	}
 #endif
 	return db_func(sp, lno, (CHAR_T *)p, len / sizeof(CHAR_T));

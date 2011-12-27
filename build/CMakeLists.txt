@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.0 2011/12/20 21:29:56 zy Exp $
+# $Id: CMakeLists.txt,v 1.1 2011/12/27 01:32:01 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -27,7 +27,7 @@ if(DEBUG)
 		"-Wformat"
 		"-Wmissing-prototypes"
 		"-Wmissing-braces"
-		"-Wno-pointer-sign")
+		"-Wpointer-sign")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
@@ -104,6 +104,7 @@ if(USE_WIDECHAR)
 	add_library(regex STATIC ${REGEX_SRCS})
 else(USE_WIDECHAR)
 	set(CURSES_LIBRARY ${_curses_lib})
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-pointer-sign")
 endif(USE_WIDECHAR)
 
 if(USE_ICONV)

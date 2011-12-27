@@ -59,7 +59,7 @@ static char text_chars[256] = {
 int
 looks_utf8(const char *ibuf, size_t nbytes)
 {
-	const unsigned char *buf = ibuf;
+	const u_char *buf = (u_char*)ibuf;
 	size_t i;
 	int n;
 	int gotone = 0, ctrl = 0;
@@ -120,7 +120,7 @@ done:
 int
 looks_utf16(const char *ibuf, size_t nbytes)
 {
-	const unsigned char *buf = ibuf;
+	const u_char *buf = (u_char *)ibuf;
 	int bigend;
 	size_t i;
 	unsigned int c;
@@ -178,7 +178,7 @@ looks_utf16(const char *ibuf, size_t nbytes)
  * PUBLIC: int decode_utf8 __P((const char *));
  */
 int decode_utf8(const char *ibuf) {
-	const unsigned char *buf = ibuf;
+	const u_char *buf = (u_char *)ibuf;
 	int u = -1;
 
 	if ((buf[0] & 0x80) == 0)
@@ -207,7 +207,7 @@ int decode_utf8(const char *ibuf) {
  * PUBLIC: int decode_utf16 __P((const char *, int));
  */
 int decode_utf16(const char* ibuf, int bigend) {
-	const unsigned char *buf = ibuf;
+	const u_char *buf = (u_char *)ibuf;
 	int u = -1;
 	unsigned int w1, w2;
 
