@@ -2013,7 +2013,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	} else
 retry:		for (len = 0,
 		    off = tp->cno - 1, p = tp->lb + off;; --off, --p) {
-			if (isblank(*p)) {
+			if (cmdskip(*p)) {
 				++p;
 				break;
 			}
