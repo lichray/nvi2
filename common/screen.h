@@ -82,7 +82,7 @@ struct _scr {
 	recno_t	 defscroll;		/* Vi: ^D, ^U scroll information. */
 
 					/* Display character. */
-	u_char	 cname[MAX_CHARACTER_COLUMNS + 1];
+	char	 cname[MAX_CHARACTER_COLUMNS + 1];
 	size_t	 clen;			/* Length of display character. */
 	ARG_CHAR_T lastc;		/* The last display character. */
 

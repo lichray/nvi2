@@ -119,7 +119,7 @@ struct _gs {
 	(((ch) & ~MAX_FAST_KEY) == 0 ?					\
 	    sp->gp->cname[(unsigned char)ch].name : v_key_name(sp, ch))
 	struct {
-		u_char	 name[MAX_CHARACTER_COLUMNS + 1];
+		char	 name[MAX_CHARACTER_COLUMNS + 1];
 		u_int8_t len;
 	} cname[MAX_FAST_KEY + 1];	/* Fast lookup table. */
 

@@ -40,7 +40,7 @@ static const char sccsid[] = "$Id: vs_line.c,v 10.39 2011/12/14 14:58:15 zy Exp 
 int
 vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 {
-	u_char *kp;
+	char *kp;
 	GS *gp;
 	SMAP *tsmp;
 	size_t chlen = 0, cno_cnt, cols_per_screen, len, nlen;

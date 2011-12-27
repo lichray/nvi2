@@ -218,9 +218,9 @@ v_key_len(
  *	Return the string that will display the key.  This routine
  *	is the backup for the KEY_NAME() macro.
  *
- * PUBLIC: u_char *v_key_name __P((SCR *, ARG_CHAR_T));
+ * PUBLIC: char *v_key_name __P((SCR *, ARG_CHAR_T));
  */
-u_char *
+char *
 v_key_name(
 	SCR *sp,
 	ARG_CHAR_T ach)
