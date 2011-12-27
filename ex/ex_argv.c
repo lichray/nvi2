@@ -105,7 +105,7 @@ argv_exp1(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen, int is_bang)
 	/* If it's empty, we're done. */
 	if (len != 0) {
 		for (p = bp, t = bp + len; p < t; ++p)
-			if (!isblank(*p))
+			if (!cmdskip(*p))
 				break;
 		if (p == t)
 			goto ret;
@@ -172,7 +172,7 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 		n = 0;
 	else {
 		for (np = mp = O_STR(sp, O_SHELLMETA); *np != '\0'; ++np)
-			if (isblank(*np) || isalnum(*np))
+			if (cmdskip(*np) || isalnum(*np))
 				break;
 		p = bp + SHELLOFFSET;
 		n = len - SHELLOFFSET;
@@ -182,7 +182,7 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 					break;
 		} else
 			for (; n > 0; --n, ++p)
-				if (!isblank(*p) &&
+				if (!cmdskip(*p) &&
 				    !isalnum(*p) && strchr(mp, *p) != NULL)
 					break;
 	}
@@ -253,7 +253,7 @@ argv_exp3(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 		/* Skip any leading whitespace. */
 		for (; cmdlen > 0; --cmdlen, ++cmd) {
 			ch = *cmd;
-			if (!isblank(ch))
+			if (!cmdskip(ch))
 				break;
 		}
 		if (cmdlen == 0)
@@ -273,7 +273,7 @@ argv_exp3(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 			if (IS_ESCAPE(sp, excp, ch) && cmdlen > 1) {
 				++cmd;
 				--cmdlen;
-			} else if (isblank(ch))
+			} else if (cmdskip(ch))
 				break;
 		}
 
@@ -736,7 +736,7 @@ alloc_err:	rval = SEXP_ERR;
 		rval = SEXP_EXPANSION_ERR;
 
 	for (p = bp; len; ++p, --len)
-		if (!isblank(*p))
+		if (!cmdskip(*p))
 			break;
 	if (len == 0)
 		rval = SEXP_EXPANSION_ERR;

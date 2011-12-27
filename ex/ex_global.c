@@ -90,7 +90,7 @@ ex_g_setup(SCR *sp, EXCMD *cmdp, enum which cmd)
 	 */
 	if (cmdp->argc == 0)
 		goto usage;
-	for (p = cmdp->argv[0]->bp; isblank(*p); ++p);
+	for (p = cmdp->argv[0]->bp; cmdskip(*p); ++p);
 	if (!isascii(*p) || *p == '\0' || isalnum(*p) ||
 	    *p == '\\' || *p == '|' || *p == '\n') {
 usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);

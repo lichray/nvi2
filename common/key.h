@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: key.h,v 10.52 2011/12/02 01:17:53 zy Exp $
+ *	$Id: key.h,v 10.53 2011/12/27 12:45:58 zy Exp $
  */
 
 #include "multibyte.h"
@@ -158,6 +158,17 @@ extern KEYLIST keylist[];
 #define	MAPPED_KEYS_WAITING(sp)						\
 	(KEYS_WAITING(sp) &&						\
 	    F_ISSET(&sp->gp->i_event[sp->gp->i_next].e_ch, CH_MAPPED))
+
+/*
+ * Ex/vi commands are generally separated by whitespace characters.  We
+ * can't use the standard isspace(3) macro because it returns true for
+ * characters like ^K in the ASCII character set.  The POSIX isblank(3)
+ * has the same problem for non-ASCII locale, so we need a standalone one.
+ *
+ * XXX
+ * Note side effect, ch is evaluated multiple times.
+ */
+#define	cmdskip(ch)	((ch) == ' ' || (ch) == '\t')
 
 /* The "standard" tab width, for displaying things to users. */
 #define	STANDARD_TAB	6

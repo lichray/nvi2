@@ -656,7 +656,7 @@ opts_set(
 				rval = 1;
 				break;
 			}
-			if (*endp && !isblank(*endp)) {
+			if (*endp && !cmdskip(*endp)) {
 badnum:				INT2CHAR(sp, name, STRLEN(name) + 1, 
 					     np, nlen);
 				p2 = msg_print(sp, np, &nf);
@@ -1038,13 +1038,13 @@ opts_save(
 				break;
 			(void)fprintf(fp, "set ");
 			for (p = op->name; (ch = *p) != '\0'; ++p) {
-				if (isblank(ch) || ch == '\\')
+				if (cmdskip(ch) || ch == '\\')
 					(void)putc('\\', fp);
 				fprintf(fp, WC, ch);
 			}
 			(void)putc('=', fp);
 			for (np = O_STR(sp, cnt); (nch = *np) != '\0'; ++np) {
-				if (isblank(nch) || nch == '\\')
+				if (cmdskip(nch) || nch == '\\')
 					(void)putc('\\', fp);
 				(void)putc(nch, fp);
 			}

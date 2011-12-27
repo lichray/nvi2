@@ -365,7 +365,7 @@ seq_save(
 		for (p = qp->input, olen = qp->ilen; olen > 0; --olen) {
 			ch = *p++;
 			if (ch == CH_LITERAL || ch == '|' ||
-			    isblank(ch) || KEY_VAL(sp, ch) == K_NL)
+			    cmdskip(ch) || KEY_VAL(sp, ch) == K_NL)
 				(void)putc(CH_LITERAL, fp);
 			(void)putc(ch, fp);
 		}

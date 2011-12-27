@@ -144,7 +144,7 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 
 	/* Skip any leading whitespace. */
 	if (cmdp->argc != 0)
-		for (p = cmdp->argv[0]->bp; *p != '\0' && isblank(*p); ++p);
+		for (p = cmdp->argv[0]->bp; *p != '\0' && cmdskip(*p); ++p);
 
 	/* If "write !" it's a pipe to a utility. */
 	if (cmdp->argc != 0 && cmd == WRITE && *p == '!') {
@@ -155,7 +155,7 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 		}
 
 		/* Expand the argument. */
-		for (++p; *p && isblank(*p); ++p);
+		for (++p; *p && cmdskip(*p); ++p);
 		if (*p == '\0') {
 			ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 			return (1);
@@ -202,7 +202,7 @@ exwr(SCR *sp, EXCMD *cmdp, enum which cmd)
 		LF_SET(FS_APPEND);
 
 		/* Skip ">>" and whitespace. */
-		for (p += 2; *p && isblank(*p); ++p);
+		for (p += 2; *p && cmdskip(*p); ++p);
 	}
 
 	/* If no other arguments, just write the file back. */

@@ -71,7 +71,7 @@ ex_s(SCR *sp, EXCMD *cmdp)
 		goto subagain;
 	for (p = cmdp->argv[0]->bp,
 	    len = cmdp->argv[0]->len; len > 0; --len, ++p) {
-		if (!isblank(*p))
+		if (!cmdskip(*p))
 			break;
 	}
 	if (len == 0)

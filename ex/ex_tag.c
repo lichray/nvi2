@@ -862,7 +862,7 @@ ex_tagf_alloc(SCR *sp, char *str)
 
 	/* Create new queue. */
 	for (p = t = str;; ++p) {
-		if (*p == '\0' || isblank(*p)) {
+		if (*p == '\0' || cmdskip(*p)) {
 			if ((len = p - t) > 1) {
 				MALLOC_RET(sp, tfp, TAGF *, sizeof(TAGF));
 				MALLOC(sp, tfp->name, char *, len + 1);

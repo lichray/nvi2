@@ -168,7 +168,7 @@ proc_wait(SCR *sp, long int pid, const char *cmd, int silent, int okpipe)
 	 * exit before reading all of its input.
 	 */
 	if (WIFSIGNALED(pstat) && (!okpipe || WTERMSIG(pstat) != SIGPIPE)) {
-		for (; isblank(*cmd); ++cmd);
+		for (; cmdskip(*cmd); ++cmd);
 		p = msg_print(sp, cmd, &nf);
 		len = strlen(p);
 		msgq(sp, M_ERR, "%.*s%s: received signal: %s%s",
@@ -190,7 +190,7 @@ proc_wait(SCR *sp, long int pid, const char *cmd, int silent, int okpipe)
 		 * practice.
 		 */
 		if (!silent) {
-			for (; isblank(*cmd); ++cmd);
+			for (; cmdskip(*cmd); ++cmd);
 			p = msg_print(sp, cmd, &nf);
 			len = strlen(p);
 			msgq(sp, M_ERR, "%.*s%s: exited with status %d",
