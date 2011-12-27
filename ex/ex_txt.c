@@ -393,8 +393,8 @@ txt_dent(SCR *sp, TEXT *tp)
 			++scno;
 
 	/* Get the previous shiftwidth column. */
-	cno = scno;
-	scno -= --scno % sw;
+	cno = scno--;
+	scno -= scno % sw;
 
 	/*
 	 * Since we don't know what comes before the character(s) being

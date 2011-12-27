@@ -895,7 +895,7 @@ msg_print(
 
 	*needfree = 0;
 
-	CHAR2INT5(sp, cw, s, strlen(s) + 1, wp, wlen);
+	CHAR2INT5(sp, cw, (char *)s, strlen(s) + 1, wp, wlen);
 	for (cp = wp; *cp != L('\0'); ++cp)
 		if (!ISPRINT(*cp))
 			break;

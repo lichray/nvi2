@@ -25,6 +25,7 @@ static const char sccsid[] = "$Id: ex_cscope.c,v 10.22 2011/12/25 22:38:06 zy Ex
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>

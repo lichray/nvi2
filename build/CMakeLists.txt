@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.1 2011/12/27 01:32:01 zy Exp $
+# $Id: CMakeLists.txt,v 1.2 2011/12/27 01:40:00 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -23,16 +23,16 @@ endfunction()
 
 if(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O0 -g"
-		"-fstrict-aliasing -Wstrict-aliasing"
-		"-Wformat"
+		"-Wall"
+		"-Wno-unused"
+		"-Wno-parentheses"
+		"-Wno-uninitialized"	# meaningless without -O
 		"-Wmissing-prototypes"
-		"-Wmissing-braces"
-		"-Wpointer-sign")
+		"-fstrict-aliasing -Wstrict-aliasing")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
-		"-Wuninitialized"
-		"-Wno-pointer-sign")
+		"-Wuninitialized")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
