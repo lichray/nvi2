@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex.c,v 10.78 2011/12/21 20:40:35 zy Exp $";
+static const char sccsid[] = "$Id: ex.c,v 10.79 2011/12/26 23:37:01 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -260,7 +260,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 		if ((ch = *ecp->cp) == '\n') {
 			++gp->if_lno;
 			++ecp->if_lno;
-		} else if (ISBLANK(ch))
+		} else if (isblank(ch))
 			notempty = 1;
 		else
 			break;
@@ -299,7 +299,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 	/* Skip whitespace. */
 	for (; ecp->clen > 0; ++ecp->cp, --ecp->clen) {
 		ch = *ecp->cp;
-		if (!ISBLANK(ch))
+		if (!isblank(ch))
 			break;
 	}
 
@@ -354,7 +354,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 	 */
 	for (; ecp->clen > 0; ++ecp->cp, --ecp->clen) {
 		ch = *ecp->cp;
-		if (!ISBLANK(ch) && ch != ':')
+		if (!isblank(ch) && ch != ':')
 			break;
 	}
 
@@ -646,7 +646,7 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 			ecp->save_cmd = ecp->cp;
 		}
 		for (; ecp->clen > 0; --ecp->clen, ++ecp->cp)
-			if (!ISBLANK(*ecp->cp))
+			if (!isblank(*ecp->cp))
 				break;
 		/*
 		 * QUOTING NOTE:
@@ -668,7 +668,7 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 					++discard;
 					--ecp->clen;
 					ch = *++ecp->cp;
-				} else if (ISBLANK(ch))
+				} else if (isblank(ch))
 					break;
 				*p++ = ch;
 			}
@@ -712,7 +712,7 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 		 */
 		for (tmp = 0; ecp->clen > 0; --ecp->clen, ++ecp->cp) {
 			ch = *ecp->cp;
-			if (ISBLANK(ch))
+			if (isblank(ch))
 				tmp = 1;
 			else
 				break;
@@ -730,7 +730,7 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 		 * into something like ":s g", so use the special s command.
 		 */
 		for (; ecp->clen > 0; --ecp->clen, ++ecp->cp)
-			if (!ISBLANK(ecp->cp[0]))
+			if (!isblank(ecp->cp[0]))
 				break;
 
 		if (!isascii(ecp->cp[0]) ||
@@ -955,7 +955,7 @@ two_addr:	switch (ecp->addrcnt) {
 
 		/* Skip leading <blank>s. */
 		for (; ecp->clen > 0; --ecp->clen, ++ecp->cp)
-			if (!ISBLANK(*ecp->cp))
+			if (!isblank(*ecp->cp))
 				break;
 		if (ecp->clen == 0)
 			break;
@@ -1152,7 +1152,7 @@ end_case23:		break;
 				    ecp, ch) && ecp->clen > 1) {
 					--ecp->clen;
 					*p++ = *++ecp->cp;
-				} else if (ISBLANK(ch)) {
+				} else if (isblank(ch)) {
 					++ecp->cp;
 					--ecp->clen;
 					break;
@@ -1166,7 +1166,7 @@ end_case23:		break;
 			for (; ecp->clen > 0;
 			    --ecp->clen, ++ecp->cp) {
 				ch = *ecp->cp;
-				if (!ISBLANK(ch))
+				if (!isblank(ch))
 					break;
 			}
 			if (ecp->clen == 0)
@@ -1211,7 +1211,7 @@ arg_cnt_chk:		if (*++np != 'N') {		/* N */
 	/* Skip trailing whitespace. */
 	for (; ecp->clen > 0; --ecp->clen) {
 		ch = *ecp->cp++;
-		if (!ISBLANK(ch))
+		if (!isblank(ch))
 			break;
 	}
 
@@ -1949,7 +1949,7 @@ search:		mp->lno = sp->lno;
 
 	/* Skip trailing <blank>s. */
 	for (; ecp->clen > 0 &&
-	    ISBLANK(ecp->cp[0]); ++ecp->cp, --ecp->clen);
+	    isblank(ecp->cp[0]); ++ecp->cp, --ecp->clen);
 
 	/*
 	 * Evaluate any offset.  If no address yet found, the offset
@@ -1992,7 +1992,7 @@ search:		mp->lno = sp->lno;
 		 */
 		F_SET(ecp, E_DELTA);
 		for (;;) {
-			for (; ecp->clen > 0 && ISBLANK(ecp->cp[0]);
+			for (; ecp->clen > 0 && isblank(ecp->cp[0]);
 			    ++ecp->cp, --ecp->clen);
 			if (ecp->clen == 0 || (!ISDIGIT(ecp->cp[0]) &&
 			    ecp->cp[0] != '+' && ecp->cp[0] != '-' &&

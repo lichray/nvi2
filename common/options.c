@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.70 2011/12/23 01:12:46 zy Exp $";
+static const char sccsid[] = "$Id: options.c,v 10.71 2011/12/26 23:37:01 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -656,7 +656,7 @@ opts_set(
 				rval = 1;
 				break;
 			}
-			if (*endp && !ISBLANK(*endp)) {
+			if (*endp && !isblank(*endp)) {
 badnum:				INT2CHAR(sp, name, STRLEN(name) + 1, 
 					     np, nlen);
 				p2 = msg_print(sp, np, &nf);
@@ -1038,7 +1038,7 @@ opts_save(
 				break;
 			(void)fprintf(fp, "set ");
 			for (p = op->name; (ch = *p) != L('\0'); ++p) {
-				if (ISBLANK(ch) || ch == L('\\'))
+				if (isblank(ch) || ch == L('\\'))
 					(void)putc('\\', fp);
 				fprintf(fp, WC, ch);
 			}
