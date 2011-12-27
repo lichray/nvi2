@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.24 2011/11/19 17:36:27 zy Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.25 2011/12/27 15:15:23 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -97,7 +97,7 @@ nonblank(
 		return (0);
 
 	for (cnt = off, p = &p[off],
-	    len -= off; len && isblank(*p); ++cnt, ++p, --len);
+	    len -= off; len && ISBLANK(*p); ++cnt, ++p, --len);
 
 	/* Set the return. */
 	*cnop = len ? cnt : cnt - 1;
