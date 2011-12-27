@@ -113,19 +113,19 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 			 * Nul terminate the pattern string -- it's passed
 			 * to regcomp which doesn't understand anything else.
 			 */
-			*t = L('\0');
+			*t = '\0';
 			break;
 		}
-		if (p[0] == L('\\'))
+		if (p[0] == '\\')
 			if (p[1] == delim)
 				++p;
-			else if (p[1] == L('\\'))
+			else if (p[1] == '\\')
 				*t++ = *p++;
 		*t++ = *p++;
 	}
 
 	/* If the pattern string is empty, use the last one. */
-	if (*ptrn == L('\0')) {
+	if (*ptrn == '\0') {
 		if (sp->re == NULL) {
 			ex_emsg(sp, NULL, EXM_NOPREVRE);
 			return (1);

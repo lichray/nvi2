@@ -110,10 +110,10 @@ ex_usage(SCR *sp, EXCMD *cmdp)
 			if (cp == &cmds[C_SCROLL])
 				name = L("^D");
 			else if (F_ISSET(cp, E_NEWSCREEN)) {
-				nb[0] = L('[');
+				nb[0] = '[';
 				nb[1] = TOUPPER(cp->name[0]);
 				nb[2] = cp->name[0];
-				nb[3] = L(']');
+				nb[3] = ']';
 				for (name = cp->name + 1,
 				    p = nb + 4; (*p++ = *name++) != '\0';);
 				name = nb;

@@ -187,39 +187,39 @@ subagain:	return (ex_subagain(sp, cmdp));
 	 * V and then percolated elsewhere, presumably around the time
 	 * that it was added to their version of ed(1).
 	 */
-	if (p[0] == L('\0') || p[0] == delim) {
+	if (p[0] == '\0' || p[0] == delim) {
 		if (p[0] == delim)
 			++p;
 		if (sp->repl != NULL)
 			free(sp->repl);
 		sp->repl = NULL;
 		sp->repl_len = 0;
-	} else if (p[0] == L('%') && (p[1] == L('\0') || p[1] == delim))
+	} else if (p[0] == '%' && (p[1] == '\0' || p[1] == delim))
 		p += p[1] == delim ? 2 : 1;
 	else {
 		for (rep = p, len = 0;
-		    p[0] != L('\0') && p[0] != delim; ++p, ++len)
-			if (p[0] == L('~'))
+		    p[0] != '\0' && p[0] != delim; ++p, ++len)
+			if (p[0] == '~')
 				len += sp->repl_len;
 		GET_SPACE_RETW(sp, bp, blen, len);
 		for (t = bp, len = 0, p = rep;;) {
-			if (p[0] == L('\0') || p[0] == delim) {
+			if (p[0] == '\0' || p[0] == delim) {
 				if (p[0] == delim)
 					++p;
 				break;
 			}
-			if (p[0] == L('\\')) {
+			if (p[0] == '\\') {
 				if (p[1] == delim)
 					++p;
-				else if (p[1] == L('\\')) {
+				else if (p[1] == '\\') {
 					*t++ = *p++;
 					++len;
-				} else if (p[1] == L('~')) {
+				} else if (p[1] == '~') {
 					++p;
 					if (!O_ISSET(sp, O_MAGIC))
 						goto tilde;
 				}
-			} else if (p[0] == L('~') && O_ISSET(sp, O_MAGIC)) {
+			} else if (p[0] == '~' && O_ISSET(sp, O_MAGIC)) {
 tilde:				++p;
 				MEMCPYW(t, sp->repl, sp->repl_len);
 				t += sp->repl_len;

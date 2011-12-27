@@ -161,7 +161,7 @@ retry:		FREE_SPACE(sp, bp, blen);
 		size_t wlen;
 
 		CHAR2INT(sp, gp->if_name, strlen(gp->if_name) + 1, wp, wlen);
-		for (; *wp != L('\0'); ++wp) {
+		for (; *wp != '\0'; ++wp) {
 			len = snprintf(mp, REM, "%s", KEY_NAME(sp, *wp));
 			mp += len;
 			if ((mlen += len) > blen)
@@ -562,7 +562,7 @@ msgq_status(
 	CHAR2INT(sp, sp->frp->name, len + 1, wp, wlen);
 
 	/* Copy in the filename. */
-	for (; *wp != L('\0'); ++wp) {
+	for (; *wp != '\0'; ++wp) {
 		len = KEY_LEN(sp, *wp);
 		memcpy(p, KEY_NAME(sp, *wp), len);
 		p += len;
@@ -896,10 +896,10 @@ msg_print(
 	*needfree = 0;
 
 	CHAR2INT5(sp, cw, (char *)s, strlen(s) + 1, wp, wlen);
-	for (cp = wp; *cp != L('\0'); ++cp)
+	for (cp = wp; *cp != '\0'; ++cp)
 		if (!ISPRINT(*cp))
 			break;
-	if (*cp == L('\0'))
+	if (*cp == '\0')
 		return ((char *)s);	/* SAFE: needfree set to 0. */
 
 	nlen = 0;
@@ -921,7 +921,7 @@ alloc_err:	return ("");
 	}
 	*needfree = 1;
 
-	for (p = bp, ep = (bp + blen) - 1; *wp != L('\0') && p < ep; ++wp)
+	for (p = bp, ep = (bp + blen) - 1; *wp != '\0' && p < ep; ++wp)
 		for (t = KEY_NAME(sp, *wp); *t != '\0' && p < ep; *p++ = *t++);
 	if (p == ep)
 		goto retry;

@@ -50,7 +50,7 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 	int list_tab, list_dollar;
 	CHAR_T *p;
 	CHAR_T *cbp, *ecbp, cbuf[128];
-	ARG_CHAR_T ch = L('\0');
+	ARG_CHAR_T ch = '\0';
 
 #if defined(DEBUG) && 0
 	TRACE(sp, "vs_line: row %u: line: %u off: %u\n",
@@ -173,16 +173,16 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 			if (dne) {
 				if (smp->lno == 1) {
 					if (list_dollar) {
-						ch = L('$');
+						ch = '$';
 						goto empty;
 					}
 				} else {
-					ch = L('~');
+					ch = '~';
 					goto empty;
 				}
 			} else
 				if (list_dollar) {
-					ch = L('$');
+					ch = '$';
 empty:					(void)gp->scr_addstr(sp,
 					    KEY_NAME(sp, ch), KEY_LEN(sp, ch));
 				}
@@ -263,7 +263,7 @@ empty:					(void)gp->scr_addstr(sp,
 	/* Do it the hard way, for leftright scrolling screens. */
 	if (O_ISSET(sp, O_LEFTRIGHT)) {
 		for (; offset_in_line < len; ++offset_in_line) {
-			chlen = (ch = *p++) == L('\t') && !list_tab ?
+			chlen = (ch = *p++) == '\t' && !list_tab ?
 			    TAB_OFF(scno) : KEY_COL(sp, ch);
 			if ((scno += chlen) >= skip_cols)
 				break;
@@ -290,7 +290,7 @@ empty:					(void)gp->scr_addstr(sp,
 	/* Do it the hard way, for historic line-folding screens. */
 	else {
 		for (; offset_in_line < len; ++offset_in_line) {
-			chlen = (ch = *p++) == L('\t') && !list_tab ?
+			chlen = (ch = *p++) == '\t' && !list_tab ?
 			    TAB_OFF(scno) : KEY_COL(sp, ch);
 			if ((scno += chlen) < cols_per_screen)
 				continue;
@@ -340,7 +340,7 @@ display:
 	ecbp = (cbp = cbuf) + sizeof(cbuf)/sizeof(CHAR_T) - 1;
 	for (is_partial = 0, scno = 0;
 	    offset_in_line < len; ++offset_in_line, offset_in_char = 0) {
-		if ((ch = *p++) == L('\t') && !list_tab) {
+		if ((ch = *p++) == '\t' && !list_tab) {
 			scno += chlen = TAB_OFF(scno) - offset_in_char;
 			is_tab = 1;
 		} else {
@@ -407,7 +407,7 @@ display:
 			continue;
 
 #define	FLUSH {								\
-	*cbp = L('\0');							\
+	*cbp = '\0';							\
 	(void)gp->scr_waddstr(sp, cbuf, cbp - cbuf);			\
 	cbp = cbuf;							\
 }

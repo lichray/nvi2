@@ -801,7 +801,7 @@ vs_modeline(SCR *sp)
 		CHAR2INT(sp, sp->frp->name, strlen(sp->frp->name) + 1, wp, l);
 		p = wp + l;
 		for (ellipsis = 0, cols = sp->cols / 2; --p > wp;) {
-			if (*p == L('/')) {
+			if (*p == '/') {
 				++p;
 				break;
 			}
@@ -823,7 +823,7 @@ vs_modeline(SCR *sp)
 			(void)gp->scr_addstr(sp,
 			    KEY_NAME(sp, ' '), KEY_LEN(sp, ' '));
 		}
-		for (; *p != L('\0'); ++p)
+		for (; *p != '\0'; ++p)
 			(void)gp->scr_addstr(sp,
 			    KEY_NAME(sp, *p), KEY_COL(sp, *p));
 	}

@@ -514,7 +514,7 @@ opts_set(
 
 		/* Search for the name, then name without any leading "no". */
 		if ((op = opts_search(name)) == NULL &&
-		    name[0] == L('n') && name[1] == L('o')) {
+		    name[0] == 'n' && name[1] == 'o') {
 			turnoff = 1;
 			name += 2;
 			op = opts_search(name);
@@ -1037,8 +1037,8 @@ opts_save(
 			if (O_STR(sp, cnt) == NULL)
 				break;
 			(void)fprintf(fp, "set ");
-			for (p = op->name; (ch = *p) != L('\0'); ++p) {
-				if (isblank(ch) || ch == L('\\'))
+			for (p = op->name; (ch = *p) != '\0'; ++p) {
+				if (isblank(ch) || ch == '\\')
 					(void)putc('\\', fp);
 				fprintf(fp, WC, ch);
 			}

@@ -44,19 +44,19 @@ ex_display(SCR *sp, EXCMD *cmdp)
 	arg = cmdp->argv[0];
 
 	switch (arg->bp[0]) {
-	case L('b'):
+	case 'b':
 		if (!is_prefix(arg, L("buffers")))
 			break;
 		return (bdisplay(sp));
-	case L('c'):
+	case 'c':
 		if (!is_prefix(arg, L("connections")))
 			break;
 		return (cscope_display(sp));
-	case L('s'):
+	case 's':
 		if (!is_prefix(arg, L("screens")))
 			break;
 		return (ex_sdisplay(sp));
-	case L('t'):
+	case 't':
 		if (!is_prefix(arg, L("tags")))
 			break;
 		return (ex_tag_display(sp));
