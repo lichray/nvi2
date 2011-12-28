@@ -43,8 +43,6 @@ typedef wchar_t 	RCHAR_T;
 #define SPRINTF		swprintf
 #define STRCMP		wcscmp
 #define STRPBRK		wcspbrk
-#define ISALPHA		iswalpha
-#define ISALNUM		iswalnum
 #define ISBLANK		iswblank
 #define ISCNTRL		iswcntrl
 #define ISDIGIT		iswdigit
@@ -78,8 +76,6 @@ typedef	char		RCHAR_T;
 #define SPRINTF		snprintf
 #define STRCMP		strcmp
 #define STRPBRK		strpbrk
-#define ISALPHA		isalpha
-#define ISALNUM		isalnum
 #define ISBLANK		isblank
 #define ISCNTRL		iscntrl
 #define ISDIGIT		isdigit
