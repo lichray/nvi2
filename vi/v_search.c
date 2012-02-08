@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_search.c,v 10.30 2001/09/11 20:52:46 skimo Exp $";
+static const char sccsid[] = "$Id: v_search.c,v 10.31 2012/02/08 07:26:59 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -312,6 +312,29 @@ v_searchn(SCR *sp, VICMD *vp)
 }
 
 /*
+ * is_special --
+ *	Test if the character is special in a basic RE.
+ */
+static int
+is_special(CHAR_T c)
+{
+	/*
+	 * !!!
+	 * `*' and `$' are ordinary when appear at the beginning of a RE,
+	 * but it's safe to distinguish them from the ordinary characters.
+	 * The tilde is vi-specific, of course.
+	 */
+	return (STRCHR(L(".[*\\^$~"), c) && c);
+}
+
+/*
+ * Rear delimiter for word search when the keyword ends in
+ * (i.e., consists of) a non-word character.  See v_searchw below.
+ */
+#define RE_NWSTOP	L("([^[:alnum:]_]|$)")
+#define RE_NWSTOP_LEN	(SIZE(RE_NWSTOP) - 1)
+
+/*
  * v_searchw -- [count]^A
  *	Search for the word under the cursor.
  *
@@ -324,14 +347,38 @@ v_searchw(SCR *sp, VICMD *vp)
 	int rval;
 	CHAR_T *bp, *p;
 
-	len = VIP(sp)->klen + RE_WSTART_LEN + RE_WSTOP_LEN;
+	/* An upper bound for the SIZE of the RE under construction. */
+	len = VIP(sp)->klen + MAX(RE_WSTART_LEN, 1)
+	    + MAX(RE_WSTOP_LEN, RE_NWSTOP_LEN);
 	GET_SPACE_RETW(sp, bp, blen, len);
-	MEMCPY(bp, RE_WSTART, RE_WSTART_LEN); 
-	p = bp + RE_WSTART_LEN;
+	p = bp;
+
+	/* Only the first character can be non-word, see v_curword. */
+	if (inword(VIP(sp)->keyw[0])) {
+		MEMCPY(p, RE_WSTART, RE_WSTART_LEN);
+		p += RE_WSTART_LEN;
+	} else if (is_special(VIP(sp)->keyw[0])) {
+		MEMCPY(p, L("\\"), 1);
+		p += 1;
+	}
+
 	MEMCPY(p, VIP(sp)->keyw, VIP(sp)->klen);
 	p += VIP(sp)->klen;
-	MEMCPY(p, RE_WSTOP, RE_WSTOP_LEN); 
 
+	if (inword(p[-1])) {
+		MEMCPY(p, RE_WSTOP, RE_WSTOP_LEN);
+		p += RE_WSTOP_LEN;
+	} else {
+		/*
+		 * The keyword is a single non-word character.
+		 * We want it to stay the same when typing ^A several times
+		 * in a row, just the way the other cases behave.
+		 */
+		MEMCPY(p, RE_NWSTOP, RE_NWSTOP_LEN);
+		p += RE_NWSTOP_LEN;
+	}
+
+	len = p - bp;
 	rval = v_search(sp, vp, bp, len, SEARCH_SET, FORWARD);
 
 	FREE_SPACEW(sp, bp, blen);
