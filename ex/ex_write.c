@@ -325,7 +325,7 @@ ex_writefp(SCR *sp, char *name, FILE *fp, MARK *fm, MARK *tm, u_long *nlno, u_lo
 	lcnt = 0;
 	msg = "253|Writing...";
 
-	if (O_STR(sp, O_FILEENCODING)) {
+	if (O_ISSET(sp, O_FILEENCODING)) {
 		isutf16 = !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16", 6);
 		isutf16 += !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-16le", 8);
 	} else isutf16 = 0;

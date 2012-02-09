@@ -1269,8 +1269,9 @@ file_encinit(SCR *sp)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
 			break;
 		default:
-			/* Fallback to the locale encoding. */
-			o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
+			/* Fallback to the locale/preset encoding. */
+			if (!O_ISSET(sp, O_FILEENCODING))
+				o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 		}
 	}
 
