@@ -76,10 +76,10 @@ OPTLIST const optlist[] = {
 	{L("directory"),	NULL,		OPT_STR,	0},
 /* O_EDCOMPATIBLE   4BSD */
 	{L("edcompatible"),NULL,		OPT_0BOOL,	0},
-/* O_ESCAPETIME	  4.4BSD */
-	{L("escapetime"),	NULL,		OPT_NUM,	0},
 /* O_ERRORBELLS	    4BSD */
 	{L("errorbells"),	NULL,		OPT_0BOOL,	0},
+/* O_ESCAPETIME	  4.4BSD */
+	{L("escapetime"),	NULL,		OPT_NUM,	0},
 /* O_EXRC	System V (undocumented) */
 	{L("exrc"),	NULL,		OPT_0BOOL,	0},
 /* O_EXTENDED	  4.4BSD */
