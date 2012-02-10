@@ -146,7 +146,7 @@ OPTLIST const optlist[] = {
 /* O_OPTIMIZE	    4BSD */
 	{L("optimize"),	NULL,		OPT_1BOOL,	0},
 /* O_PARAGRAPHS	    4BSD */
-	{L("paragraphs"),	f_paragraph,	OPT_STR,	0},
+	{L("paragraphs"),	NULL,		OPT_STR,	OPT_PAIRS},
 /* O_PATH	  4.4BSD */
 	{L("path"),	NULL,		OPT_STR,	0},
 /* O_PRINT	  4.4BSD */
@@ -170,7 +170,7 @@ OPTLIST const optlist[] = {
 /* O_SEARCHINCR	  4.4BSD */
 	{L("searchincr"),	NULL,		OPT_0BOOL,	0},
 /* O_SECTIONS	    4BSD */
-	{L("sections"),	f_section,	OPT_STR,	0},
+	{L("sections"),	NULL,		OPT_STR,	OPT_PAIRS},
 /* O_SECURE	  4.4BSD */
 	{L("secure"),	NULL,		OPT_0BOOL,	OPT_NOUNSET},
 /* O_SHELL	    4BSD */
@@ -723,6 +723,14 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
 				if (!disp)
 					disp = SELECT_DISPLAY;
 				F_SET(spo, OPT_SELECTED);
+				break;
+			}
+
+			/* Check for strings that must have even length. */
+			if (F_ISSET(op, OPT_PAIRS) && STRLEN(sep) & 1) {
+				msgq_wstr(sp, M_ERR, name,
+				    "047|The %s option must be in two character groups");
+				rval = 1;
 				break;
 			}
 
