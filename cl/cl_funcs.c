@@ -794,11 +794,8 @@ cl_suspend(SCR *sp, int *allowedp)
 	/* Restore the window name. */
 	(void)cl_rename(sp, NULL, 0);
 
-#ifdef HAVE_BSD_CURSES
-	(void)cl_attr(sp, SA_ALTERNATE, 0);
-#else
 	(void)endwin();
-#endif
+
 	/*
 	 * XXX
 	 * Restore the original terminal settings.  This is bad -- the
@@ -827,10 +824,6 @@ cl_suspend(SCR *sp, int *allowedp)
 	wrefresh(win);			    /* Needed on SunOs/Solaris ? */
 	if (F_ISSET(clp, CL_STDIN_TTY))
 		(void)tcsetattr(STDIN_FILENO, TCSASOFT | TCSADRAIN, &t);
-
-#ifdef HAVE_BSD_CURSES
-	(void)cl_attr(sp, SA_ALTERNATE, 1);
-#endif
 
 	/* Set the window name. */
 	(void)cl_rename(sp, sp->frp->name, 1);

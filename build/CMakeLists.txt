@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.2 2011/12/27 01:40:00 zy Exp $
+# $Id: CMakeLists.txt,v 1.3 2012/02/11 12:11:00 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -12,7 +12,6 @@ include(CheckCSourceCompiles)
 mark_as_advanced(FORCE CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
 
 option(DEBUG "Build a debugging version" OFF)
-option(HAVE_BSD_CURSES "Old BSD Style curses library" OFF)
 option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
@@ -115,15 +114,6 @@ if(USE_ICONV)
 	endif(NOT ICONV_IN_LIBC)
 	include_directories(${ICONV_INCLUDE_DIR})
 endif(USE_ICONV)
-
-check_library_exists(${CURSES_LIBRARY} waddnstr "" HAVE_CURSES_WADDNSTR)
-check_library_exists(${CURSES_LIBRARY} beep "" HAVE_CURSES_BEEP)
-check_library_exists(${CURSES_LIBRARY} flash "" HAVE_CURSES_FLASH)
-check_library_exists(${CURSES_LIBRARY} idlok "" HAVE_CURSES_IDLOK)
-check_library_exists(${CURSES_LIBRARY} keypad "" HAVE_CURSES_KEYPAD)
-check_library_exists(${CURSES_LIBRARY} newterm "" HAVE_CURSES_NEWTERM)
-check_library_exists(${CURSES_LIBRARY} setupterm "" HAVE_CURSES_SETUPTERM)
-check_library_exists(${CURSES_LIBRARY} tigetstr "" HAVE_CURSES_TIGETSTR)
 
 check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
 check_include_files(sys/select.h HAVE_SYS_SELECT_H)
