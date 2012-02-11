@@ -199,15 +199,15 @@ mark(SCR *sp, VICMD *vp, int getmark, enum which cmd)
 #ifdef HISTORICAL_PRACTICE
 	if (ISCMD(vp->rkp, 'y')) {
 		if ((cmd == BQMARK ||
-		    cmd == FQMARK && vp->m_start.lno != vp->m_stop.lno) &&
+		    (cmd == FQMARK && vp->m_start.lno != vp->m_stop.lno)) &&
 		    (vp->m_start.lno > vp->m_stop.lno ||
-		    vp->m_start.lno == vp->m_stop.lno &&
-		    vp->m_start.cno > vp->m_stop.cno))
+		    (vp->m_start.lno == vp->m_stop.lno &&
+		    vp->m_start.cno > vp->m_stop.cno)))
 			vp->m_final = vp->m_stop;
 	} else if (ISCMD(vp->rkp, 'd'))
 		if (vp->m_start.lno > vp->m_stop.lno ||
-		    vp->m_start.lno == vp->m_stop.lno &&
-		    vp->m_start.cno > vp->m_stop.cno)
+		    (vp->m_start.lno == vp->m_stop.lno &&
+		    vp->m_start.cno > vp->m_stop.cno))
 			vp->m_final = vp->m_stop;
 #else
 	vp->m_final = vp->m_start;

@@ -53,7 +53,7 @@ ex_z(SCR *sp, EXCMD *cmdp)
 	if (FL_ISSET(cmdp->iflags, E_C_COUNT))
 		cnt = cmdp->count;
 	else
-#ifdef HISTORIC_PRACTICE
+#ifdef HISTORICAL_PRACTICE
 		cnt = O_VAL(sp, O_SCROLL) * 2;
 #else
 		cnt = O_VAL(sp, O_WINDOW) - 1;
