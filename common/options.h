@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: options.h,v 10.21 2011/11/30 23:49:41 zy Exp $
+ *	$Id: options.h,v 10.21 2012/02/10 20:24:58 zy Exp $
  */
 
 /*
@@ -90,7 +90,6 @@ struct _optlist {
 #define	OPT_NOUNSET	0x020		/* Option may not be unset. */
 #define	OPT_NOZERO	0x040		/* Option may not be set to 0. */
 #define	OPT_PAIRS	0x080		/* String with even length. */
-#define	OPT_EARLYSET	0x100		/* Call the function immediately. */
 	u_int8_t flags;
 };
 
