@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: vi.h,v 10.28 2011/12/03 02:06:25 zy Exp $
+ *	$Id: vi.h,v 10.29 2012/02/11 00:33:46 zy Exp $
  */
 
 /* Definition of a vi "word". */
@@ -258,6 +258,7 @@ typedef struct _vi_private {
 
 	MARK	sel;		/* Select start position. */
 
+	CHAR_T *mcs;		/* Match character list. */
 	char   *ps;		/* Paragraph plus section list. */
 
 	u_long	u_ccnt;		/* Undo command count. */

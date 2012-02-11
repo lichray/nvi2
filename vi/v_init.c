@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_init.c,v 10.9 2001/06/25 15:19:31 skimo Exp $";
+static const char sccsid[] = "$Id: v_init.c,v 10.10 2012/02/11 00:33:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -57,6 +57,11 @@ v_screen_copy(SCR *orig, SCR *sp)
 			nvip->rep_len = ovip->rep_len;
 		}
 
+		/* Copy the match characters information. */
+		if (ovip->mcs != NULL && (nvip->mcs =
+		    v_wstrdup(sp, ovip->mcs, STRLEN(ovip->mcs))) == NULL)
+			return (1);
+
 		/* Copy the paragraph/section information. */
 		if (ovip->ps != NULL && (nvip->ps =
 		    v_strdup(sp, ovip->ps, strlen(ovip->ps))) == NULL)
@@ -87,6 +92,8 @@ v_screen_end(SCR *sp)
 		free(vip->keyw);
 	if (vip->rep != NULL)
 		free(vip->rep);
+	if (vip->mcs != NULL)
+		free(vip->mcs);
 	if (vip->ps != NULL)
 		free(vip->ps);
 
@@ -109,6 +116,8 @@ int
 v_optchange(SCR *sp, int offset, char *str, u_long *valp)
 {
 	switch (offset) {
+	case O_MATCHCHARS:
+		return (v_buildmcs(sp, str));
 	case O_PARAGRAPHS:
 		return (v_buildps(sp, str, O_STR(sp, O_SECTIONS)));
 	case O_SECTIONS:

@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_match.c,v 10.10 2001/06/25 15:19:32 skimo Exp $";
+static const char sccsid[] = "$Id: v_match.c,v 10.11 2012/02/11 00:33:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -21,6 +21,7 @@ static const char sccsid[] = "$Id: v_match.c,v 10.10 2001/06/25 15:19:32 skimo E
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../common/common.h"
@@ -40,6 +41,16 @@ v_match(SCR *sp, VICMD *vp)
 	size_t cno, len, off;
 	int cnt, isempty, matchc, startc, (*gc)__P((SCR *, VCS *));
 	CHAR_T *p;
+	CHAR_T *cp;
+	const CHAR_T *match_chars;
+
+	/*
+	 * Historically vi would match (), {} and [] however
+	 * an update included <>.  This is ok for editing HTML
+	 * but a pain in the butt for C source.
+	 * Making it an option lets the user decide what is 'right'.
+	 */
+	match_chars = VIP(sp)->mcs;
 
 	/*
 	 * !!!
@@ -59,43 +70,14 @@ v_match(SCR *sp, VICMD *vp)
 nomatch:		msgq(sp, M_BERR, "184|No match character on this line");
 			return (1);
 		}
-		switch (startc = p[off]) {
-		case '(':
-			matchc = ')';
-			gc = cs_next;
+		startc = p[off];
+		cp = STRCHR(match_chars, startc);
+		if (cp != NULL) {
+			cnt = cp - match_chars;
+			matchc = match_chars[cnt ^ 1];
+			gc = cnt & 1 ? cs_prev : cs_next;
 			break;
-		case ')':
-			matchc = '(';
-			gc = cs_prev;
-			break;
-		case '[':
-			matchc = ']';
-			gc = cs_next;
-			break;
-		case ']':
-			matchc = '[';
-			gc = cs_prev;
-			break;
-		case '{':
-			matchc = '}';
-			gc = cs_next;
-			break;
-		case '}':
-			matchc = '{';
-			gc = cs_prev;
-			break;
-		case '<':
-			matchc = '>';
-			gc = cs_next;
-			break;
-		case '>':
-			matchc = '<';
-			gc = cs_prev;
-			break;
-		default:
-			continue;
 		}
-		break;
 	}
 
 	cs.cs_lno = vp->m_start.lno;
@@ -165,5 +147,31 @@ nomatch:		msgq(sp, M_BERR, "184|No match character on this line");
 		if (!isblank(*p))
 			return (0);
 	F_SET(vp, VM_LMODE);
+	return (0);
+}
+
+/*
+ * v_buildmcs --
+ *	Build the match character list.
+ *
+ * PUBLIC: int v_buildmcs __P((SCR *, char *));
+ */
+int
+v_buildmcs(SCR *sp, char *str)
+{
+	CHAR_T **mp = &VIP(sp)->mcs;
+	size_t len = strlen(str) + 1;
+
+	if (*mp != NULL)
+		free(*mp);
+	MALLOC(sp, *mp, CHAR_T *, len * sizeof(CHAR_T));
+	if (*mp == NULL)
+		return (1);
+#ifdef USE_WIDECHAR
+	if (mbstowcs(*mp, str, len) == (size_t)-1)
+		return (1);
+#else
+	MEMCPY(*mp, str, len);
+#endif
 	return (0);
 }

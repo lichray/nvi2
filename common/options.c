@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.71 2011/12/26 23:37:01 zy Exp $";
+static const char sccsid[] = "$Id: options.c,v 10.72 2012/02/11 00:33:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -120,6 +120,8 @@ OPTLIST const optlist[] = {
 	{L("lock"),	NULL,		OPT_1BOOL,	0},
 /* O_MAGIC	    4BSD */
 	{L("magic"),	NULL,		OPT_1BOOL,	0},
+/* O_MATCHCHARS	  NetBSD 2.0 */
+	{L("matchchars"),	NULL,		OPT_STR,	OPT_PAIRS},
 /* O_MATCHTIME	  4.4BSD */
 	{L("matchtime"),	NULL,		OPT_NUM,	0},
 /* O_MESG	    4BSD */
@@ -361,6 +363,7 @@ opts_init(
 	OI(O_ESCAPETIME, L("escapetime=6"));
 	OI(O_FILEC, L("filec=\t"));
 	OI(O_KEYTIME, L("keytime=6"));
+	OI(O_MATCHCHARS, L("matchchars=()[]{}<>"));
 	OI(O_MATCHTIME, L("matchtime=7"));
 	(void)SPRINTF(b2, SIZE(b2), L("msgcat=%s"), _PATH_MSGCAT);
 	OI(O_MSGCAT, b2);
