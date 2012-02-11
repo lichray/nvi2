@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_move.c,v 10.15 2001/06/25 15:19:17 skimo Exp $";
+static const char sccsid[] = "$Id: ex_move.c,v 10.16 2012/02/11 15:52:33 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -51,7 +51,7 @@ ex_copy(SCR *sp, EXCMD *cmdp)
 	fm2 = cmdp->addr2;
 	TAILQ_INIT(cb.textq);
 	for (cnt = fm1.lno; cnt <= fm2.lno; ++cnt)
-		if (cut_line(sp, cnt, 0, 0, &cb)) {
+		if (cut_line(sp, cnt, 0, ENTIRE_LINE, &cb)) {
 			rval = 1;
 			goto err;
 		}

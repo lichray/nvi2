@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: delete.c,v 10.17 2001/06/25 15:19:09 skimo Exp $";
+static const char sccsid[] = "$Id: delete.c,v 10.18 2012/02/11 15:52:33 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -67,7 +67,7 @@ del(
 		if (tm->lno == lno) {
 			if (db_get(sp, lno, DBG_FATAL, &p, &len))
 				return (1);
-			eof = tm->cno >= len ? 1 : 0;
+			eof = tm->cno != ENTIRE_LINE && tm->cno >= len ? 1 : 0;
 		} else
 			eof = 1;
 		if (eof) {

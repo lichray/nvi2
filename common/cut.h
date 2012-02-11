@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: cut.h,v 10.9 2000/07/22 17:31:18 skimo Exp $
+ *	$Id: cut.h,v 10.10 2012/02/11 15:52:33 zy Exp $
  */
 
 typedef struct _texth TEXTH;		/* TEXT list head structure. */
@@ -33,6 +33,8 @@ struct _text {				/* Text: a linked list of lines. */
 
 	/* These fields are used by the vi text input routine. */
 	recno_t	 lno;			/* 1-N: file line. */
+
+#define	ENTIRE_LINE	((size_t)-1)	/* cno: end of the line. */
 	size_t	 cno;			/* 0-N: file character in line. */
 	size_t	 ai;			/* 0-N: autoindent bytes. */
 	size_t	 insert;		/* 0-N: bytes to insert (push). */

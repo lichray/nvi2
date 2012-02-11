@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cut.c,v 10.11 2011/06/26 20:57:04 zy Exp $";
+static const char sccsid[] = "$Id: cut.c,v 10.12 2012/02/11 15:52:33 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -137,17 +137,16 @@ copyloop:
 	}
 
 
-#define	ENTIRE_LINE	0
 	/* In line mode, it's pretty easy, just cut the lines. */
 	if (LF_ISSET(CUT_LINEMODE)) {
 		cbp->flags |= CB_LMODE;
 		for (lno = fm->lno; lno <= tm->lno; ++lno)
-			if (cut_line(sp, lno, 0, 0, cbp))
+			if (cut_line(sp, lno, 0, ENTIRE_LINE, cbp))
 				goto cut_line_err;
 	} else {
 		/*
-		 * Get the first line.  A length of 0 causes cut_line
-		 * to cut from the MARK to the end of the line.
+		 * Get the first line.  A length of ENTIRE_LINE causes
+		 * cut_line to cut from the MARK to the end of the line.
 		 */
 		if (cut_line(sp, fm->lno, fm->cno, fm->lno != tm->lno ?
 		    ENTIRE_LINE : (tm->cno - fm->cno) + 1, cbp))
@@ -250,7 +249,7 @@ cut_line(
 	 * copy the portion we want, and reset the TEXT length.
 	 */
 	if (len != 0) {
-		if (clen == 0)
+		if (clen == ENTIRE_LINE)
 			clen = len - fcno;
 		MEMCPYW(tp->lb, p + fcno, clen);
 		tp->len = clen;
