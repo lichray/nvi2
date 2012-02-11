@@ -304,12 +304,10 @@ opts_init(
 {
 	ARGS *argv[2], a, b;
 	OPTLIST const *op;
-	u_long isset, v;
+	u_long v;
 	int cnt, optindx = 0;
 	char *s;
 	CHAR_T b2[1024];
-	CHAR_T *wp;
-	size_t wlen;
 
 	a.bp = b2;
 	b.bp = NULL;
@@ -476,7 +474,7 @@ opts_set(
 	OPTION *spo;
 	u_long isset, turnoff, value;
 	int ch, equals, nf, nf2, offset, qmark, rval;
-	CHAR_T *endp, *name, *p, *sep, *t;
+	CHAR_T *endp, *name, *p, *sep;
 	char *p2, *t2;
 	char *np;
 	size_t nlen;
@@ -835,7 +833,6 @@ opts_dump(
 	int numcols, numrows, row;
 	int b_op[O_OPTIONCOUNT], s_op[O_OPTIONCOUNT];
 	char nbuf[20];
-	CHAR_T *kp;
 
 	/*
 	 * Options are output in two groups -- those that fit in a column and

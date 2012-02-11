@@ -90,8 +90,6 @@ argv_exp1(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen, int is_bang)
 	EX_PRIVATE *exp;
 	size_t blen, len;
 	CHAR_T *p, *t, *bp;
-	size_t wlen;
-	CHAR_T *wp;
 
 	GET_SPACE_RETW(sp, bp, blen, 512);
 

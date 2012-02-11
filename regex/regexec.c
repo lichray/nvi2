@@ -59,7 +59,9 @@ static char sccsid[] = "@(#)regexec.c	8.2 (Berkeley) 3/16/94";
 #include "utils.h"
 #include "regex2.h"
 
+#ifdef notdef
 static int nope = 0;		/* for use in asserts; shuts lint up */
+#endif
 
 /* macros for manipulating states, small version */
 #define	states	int

@@ -110,7 +110,9 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     size_t   n;
     ssize_t  nlen = len;
     char *src = (char *)str;
+#ifdef USE_ICONV
     char	buffer[CONV_BUFFER_SIZE];
+#endif
     size_t	left = len;
     int		error = 1;
 
@@ -209,7 +211,9 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     ssize_t  nlen = len + MB_CUR_MAX;
     char *dst;
     size_t buflen;
+#ifdef USE_ICONV
     char	buffer[CONV_BUFFER_SIZE];
+#endif
     int		error = 1;
 
 /* convert first len bytes of buffer and append it to cw->bp
@@ -317,7 +321,9 @@ conv_init (SCR *orig, SCR *sp)
 	MEMCPY(&sp->conv, &orig->conv, 1);
     else {
 	char *ctype;
+#ifdef USE_WIDECHAR
 	char *cp;
+#endif
 	setlocale(LC_ALL, "");
 	ctype = setlocale(LC_CTYPE, NULL);
 #ifdef USE_WIDECHAR

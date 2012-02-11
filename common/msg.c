@@ -66,12 +66,17 @@ msgq(sp, mt, fmt, va_alist)
 	} str[__NL_ARGMAX];
 #endif
 	static int reenter;		/* STATIC: Re-entrancy check. */
-	int ch;
 	GS *gp;
-	size_t blen, cnt1, cnt2, len, mlen, nlen, soff;
-	const char *p, *t, *u;
-	char *bp, *mp, *rbp, *s_rbp;
+	size_t blen, len, mlen, nlen;
+	const char *p;
+	char *bp, *mp;
         va_list ap;
+#ifndef NL_ARGMAX
+	int ch;
+	char *rbp, *s_rbp;
+	const char *t, *u;
+	size_t cnt1, cnt2, soff;
+#endif
 
 	/*
 	 * !!!
@@ -276,7 +281,9 @@ retry:		FREE_SPACE(sp, bp, blen);
 	fmt = rbp;
 #endif
 
+#ifndef NL_ARGMAX
 format:	/* Format the arguments into the string. */
+#endif
 #ifdef __STDC__
         va_start(ap, fmt);
 #else
@@ -351,7 +358,10 @@ nofmt:	mp += len;
 		(void)fprintf(stderr, "%.*s", (int)mlen, bp);
 
 	/* Cleanup. */
-ret:	FREE_SPACE(sp, bp, blen);
+#ifndef NL_ARGMAX
+ret:
+#endif
+	FREE_SPACE(sp, bp, blen);
 alloc_err:
 	reenter = 0;
 }

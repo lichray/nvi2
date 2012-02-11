@@ -56,7 +56,6 @@ ex_read(SCR *sp, EXCMD *cmdp)
 	size_t arglen = 0;
 	int argc, rval;
 	char *p;
-	char *np;
 
 	gp = sp->gp;
 

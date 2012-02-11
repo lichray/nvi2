@@ -103,13 +103,17 @@ static int freezeset __P((struct parse *p, cset *cs));
 static int firstch __P((struct parse *p, cset *cs));
 static int nch __P((struct parse *p, cset *cs));
 static void mcadd __P((struct parse *p, cset *cs, char *cp));
+#ifdef notdef
 static void mcsub __P((cset *cs, char *cp));
 static int mcin __P((cset *cs, char *cp));
 static char *mcfind __P((cset *cs, char *cp));
+#endif
 static void mcinvert __P((struct parse *p, cset *cs));
 static void mccase __P((struct parse *p, cset *cs));
+#ifdef notdef
 static int isinsets __P((struct re_guts *g, int c));
 static int samesets __P((struct re_guts *g, int c1, int c2));
+#endif
 static void categorize __P((struct parse *p, struct re_guts *g));
 static sopno dupl __P((struct parse *p, sopno start, sopno finish));
 static void doemit __P((struct parse *p, sop op, size_t opnd));
@@ -144,7 +148,7 @@ static RCHAR_T nuls[10];		/* place to point scanner in event of error */
 #define	NEXTn(n)	(p->next += (n))
 #define	GETNEXT()	(*p->next++)
 #define	SETERROR(e)	seterr(p, (e))
-#define	REQUIRE(co, e)	((co) || SETERROR(e))
+#define	REQUIRE(co, e)	((void)((co) || SETERROR(e)))
 #define	MUSTSEE(c, e)	(REQUIRE(MORE() && PEEK() == (c), e))
 #define	MUSTEAT(c, e)	(REQUIRE(MORE() && GETNEXT() == (c), e))
 #define	MUSTNOTSEE(c, e)	(REQUIRE(!MORE() || PEEK() != (c), e))
@@ -668,7 +672,6 @@ p_count(register struct parse *p)
 static void
 p_bracket(register struct parse *p)
 {
-	register char c;
 	register cset *cs = allocset(p);
 	register int invert = 0;
 	static RCHAR_T bow[] = { '[', ':', '<', ':', ']', ']' };
@@ -879,7 +882,6 @@ p_b_coll_elem(register struct parse *p, int endc)
 	register RCHAR_T *sp = p->next;
 	register struct cname *cp;
 	register int len;
-	register char c;
 
 	while (MORE() && !SEETWO(endc, ']'))
 		NEXT();
@@ -1238,6 +1240,7 @@ mcadd(register struct parse *p, register cset *cs, register char *cp)
 	cs->multis[cs->smultis - 1] = '\0';
 }
 
+#ifdef notdef
 /*
  - mcsub - subtract a collating element from a cset
  == static void mcsub(register cset *cs, register char *cp);
@@ -1289,6 +1292,7 @@ mcfind(register cset *cs, register char *cp)
 			return(p);
 	return(NULL);
 }
+#endif
 
 /*
  - mcinvert - invert the list of collating elements in a cset
@@ -1316,6 +1320,7 @@ mccase(register struct parse *p, register cset *cs)
 	assert(cs->multis == NULL);	/* xxx */
 }
 
+#ifdef notdef
 /*
  - isinsets - is this character in any sets?
  == static int isinsets(register struct re_guts *g, int c);
@@ -1352,6 +1357,7 @@ samesets(register struct re_guts *g, int c1, int c2)
 			return(0);
 	return(1);
 }
+#endif
 
 /*
  - categorize - sort out character categories
@@ -1360,9 +1366,8 @@ samesets(register struct re_guts *g, int c1, int c2)
 static void
 categorize(struct parse *p, register struct re_guts *g)
 {
-/*
+#ifdef notdef
 	register cat_t *cats = g->categories;
-*/
 	register int c;
 	register int c2;
 	register cat_t cat;
@@ -1371,7 +1376,6 @@ categorize(struct parse *p, register struct re_guts *g)
 	if (p->error != 0)
 		return;
 
-/*
 	for (c = CHAR_MIN; c <= CHAR_MAX; c++)
 		if (cats[c] == 0 && isinsets(g, c)) {
 			cat = g->ncategories++;
@@ -1380,7 +1384,7 @@ categorize(struct parse *p, register struct re_guts *g)
 				if (cats[c2] == 0 && samesets(g, c, c2))
 					cats[c2] = cat;
 		}
-*/
+#endif
 }
 
 /*

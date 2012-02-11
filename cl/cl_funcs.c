@@ -313,10 +313,13 @@ cl_cursor(SCR *sp, size_t *yp, size_t *xp)
 int
 cl_deleteln(SCR *sp)
 {
-	CHAR_T ch;
 	CL_PRIVATE *clp;
 	WINDOW *win;
+	size_t y, x;
+#ifndef mvchgat
+	CHAR_T ch;
 	size_t col, lno, spcnt, y, x;
+#endif
 
 	clp = CLP(sp);
 	win = CLSP(sp) ? CLSP(sp) : stdscr;
@@ -866,6 +869,7 @@ usage: vi [-eFlRrSv] [-c command] [-t tag] [-w size] [file ...]\n"
  *	Stub routine so can flush out curses screen changes using gdb.
  */
 static int
+	__attribute__((unused))
 gdbrefresh(void)
 {
 	refresh();

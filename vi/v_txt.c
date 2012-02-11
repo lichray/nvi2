@@ -1891,7 +1891,7 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 {
 	CHAR_T ch;
 	u_long sw, ts;
-	size_t cno, current, spaces, target, tabs, off;
+	size_t cno, current, spaces, target, tabs;
 	int ai_reset;
 
 	ts = O_VAL(sp, O_TABSTOP);
