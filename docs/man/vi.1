@@ -10,9 +10,9 @@
 .\"
 .\" See the LICENSE file for redistribution information.
 .\"
-.\"     $Id: vi.1,v 8.57 2011/12/23 01:12:46 zy Exp $
+.\"     $Id: vi.1,v 8.58 2012/02/11 01:33:39 zy Exp $
 .\"
-.TH VI 1 "23 August, 2011"
+.TH VI 1 "11 February, 2012"
 .UC
 .SH NAME
 ex, vi, view \- text editors
@@ -1158,6 +1158,9 @@ read or written.
 .TP
 .B "magic [on]"
 Treat certain characters specially in regular expressions.
+.TP
+.B "matchchars [[]{}()<>]"
+Character pairs looked for by the % command.
 .TP
 .B "matchtime [7]"
 .I \&Vi
