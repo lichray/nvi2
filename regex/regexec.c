@@ -63,7 +63,7 @@ static int nope = 0;		/* for use in asserts; shuts lint up */
 
 /* macros for manipulating states, small version */
 #define	states	int
-#define	states1	states		/* for later use in regexec() decision */
+#define	states1	int		/* for later use in regexec() decision */
 #define	CLEAR(v)	((v) = 0)
 #define	SET0(v, n)	((v) &= ~(1 << (n)))
 #define	SET1(v, n)	((v) |= 1 << (n))
