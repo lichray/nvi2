@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: msg.c,v 10.51 2011/12/14 23:26:19 zy Exp $";
+static const char sccsid[] = "$Id: msg.c,v 10.52 2012/02/12 11:03:28 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -899,13 +899,13 @@ msg_print(
 {
 	size_t blen, nlen;
 	char *bp, *ep, *p, *t;
-	static CONVWIN cw;
 	CHAR_T *wp, *cp;
 	size_t wlen;
 
 	*needfree = 0;
 
-	CHAR2INT5(sp, cw, (char *)s, strlen(s) + 1, wp, wlen);
+	/* XXX Not good for debugging ex_read & ex_filter.*/
+	CHAR2INT5(sp, EXP(sp)->ibcw, (char *)s, strlen(s) + 1, wp, wlen);
 	for (cp = wp; *cp != '\0'; ++cp)
 		if (!ISPRINT(*cp))
 			break;
