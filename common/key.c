@@ -279,6 +279,7 @@ nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 		len = 2;
 		goto done;
 	}
+#ifdef USE_WIDECHAR
 	if (INTISWIDE(ach)) {
 		int uc = -1;
 
@@ -303,6 +304,7 @@ nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 			goto done;
 		}
 	}
+#endif
 	if (O_ISSET(sp, O_OCTAL)) {
 		sp->cname[0] = '\\';
 		sp->cname[1] = octdigit[(ch & 0300) >> 6];
