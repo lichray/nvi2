@@ -10,7 +10,7 @@
 .\"
 .\" See the LICENSE file for redistribution information.
 .\"
-.\"     $Id: vi.1,v 8.58 2012/02/11 01:33:39 zy Exp $
+.\"     $Id: vi.1,v 8.59 2012/02/12 12:56:37 zy Exp $
 .\"
 .TH VI 1 "11 February, 2012"
 .UC
@@ -1159,8 +1159,10 @@ read or written.
 .B "magic [on]"
 Treat certain characters specially in regular expressions.
 .TP
-.B "matchchars [[]{}()<>]"
-Character pairs looked for by the % command.
+.B "matchchars [[]{}()]"
+Character pairs looked for by the
+.B %
+command.
 .TP
 .B "matchtime [7]"
 .I \&Vi
@@ -1302,7 +1304,7 @@ Set the autoindent and shift command indentation width.
 .B "showmatch, sm [off]"
 .I \&Vi
 only.
-Note matching ``{'' and ``('' for ``}'' and ``)'' characters.
+Note the left matching characters when the right ones are inserted.
 .TP
 .B "showmode, smd [off]"
 .I \&Vi
