@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.111 2011/12/27 15:18:38 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 10.112 2012/02/12 11:53:19 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1198,11 +1198,6 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		if (txt_dent(sp, tp, 1))
 			goto err;
 		goto ebuf_chk;
-	case K_RIGHTBRACE:
-	case K_RIGHTPAREN:
-		if (LF_ISSET(TXT_SHOWMATCH))
-			showmatch = 1;
-		goto ins_ch;
 	case K_BACKSLASH:		/* Quote next erase/kill. */
 		/*
 		 * !!!
@@ -1250,6 +1245,14 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		hexcnt = 1;
 		goto insq_ch;
 	default:			/* Insert the character. */
+		if (LF_ISSET(TXT_SHOWMATCH)) {
+			CHAR_T *match_chars, *cp;
+
+			match_chars = VIP(sp)->mcs;
+			cp = STRCHR(match_chars, evp->e_c);
+			if (cp != NULL && (cp - match_chars) & 1)
+				showmatch = 1;
+		}
 ins_ch:		/*
 		 * Historically, vi eliminated nul's out of hand.  If the
 		 * beautify option was set, it also deleted any unknown
@@ -2744,7 +2747,7 @@ txt_showmatch(SCR *sp, TEXT *tp)
 	cs.cs_cno = tp->cno - 1;
 	if (cs_init(sp, &cs))
 		return (1);
-	startc = (endc = cs.cs_ch)  == ')' ? '(' : '{';
+	startc = STRCHR(VIP(sp)->mcs, endc = cs.cs_ch)[-1];
 
 	/* Search for the match. */
 	for (cnt = 1;;) {
