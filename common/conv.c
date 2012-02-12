@@ -357,8 +357,6 @@ conv_init (SCR *orig, SCR *sp)
 	    sp->conv.int2file = fe_int2char;
 	    sp->conv.input2int = ie_char2int;
 	}
-#elif __linux__
-	setlocale(LC_CTYPE, "");
 #endif
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, codeset(), 0);

@@ -880,21 +880,6 @@ success_open:
 		msgq_str(sp, M_ERR, name,
 		    "252|%s: write lock was unavailable");
 
-#if __linux__
-	/*
-	 * XXX
-	 * In libc 4.5.x, fdopen(fd, "w") clears the O_APPEND flag (if set).
-	 * This bug is fixed in libc 4.6.x.
-	 *
-	 * This code works around this problem for libc 4.5.x users.
-	 * Note that this code is harmless if you're using libc 4.6.x.
-	 */
-	if (LF_ISSET(FS_APPEND) && lseek(fd, (off_t)0, SEEK_END) < 0) {
-		msgq(sp, M_SYSERR, "%s", name);
-		return (1);
-	}
-#endif
-
 	/*
 	 * Use stdio for buffering.
 	 *
