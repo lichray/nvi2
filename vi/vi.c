@@ -1015,6 +1015,8 @@ v_dtoh(SCR *sp)
 		}
 		TAILQ_REMOVE(gp->dq, tsp, q);
 		TAILQ_INSERT_TAIL(gp->hq, tsp, q);
+		/* XXXX Change if hidden screens per window */
+		gp->scr_discard(tsp, NULL);
 	}
 
 	/* Move current screen back to the display queue. */
