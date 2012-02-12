@@ -49,8 +49,8 @@ codeset(void) {
 
 #ifdef USE_WIDECHAR
 static int 
-raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, size_t *tolen,
-	CHAR_T **dst)
+raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
+	size_t *tolen, CHAR_T **dst)
 {
     int i;
     CHAR_T **tostr = &cw->bp1.wc;
@@ -181,8 +181,8 @@ cs_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 }
 
 static int 
-int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw, size_t *tolen,
-	char **dst)
+int2raw(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
+	size_t *tolen, char **dst)
 {
     int i;
     char **tostr = &cw->bp1.c;
@@ -313,27 +313,26 @@ cs_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
  * PUBLIC: void conv_init __P((SCR *, SCR *));
  */
 void
-conv_init (SCR *orig, SCR *sp)
+conv_init(SCR *orig, SCR *sp)
 {
     int i;
 
+    if (orig == NULL)
+	setlocale(LC_ALL, "");
     if (orig != NULL)
 	MEMCPY(&sp->conv, &orig->conv, 1);
+#ifdef USE_WIDECHAR
     else {
-	char *ctype;
-#ifdef USE_WIDECHAR
-	char *cp;
-#endif
-	setlocale(LC_ALL, "");
+	char *ctype, *cp;
+
 	ctype = setlocale(LC_CTYPE, NULL);
-#ifdef USE_WIDECHAR
 	/*
 	 * The CJK hacks try to use GB18030 to handle
 	 * eucCN, eucJP, eucKR, GB2312, GBK, CP949, CP936.
 	 *
 	 * XXX
-	 * This fixes the libncursesw limitaions (GB2312, GBK, and CP949
-	 * do not work) on FreeBSD at the same time.
+	 * This fixes the libncursesw limitaions (GB2312, GBK, and
+	 * CP949 do not work) on FreeBSD at the same time.
 	 */
 	if ((cp = strchr(ctype, '.'))) {
 	    ++cp;
@@ -357,16 +356,16 @@ conv_init (SCR *orig, SCR *sp)
 	    sp->conv.int2file = fe_int2char;
 	    sp->conv.input2int = ie_char2int;
 	}
-#endif
-#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+#ifdef USE_ICONV
 	o_set(sp, O_INPUTENCODING, OS_STRDUP, codeset(), 0);
 #endif
     }
+#endif
 
     /* iconv descriptors must be distinct to screens. */
     for (i = 0; i <= IC_IE_TO_UTF16; ++i)
 	sp->conv.id[i] = (iconv_t)-1;
-#if defined(USE_WIDECHAR) && defined(USE_ICONV)
+#ifdef USE_ICONV
     conv_enc(sp, O_INPUTENCODING, 0);
 #endif
     /* XXX Do not inherit fileencoding from the old screen. */
@@ -379,7 +378,7 @@ conv_init (SCR *orig, SCR *sp)
  * PUBLIC: int conv_enc __P((SCR *, int, char *));
  */
 int
-conv_enc (SCR *sp, int option, char *enc)
+conv_enc(SCR *sp, int option, char *enc)
 {
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
     iconv_t *c2w, *w2c;
@@ -444,7 +443,7 @@ err:
  * PUBLIC: void conv_end __P((SCR *));
  */
 void
-conv_end (SCR *sp)
+conv_end(SCR *sp)
 {
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
     int i;
