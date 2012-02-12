@@ -361,7 +361,7 @@ opts_init(
 	OI(O_ESCAPETIME, L("escapetime=6"));
 	OI(O_FILEC, L("filec=\t"));
 	OI(O_KEYTIME, L("keytime=6"));
-	OI(O_MATCHCHARS, L("matchchars=()[]{}<>"));
+	OI(O_MATCHCHARS, L("matchchars=()[]{}"));
 	OI(O_MATCHTIME, L("matchtime=7"));
 	(void)SPRINTF(b2, SIZE(b2), L("msgcat=%s"), _PATH_MSGCAT);
 	OI(O_MSGCAT, b2);
