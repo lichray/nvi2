@@ -172,7 +172,7 @@ proc_wait(SCR *sp, long int pid, const char *cmd, int silent, int okpipe)
 		p = msg_print(sp, cmd, &nf);
 		len = strlen(p);
 		msgq(sp, M_ERR, "%.*s%s: received signal: %s%s",
-		    MIN(len, 20), p, len > 20 ? " ..." : "",
+		    (int)MIN(len, 20), p, len > 20 ? " ..." : "",
 		    sigmsg(WTERMSIG(pstat)),
 		    WCOREDUMP(pstat) ? "; core dumped" : "");
 		if (nf)
@@ -194,7 +194,7 @@ proc_wait(SCR *sp, long int pid, const char *cmd, int silent, int okpipe)
 			p = msg_print(sp, cmd, &nf);
 			len = strlen(p);
 			msgq(sp, M_ERR, "%.*s%s: exited with status %d",
-			    MIN(len, 20), p, len > 20 ? " ..." : "",
+			    (int)MIN(len, 20), p, len > 20 ? " ..." : "",
 			    WEXITSTATUS(pstat));
 			if (nf)
 				FREE_SPACE(sp, p, 0);

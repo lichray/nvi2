@@ -451,8 +451,8 @@ opts_init(
 #undef OI
 	return (0);
 
-err:	msgq(sp, M_ERR,
-	    "031|Unable to set default %s option", optlist[optindx].name);
+err:	msgq_wstr(sp, M_ERR, optlist[optindx].name,
+	    "031|Unable to set default %s option");
 	return (1);
 }
 

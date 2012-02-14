@@ -467,7 +467,7 @@ adjust:	if (!O_ISSET(sp, O_LEFTRIGHT) &&
 #ifdef DEBUG
 	/* Sanity checking. */
 	if (CNO >= len && len != 0) {
-		msgq(sp, M_ERR, "Error: %s/%d: cno (%u) >= len (%u)",
+		msgq(sp, M_ERR, "Error: %s/%d: cno (%zu) >= len (%zu)",
 		     tail(__FILE__), __LINE__, CNO, len);
 		return (1);
 	}

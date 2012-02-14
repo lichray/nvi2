@@ -1379,7 +1379,7 @@ ebuf_chk:	if (tp->cno >= tp->len) {
 #ifdef DEBUG
 	if (tp->cno + tp->insert + tp->owrite != tp->len) {
 		msgq(sp, M_ERR,
-		    "len %u != cno: %u ai: %u insert %u overwrite %u",
+		    "len %zu != cno: %zu ai: %zu insert %zu overwrite %zu",
 		    tp->len, tp->cno, tp->ai, tp->insert, tp->owrite);
 		if (LF_ISSET(TXT_REPLAY))
 			goto done;

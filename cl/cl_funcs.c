@@ -537,7 +537,7 @@ cl_move(SCR *sp, size_t lno, size_t cno)
 	win = CLSP(sp) ? CLSP(sp) : stdscr;
 	/* See the comment in cl_cursor. */
 	if (wmove(win, RLNO(sp, lno), RCNO(sp, cno)) == ERR) {
-		msgq(sp, M_ERR, "Error: move: l(%u + %u) c(%u + %u)",
+		msgq(sp, M_ERR, "Error: move: l(%zu + %zu) c(%zu + %zu)",
 		    lno, sp->roff, cno, sp->coff);
 		return (1);
 	}

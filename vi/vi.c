@@ -964,7 +964,7 @@ v_init(SCR *sp)
 			sp->t_minrows = sp->t_rows = sp->rows - 1;
 			msgq(sp, M_INFO,
 			    "214|Windows option value is too large, max is %u",
-			    sp->t_rows);
+			    (u_int)sp->t_rows);
 		}
 		sp->t_maxrows = sp->rows - 1;
 	} else

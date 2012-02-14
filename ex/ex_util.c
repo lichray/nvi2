@@ -109,7 +109,7 @@ ex_ncheck(SCR *sp, int force)
 
 		for (ap = sp->cargv + 1; *ap != NULL; ++ap);
 		msgq(sp, M_ERR,
-		    "167|%d more files to edit", (ap - sp->cargv) - 1);
+		    "167|%d more files to edit", (int)(ap - sp->cargv) - 1);
 
 		return (1);
 	}
