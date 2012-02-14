@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.112 2012/02/12 11:53:19 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 10.113 2012/02/13 19:22:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -2267,7 +2267,7 @@ static int
 txt_emark(SCR *sp, TEXT *tp, size_t cno)
 {
 	CHAR_T ch;
-	char *kp;
+	u_char *kp;
 	size_t chlen, nlen, olen;
 	CHAR_T *p;
 
@@ -2303,7 +2303,8 @@ txt_emark(SCR *sp, TEXT *tp, size_t cno)
 			for (cno += chlen; chlen--;)
 				*p++ = ' ';
 		else
-			for (kp = KEY_NAME(sp, tp->lb[cno]),
+			for (kp = (u_char*)
+			    KEY_NAME(sp, tp->lb[cno]),
 			    cno += chlen; chlen--;)
 				*p++ = *kp++;
 	}
@@ -2431,7 +2432,7 @@ nothex:		tp->lb[tp->cno] = savec;
 static int
 txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 {
-	char *kp;
+	u_char *kp;
 	CHAR_T savech;
 	size_t chlen, cno, copydown, olen, nlen;
 	CHAR_T *p;
@@ -2499,7 +2500,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 					for (p = tp->lb + cno + 1; chlen--;)
 						*p++ = ' ';
 				else
-					for (kp =
+					for (kp = (u_char*)
 					    KEY_NAME(sp, tp->lb[cno]) + nlen,
 					    p = tp->lb + cno + 1; chlen--;)
 						*p++ = *kp++;

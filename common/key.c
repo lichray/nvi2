@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.52 2011/12/12 23:38:51 zy Exp $";
+static const char sccsid[] = "$Id: key.c,v 10.53 2012/02/13 19:22:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -240,12 +240,12 @@ v_key_name(
 	sp->lastc = ach;
 
 #ifdef USE_WIDECHAR
-	len = wcrtomb(sp->cname, ach, NULL);
+	len = wctomb(sp->cname, ach);
 	if (len > MB_CUR_MAX)
 #endif
-	sp->cname[(len = 1)-1] = (u_char)ach;
+		sp->cname[(len = 1)-1] = (u_char)ach;
 
-	ch = sp->cname[0];
+	ch = (u_char)sp->cname[0];
 	sp->cname[len] = '\0';
 
 	/* See if the character was explicitly declared printable or not. */

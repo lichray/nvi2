@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_line.c,v 10.39 2011/12/14 14:58:15 zy Exp $";
+static const char sccsid[] = "$Id: vs_line.c,v 10.40 2012/02/13 19:22:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -40,7 +40,7 @@ static const char sccsid[] = "$Id: vs_line.c,v 10.39 2011/12/14 14:58:15 zy Exp 
 int
 vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 {
-	char *kp;
+	u_char *kp;
 	GS *gp;
 	SMAP *tsmp;
 	size_t chlen = 0, cno_cnt, cols_per_screen, len, nlen;
@@ -437,8 +437,9 @@ display:
 			if (KEY_NEEDSWIDE(sp, ch))
 				*cbp++ = ch;
 			else
-				for (kp = KEY_NAME(sp, ch) + offset_in_char; 
-				     chlen--;)
+				for (kp = (u_char*)
+				    KEY_NAME(sp, ch) + offset_in_char;
+				    chlen--;)
 					*cbp++ = *kp++;
 		}
 	}
@@ -459,7 +460,8 @@ display:
 			chlen = KEY_LEN(sp, '$');
 			if (cbp + chlen >= ecbp)
 				FLUSH;
-			for (kp = KEY_NAME(sp, '$'); chlen--;)
+			for (kp = (u_char*)
+			    KEY_NAME(sp, '$'); chlen--;)
 				*cbp++ = *kp++;
 		}
 
