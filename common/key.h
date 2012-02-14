@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: key.h,v 10.53 2011/12/27 12:45:58 zy Exp $
+ *	$Id: key.h,v 10.54 2012/02/13 19:43:08 zy Exp $
  */
 
 #include "multibyte.h"
@@ -24,7 +24,7 @@
     sp->conv.input2int(sp, n, nlen, &(cw), &wlen, &w)
 #define CONST
 #define CHAR_WIDTH(sp, ch)  wcwidth(ch)
-#define INTISWIDE(c)	(!!(c >> 8))	    /* XXX wrong name */
+#define INTISWIDE(c)	(wctob(c) == EOF)
 #else
 #define FILE2INT5(sp,buf,n,nlen,w,wlen) \
     (w = n, wlen = nlen, 0)
