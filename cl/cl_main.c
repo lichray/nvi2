@@ -165,7 +165,7 @@ main(int argc, char **argv)
  * gs_init --
  *	Create and partially initialize the GS structure.
  */
-GS *
+static GS *
 gs_init(char *name)
 {
 	GS *gp;
