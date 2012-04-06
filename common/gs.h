@@ -62,7 +62,6 @@ struct _gs {
 	SCR	*ccl_sp;		/* Colon command-line screen. */
 
 	void	*cl_private;		/* Curses support private area. */
-	void	*ip_private;		/* IP support private area. */
 
 					/* File references. */
 	TAILQ_HEAD(_frefh, _fref) frefq[1];
