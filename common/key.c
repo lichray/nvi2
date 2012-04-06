@@ -787,9 +787,6 @@ v_event_err(
 	case E_INTERRUPT:
 		msgq(sp, M_ERR, "279|Unexpected interrupt event");
 		break;
-	case E_QUIT:
-		msgq(sp, M_ERR, "280|Unexpected quit event");
-		break;
 	case E_REPAINT:
 		msgq(sp, M_ERR, "281|Unexpected repaint event");
 		break;
@@ -801,9 +798,6 @@ v_event_err(
 		break;
 	case E_WRESIZE:
 		msgq(sp, M_ERR, "316|Unexpected resize event");
-		break;
-	case E_WRITE:
-		msgq(sp, M_ERR, "287|Unexpected write event");
 		break;
 
 	/*

@@ -67,14 +67,12 @@ typedef enum {
 	E_EOF,				/* End of input (NOT ^D). */
 	E_ERR,				/* Input error. */
 	E_INTERRUPT,			/* Interrupt. */
-	E_QUIT,				/* Quit. */
 	E_REPAINT,			/* Repaint: e_flno, e_tlno set. */
 	E_SIGHUP,			/* SIGHUP. */
 	E_SIGTERM,			/* SIGTERM. */
 	E_STRING,			/* Input string: e_csp, e_len set. */
 	E_TIMEOUT,			/* Timeout. */
 	E_WRESIZE,			/* Window resize. */
-	E_WRITE				/* Write. */
 } e_event_t;
 
 /*

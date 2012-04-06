@@ -155,8 +155,6 @@ vi(SCR **spp)
 		case GC_ERR_NOFLUSH:
 			goto gc_err_noflush;
 		case GC_EVENT:
-			if (v_event_exec(sp, vp))
-				goto err;
 			goto gc_event;
 		case GC_FATAL:
 			goto ret;
@@ -1218,10 +1216,6 @@ v_key(
 			break;
 		case E_WRESIZE:
 			return (GC_ERR);
-		case E_QUIT:
-		case E_WRITE:
-			if (command_events)
-				return (GC_EVENT);
 			/* FALLTHROUGH */
 		default:
 			v_event_err(sp, evp);

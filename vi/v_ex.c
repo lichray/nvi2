@@ -303,30 +303,6 @@ v_filter(SCR *sp, VICMD *vp)
 }
 
 /*
- * v_event_exec --
- *	Execute some command(s) based on an event.
- *
- * PUBLIC: int v_event_exec __P((SCR *, VICMD *));
- */
-int
-v_event_exec(SCR *sp, VICMD *vp)
-{
-	EXCMD cmd;
-
-	switch (vp->ev.e_event) {
-	case E_QUIT:
-		ex_cinit(sp, &cmd, C_QUIT, 0, OOBLNO, OOBLNO, 0);
-		break;
-	case E_WRITE:
-		ex_cinit(sp, &cmd, C_WRITE, 0, OOBLNO, OOBLNO, 0);
-		break;
-	default:
-		abort();
-	}
-	return (v_exec_ex(sp, vp, &cmd));
-}
-
-/*
  * v_exec_ex --
  *	Execute an ex command.
  */
