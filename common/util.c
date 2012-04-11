@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.25 2011/12/27 15:15:23 zy Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.26 2012/04/11 03:19:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -118,6 +118,26 @@ tail(char *path)
 	if ((p = strrchr(path, '/')) == NULL)
 		return (path);
 	return (p + 1);
+}
+
+/*
+ * join --
+ *	Join two paths; need free.
+ *
+ * PUBLIC: char *join __P((char *, char *));
+ */
+char *
+join(
+    char *path1,
+    char *path2)
+{
+	char *p;
+
+	if (path1[0] == '\0' || path2[0] == '/')
+		return strdup(path2);
+	(void)asprintf(&p, path1[strlen(path1)-1] == '/' ?
+	    "%s%s" : "%s/%s", path1, path2);
+	return p;
 }
 
 /*
