@@ -1232,10 +1232,13 @@ file_encinit(SCR *sp)
 		int st = looks_utf16(buf, blen);
 		if (st > 0) {
 			char *np;
+
+			/* Exclude the BOM during the editing. */
 			db_rget(sp, 1, &p, &len);
-			if ((np = malloc(len-2))) {
-				memcpy(np, p+2, len-2);
-				db_rset(sp, 1, np, len-2);	/* store w/o the BOM */
+			MALLOC(sp, np, char *, len - 2);
+			if (np != NULL) {
+				memcpy(np, p + 2, len - 2);
+				db_rset(sp, 1, np, len - 2);
 				free(np);
 			}
 		}
