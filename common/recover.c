@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 10.33 2011/12/21 12:39:25 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 10.34 2012/04/11 01:06:35 zy Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -342,13 +342,13 @@ rcv_mailfile(
 
 	/*
 	 * XXX
-	 * MAXHOSTNAMELEN is in various places on various systems, including
-	 * <netdb.h> and <sys/socket.h>.  If not found, use a large default.
+	 * MAXHOSTNAMELEN/HOST_NAME_MAX are deprecated. We try sysconf(3)
+	 * first, then fallback to _POSIX_HOST_NAME_MAX.
 	 */
-#ifndef MAXHOSTNAMELEN
-#define	MAXHOSTNAMELEN	1024
-#endif
-	char host[MAXHOSTNAMELEN];
+	char *host;
+	long hostmax = sysconf(_SC_HOST_NAME_MAX);
+	if (hostmax < 0)
+		hostmax = _POSIX_HOST_NAME_MAX;
 
 	gp = sp->gp;
 	if ((pw = getpwuid(uid = getuid())) == NULL) {
@@ -397,7 +397,8 @@ rcv_mailfile(
 	else
 		++p;
 	(void)time(&now);
-	(void)gethostname(host, sizeof(host));
+	MALLOC_RET(sp, host, char *, hostmax + 1);
+	(void)gethostname(host, hostmax + 1);
 	len = snprintf(buf, sizeof(buf),
 	    "%s%s\n%s%s\n%s\n%s\n%s%s\n%s%s\n%s\n\n",
 	    VI_FHEADER, t,			/* Non-standard. */
@@ -420,6 +421,7 @@ rcv_mailfile(
 	    "You can recover most, if not all, of the changes ",
 	    "to this file using the -r option to ", gp->progname, ":\n\n\t",
 	    gp->progname, " -r ", t);
+	free(host);
 	if (len > sizeof(buf) - 1) {
 lerr:		msgq(sp, M_ERR, "064|Recovery file buffer overrun");
 		goto err;
