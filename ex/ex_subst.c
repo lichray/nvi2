@@ -232,8 +232,8 @@ tilde:				++p;
 		if ((sp->repl_len = len) != 0) {
 			if (sp->repl != NULL)
 				free(sp->repl);
-			if ((sp->repl = malloc(len * sizeof(CHAR_T))) == NULL) {
-				msgq(sp, M_SYSERR, NULL);
+			MALLOC(sp, sp->repl, CHAR_T *, len * sizeof(CHAR_T));
+			if (sp->repl == NULL) {
 				FREE_SPACEW(sp, bp, blen);
 				return (1);
 			}
@@ -1289,9 +1289,8 @@ re_error(SCR *sp, int errcode, regex_t *preg)
 	char *oe;
 
 	s = regerror(errcode, preg, "", 0);
-	if ((oe = malloc(s)) == NULL)
-		msgq(sp, M_SYSERR, NULL);
-	else {
+	MALLOC(sp, oe, char *, s);
+	if (oe != NULL) {
 		(void)regerror(errcode, preg, oe, s);
 		msgq(sp, M_ERR, "RE error: %s", oe);
 		free(oe);
