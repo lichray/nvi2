@@ -132,7 +132,7 @@ find_file(vi_cv_path_preserve vi.recover
 if(NOT vi_cv_path_preserve)
 	foreach(_path /var/preserve /var/tmp /usr/tmp)
 		execute_process(COMMAND /bin/mkdir -p ${_path}/vi.recover
-			RESULT_VARIABLE _path_st)
+			RESULT_VARIABLE _path_st ERROR_QUIET)
 		if(NOT _path_st)
 			set(vi_cv_path_preserve ${_path}/vi.recover)
 			break()
