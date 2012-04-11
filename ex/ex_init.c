@@ -144,7 +144,7 @@ int
 ex_exrc(SCR *sp)
 {
 	struct stat hsb, lsb;
-	char *p, path[MAXPATHLEN];
+	char *p, *path;
 	CHAR_T *wp;
 	size_t wlen;
 
@@ -197,22 +197,33 @@ ex_exrc(SCR *sp)
 		if (ex_run_str(sp, "EXINIT", wp, wlen - 1, 1, 0))
 			return (1);
 	} else if ((p = getenv("HOME")) != NULL && *p) {
-		(void)snprintf(path, sizeof(path), "%s/%s", p, _PATH_NEXRC);
+		int st = 0;
+
+		if ((path = join(p, _PATH_NEXRC)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			return (1);
+		}
 		switch (exrc_isok(sp, &hsb, path, 0, 1)) {
 		case NOEXIST:
-			(void)snprintf(path,
-			    sizeof(path), "%s/%s", p, _PATH_EXRC);
+			free(path);
+			if ((path = join(p, _PATH_EXRC)) == NULL) {
+				msgq(sp, M_SYSERR, NULL);
+				return (1);
+			}
 			if (exrc_isok(sp,
 			    &hsb, path, 0, 1) == RCOK && ex_run_file(sp, path))
-				return (1);
+				st = 1;
 			break;
 		case NOPERM:
 			break;
 		case RCOK:
 			if (ex_run_file(sp, path))
-				return (1);
+				st = 1;
 			break;
 		}
+		free(path);
+		if (st)
+			return st;
 	}
 
 	/* Run the commands. */
