@@ -16,8 +16,7 @@
 static const char sccsid[] = "$Id: ex_tag.c,v 10.53 2011/12/25 13:05:04 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
@@ -1190,8 +1189,7 @@ static void
 ctag_file(SCR *sp, TAGF *tfp, char *name, char **dirp, size_t *dlenp)
 {
 	struct stat sb;
-	size_t len;
-	char *p, buf[MAXPATHLEN];
+	char *p, *buf;
 
 	/*
 	 * !!!
@@ -1205,11 +1203,15 @@ ctag_file(SCR *sp, TAGF *tfp, char *name, char **dirp, size_t *dlenp)
 	if (name[0] != '/' &&
 	    stat(name, &sb) && (p = strrchr(tfp->name, '/')) != NULL) {
 		*p = '\0';
-		len = snprintf(buf, sizeof(buf), "%s/%s", tfp->name, name);
+		if ((buf = join(tfp->name, name)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			return;
+		}
 		if (stat(buf, &sb) == 0) {
 			*dirp = tfp->name;
 			*dlenp = strlen(*dirp);
 		}
+		free(buf);
 		*p = '/';
 	}
 }
