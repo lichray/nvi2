@@ -10,10 +10,9 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_shell.c,v 10.42 2003/11/05 17:11:54 skimo Exp $";
+static const char sccsid[] = "$Id: ex_shell.c,v 10.43 2012/04/12 08:17:30 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
 #include <sys/queue.h>
 #include <sys/wait.h>
 
@@ -42,7 +41,7 @@ int
 ex_shell(SCR *sp, EXCMD *cmdp)
 {
 	int rval;
-	char buf[MAXPATHLEN];
+	char *buf;
 
 	/* We'll need a shell. */
 	if (opts_empty(sp, O_SHELL, 0))
@@ -52,13 +51,18 @@ ex_shell(SCR *sp, EXCMD *cmdp)
 	 * XXX
 	 * Assumes all shells use -i.
 	 */
-	(void)snprintf(buf, sizeof(buf), "%s -i", O_STR(sp, O_SHELL));
+	(void)asprintf(&buf, "%s -i", O_STR(sp, O_SHELL));
+	if (buf == NULL) {
+		msgq(sp, M_SYSERR, NULL);
+		return (1);
+	}
 
 	/* Restore the window name. */
 	(void)sp->gp->scr_rename(sp, NULL, 0);
 
 	/* If we're still in a vi screen, move out explicitly. */
 	rval = ex_exec_proc(sp, cmdp, buf, NULL, !F_ISSET(sp, SC_SCR_EXWROTE));
+	free(buf);
 
 	/* Set the window name. */
 	(void)sp->gp->scr_rename(sp, sp->frp->name, 1);
