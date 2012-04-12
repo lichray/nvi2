@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_tag.c,v 10.53 2011/12/25 13:05:04 zy Exp $";
+static const char sccsid[] = "$Id: ex_tag.c,v 10.54 2012/04/12 07:17:30 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -862,7 +862,7 @@ ex_tagf_alloc(SCR *sp, char *str)
 	/* Create new queue. */
 	for (p = t = str;; ++p) {
 		if (*p == '\0' || cmdskip(*p)) {
-			if ((len = p - t) > 1) {
+			if ((len = p - t)) {
 				MALLOC_RET(sp, tfp, TAGF *, sizeof(TAGF));
 				MALLOC(sp, tfp->name, char *, len + 1);
 				if (tfp->name == NULL) {
