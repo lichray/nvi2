@@ -10,11 +10,10 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: msg.c,v 10.52 2012/02/12 11:03:28 zy Exp $";
+static const char sccsid[] = "$Id: msg.c,v 10.53 2012/04/12 07:00:49 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -737,23 +736,30 @@ msg_open(
 	DB *db;
 	DBT data, key;
 	recno_t msgno;
-	char *p, *t, buf[MAXPATHLEN];
+	char *p, *t;
+	int nf = 0;
+	int rval = 0;
 
 	if ((p = strrchr(file, '/')) != NULL && p[1] == '\0' &&
 	    (((t = getenv("LC_MESSAGES")) != NULL && t[0] != '\0') ||
 	    ((t = getenv("LANG")) != NULL && t[0] != '\0'))) {
-		(void)snprintf(buf, sizeof(buf), "%s%s", file, t);
-		p = buf;
+		if ((p = join(file, t)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			return (1);
+		}
+		nf = 1;
 	} else
 		p = file;
 	if ((db = dbopen(p,
 	    O_NONBLOCK | O_RDONLY, 0, DB_RECNO, NULL)) == NULL) {
 		if (first) {
 			first = 0;
-			return (1);
+			rval = 1;
+			goto ret;
 		}
 		msgq_str(sp, M_SYSERR, p, "%s");
-		return (1);
+		rval = 1;
+		goto ret;
 	}
 
 	/*
@@ -770,18 +776,22 @@ msg_open(
 		(void)db->close(db);
 		if (first) {
 			first = 0;
-			return (1);
+			rval = 1;
+			goto ret;
 		}
 		msgq_str(sp, M_ERR, p,
 		    "030|The file %s is not a message catalog");
-		return (1);
+		rval = 1;
+		goto ret;
 	}
 	first = 0;
 
 	if (sp->gp->msg != NULL)
 		(void)sp->gp->msg->close(sp->gp->msg);
 	sp->gp->msg = db;
-	return (0);
+ret:	if (nf)
+		free(p);
+	return (rval);
 }
 
 /*
