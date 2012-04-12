@@ -13,7 +13,6 @@
 static const char sccsid[] = "$Id: ex_cd.c,v 10.12 2001/06/25 15:19:14 skimo Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
 #include <sys/queue.h>
 
 #include <bitstring.h>
@@ -38,9 +37,9 @@ ex_cd(SCR *sp, EXCMD *cmdp)
 {
 	struct passwd *pw;
 	ARGS *ap;
-	CHAR_T savech;
-	char *dir, *p, *t;	/* XXX: END OF THE STACK, DON'T TRUST GETCWD. */
-	char buf[MAXPATHLEN * 2];
+	int savech;
+	char *dir, *p, *t;
+	char *buf;
 	size_t dlen;
 
 	/*
@@ -110,14 +109,20 @@ ex_cd(SCR *sp, EXCMD *cmdp)
 			if (t < p - 1) {
 				savech = *p;
 				*p = '\0';
-				(void)snprintf(buf,
-				    sizeof(buf), "%s/%s", t, dir);
+				if ((buf = join(t, dir)) == NULL) {
+					msgq(sp, M_SYSERR, NULL);
+					return (1);
+				}
 				*p = savech;
 				if (!chdir(buf)) {
-					if (getcwd(buf, sizeof(buf)) != NULL)
+					free(buf);
+					if ((buf = getcwd(NULL, 0)) != NULL) {
 		msgq_str(sp, M_INFO, buf, "122|New current directory: %s");
+						free(buf);
+					}
 					return (0);
 				}
+				free(buf);
 			}
 			t = p + 1;
 			if (*p == '\0')
