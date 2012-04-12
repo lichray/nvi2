@@ -10,11 +10,10 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_init.c,v 10.32 2011/12/04 03:46:06 zy Exp $";
+static const char sccsid[] = "$Id: ex_init.c,v 10.33 2012/04/11 19:12:34 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 
@@ -361,7 +360,7 @@ exrc_isok(SCR *sp, struct stat *sbp, char *path, int rootown, int rootid)
 	enum { ROOTOWN, OWN, WRITER } etype;
 	uid_t euid;
 	int nf1, nf2;
-	char *a, *b, buf[MAXPATHLEN];
+	char *a, *b, *buf;
 
 	/* Check for the file's existence. */
 	if (stat(path, sbp))
@@ -383,23 +382,30 @@ exrc_isok(SCR *sp, struct stat *sbp, char *path, int rootown, int rootid)
 	return (RCOK);
 
 denied:	a = msg_print(sp, path, &nf1);
-	if (strchr(path, '/') == NULL && getcwd(buf, sizeof(buf)) != NULL) {
+	if (strchr(path, '/') == NULL && (buf = getcwd(NULL, 0)) != NULL) {
+		char *p;
+
 		b = msg_print(sp, buf, &nf2);
+		if ((p = join(b, a)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			goto err;
+		}
 		switch (etype) {
 		case ROOTOWN:
 			msgq(sp, M_ERR,
-			    "125|%s/%s: not sourced: not owned by you or root",
-			    b, a);
+			    "128|%s: not sourced: not owned by you or root", p);
 			break;
 		case OWN:
 			msgq(sp, M_ERR,
-			    "126|%s/%s: not sourced: not owned by you", b, a);
+			    "129|%s: not sourced: not owned by you", p);
 			break;
 		case WRITER:
 			msgq(sp, M_ERR,
-    "127|%s/%s: not sourced: writeable by a user other than the owner", b, a);
+    "130|%s: not sourced: writeable by a user other than the owner", p);
 			break;
 		}
+		free(p);
+err:		free(buf);
 		if (nf2)
 			FREE_SPACE(sp, b, 0);
 	} else
