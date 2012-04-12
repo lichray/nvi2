@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cd.c,v 10.12 2001/06/25 15:19:14 skimo Exp $";
+static const char sccsid[] = "$Id: ex_cd.c,v 10.13 2012/04/12 06:28:27 zy Exp $";
 #endif /* not lint */
 
 #include <sys/queue.h>
@@ -99,14 +99,10 @@ ex_cd(SCR *sp, EXCMD *cmdp)
 	for (p = t = O_STR(sp, O_CDPATH);; ++p)
 		if (*p == '\0' || *p == ':') {
 			/*
-			 * Empty strings specify ".".  The only way to get an
-			 * empty string is a leading colon, colons in a row,
-			 * or a trailing colon.  Or, to put it the other way,
-			 * if the length is 1 or less, then we're dealing with
-			 * ":XXX", "XXX::XXXX" , "XXX:", or "".  Since we've
-			 * already tried dot, we ignore tham all.
+			 * Ignore the empty strings and ".", since we've already
+			 * tried the current directory.
 			 */
-			if (t < p - 1) {
+			if (t < p && (p - t != 1 || *t != '.')) {
 				savech = *p;
 				*p = '\0';
 				if ((buf = join(t, dir)) == NULL) {
