@@ -13,8 +13,7 @@
 static const char sccsid[] = "$Id: ex_cscope.c,v 10.22 2011/12/25 22:38:06 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -203,7 +202,7 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 	CSC *csc;
 	size_t len;
 	int cur_argc;
-	char *dbname, path[MAXPATHLEN];
+	char *dbname, *path;
 	char *np = NULL;
 	size_t nlen;
 
@@ -243,12 +242,16 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 		return (1);
 	}
 	if (S_ISDIR(sb.st_mode)) {
-		(void)snprintf(path, sizeof(path),
-		    "%s/%s", np, CSCOPE_DBFILE);
-		if (stat(path, &sb)) {
-			msgq(sp, M_SYSERR, "%s", path);
+		if ((path = join(np, CSCOPE_DBFILE)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
 			return (1);
 		}
+		if (stat(path, &sb)) {
+			msgq(sp, M_SYSERR, "%s", path);
+			free(path);
+			return (1);
+		}
+		free(path);
 		dbname = CSCOPE_DBFILE;
 	} else if ((dbname = strrchr(np, '/')) != NULL)
 		*dbname++ = '\0';
@@ -298,7 +301,7 @@ get_paths(SCR *sp, CSC *csc)
 	struct stat sb;
 	int fd, nentries;
 	size_t len;
-	char *p, **pathp, buf[MAXPATHLEN * 2];
+	char *p, **pathp, *buf;
 
 	/*
 	 * EXTENSION #2:
@@ -312,7 +315,10 @@ get_paths(SCR *sp, CSC *csc)
 	 * directory.  To fix this, rewrite the each path using the cscope
 	 * directory as a prefix.
 	 */
-	(void)snprintf(buf, sizeof(buf), "%s/%s", csc->dname, CSCOPE_PATHS);
+	if ((buf = join(csc->dname, CSCOPE_PATHS)) == NULL) {
+		msgq(sp, M_SYSERR, NULL);
+		return (1);
+	}
 	if (stat(buf, &sb) == 0) {
 		/* Read in the CSCOPE_PATHS file. */
 		len = sb.st_size;
@@ -322,9 +328,11 @@ get_paths(SCR *sp, CSC *csc)
 			 msgq_str(sp, M_SYSERR, buf, "%s");
 			 if (fd >= 0)
 				(void)close(fd);
+			 free(buf);
 			 return (1);
 		}
 		(void)close(fd);
+		free(buf);
 		csc->pbuf[len] = '\0';
 
 		/* Count up the entries. */
@@ -340,6 +348,7 @@ get_paths(SCR *sp, CSC *csc)
 			*pathp++ = p;
 		return (0);
 	}
+	free(buf);
 
 	/*
 	 * If the CSCOPE_PATHS file doesn't exist, we look for files
@@ -369,7 +378,7 @@ static int
 run_cscope(SCR *sp, CSC *csc, char *dbname)
 {
 	int to_cs[2], from_cs[2];
-	char cmd[MAXPATHLEN * 2];
+	char *cmd;
 
 	/*
 	 * Cscope reads from to_cs[0] and writes to from_cs[1]; vi reads from
@@ -403,10 +412,15 @@ err:		if (to_cs[0] != -1)
 
 		/* Run the cscope command. */
 #define	CSCOPE_CMD_FMT		"cd '%s' && exec cscope -dl -f %s"
-		(void)snprintf(cmd, sizeof(cmd),
-		    CSCOPE_CMD_FMT, csc->dname, dbname);
+		(void)asprintf(&cmd, CSCOPE_CMD_FMT,
+		    csc->dname, dbname);
+		if (cmd == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			_exit (1);
+		}
 		(void)execl(_PATH_BSHELL, "sh", "-c", cmd, (char *)NULL);
 		msgq_str(sp, M_SYSERR, cmd, "execl: %s");
+		free(cmd);
 		_exit (127);
 		/* NOTREACHED */
 	default:			/* parent. */
@@ -782,7 +796,7 @@ static void
 csc_file(SCR *sp, CSC *csc, char *name, char **dirp, size_t *dlenp, int *isolderp)
 {
 	struct stat sb;
-	char **pp, buf[MAXPATHLEN];
+	char **pp, *buf;
 
 	/*
 	 * Check for the file in all of the listed paths.  If we don't
@@ -792,13 +806,18 @@ csc_file(SCR *sp, CSC *csc, char *name, char **dirp, size_t *dlenp, int *isolder
 	 * lives.
 	 */
 	for (pp = csc->paths; *pp != NULL; ++pp) {
-		(void)snprintf(buf, sizeof(buf), "%s/%s", *pp, name);
+		if ((buf = join(*pp, name)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			return;
+		}
 		if (stat(buf, &sb) == 0) {
+			free(buf);
 			*dirp = *pp;
 			*dlenp = strlen(*pp);
 			*isolderp = sb.st_mtime < csc->mtime;
 			return;
 		}
+		free(buf);
 	}
 	*dlenp = 0;
 }
