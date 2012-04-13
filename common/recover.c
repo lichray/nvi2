@@ -129,7 +129,7 @@ rcv_tmp(
 {
 	struct stat sb;
 	int fd;
-	char *dp, path[MAXPATHLEN];
+	char *dp, *path;
 
 	/*
 	 * !!!
@@ -160,14 +160,16 @@ rcv_tmp(
 		goto err;
 	}
 
-	(void)snprintf(path, sizeof(path), "%s/vi.XXXXXX", dp);
-	if ((fd = rcv_mktemp(sp, path, dp, S_IRWXU)) == -1)
+	if ((path = join(dp, "vi.XXXXXX")) == NULL)
 		goto err;
+	if ((fd = rcv_mktemp(sp, path, dp, S_IRWXU)) == -1) {
+		free(path);
+		goto err;
+	}
 	(void)close(fd);
 
-	if ((ep->rcv_path = strdup(path)) == NULL) {
-		msgq(sp, M_SYSERR, NULL);
-		(void)unlink(path);
+	ep->rcv_path = path;
+	if (0) {
 err:		msgq(sp, M_ERR,
 		    "056|Modifications not recoverable if the session fails");
 		return (1);
@@ -337,7 +339,7 @@ rcv_mailfile(
 	time_t now;
 	uid_t uid;
 	int fd;
-	char *dp, *p, *t, buf[4096], mpath[MAXPATHLEN];
+	char *dp, *p, *t, buf[4096], *mpath;
 	char *t1, *t2, *t3;
 
 	/*
@@ -360,9 +362,14 @@ rcv_mailfile(
 	if (opts_empty(sp, O_RECDIR, 0))
 		return (1);
 	dp = O_STR(sp, O_RECDIR);
-	(void)snprintf(mpath, sizeof(mpath), "%s/recover.XXXXXX", dp);
-	if ((fd = rcv_mktemp(sp, mpath, dp, S_IRUSR | S_IWUSR)) == -1)
+	if ((mpath = join(dp, "recover.XXXXXX")) == NULL) {
+		msgq(sp, M_SYSERR, NULL);
 		return (1);
+	}
+	if ((fd = rcv_mktemp(sp, mpath, dp, S_IRUSR | S_IWUSR)) == -1) {
+		free(mpath);
+		return (1);
+	}
 
 	/*
 	 * XXX
@@ -377,10 +384,7 @@ rcv_mailfile(
 	if (!issync) {
 		/* Save the recover file descriptor, and mail path. */
 		ep->rcv_fd = fd;
-		if ((ep->rcv_mpath = strdup(mpath)) == NULL) {
-			msgq(sp, M_SYSERR, NULL);
-			goto err;
-		}
+		ep->rcv_mpath = mpath;
 		cp_path = ep->rcv_path;
 	}
 
@@ -601,7 +605,7 @@ rcv_read(
 	time_t rec_mtime;
 	int fd, found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
-	char file[MAXPATHLEN], path[MAXPATHLEN], recpath[MAXPATHLEN];
+	char file[MAXPATHLEN], path[MAXPATHLEN], *recpath;
 
 	if (opts_empty(sp, O_RECDIR, 0))
 		return (1);
@@ -618,8 +622,10 @@ rcv_read(
 	for (found = requested = 0; (dp = readdir(dirp)) != NULL;) {
 		if (strncmp(dp->d_name, "recover.", 8))
 			continue;
-		(void)snprintf(recpath,
-		    sizeof(recpath), "%s/%s", rp, dp->d_name);
+		if ((recpath = join(rp, dp->d_name)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			continue;
+		}
 
 		/*
 		 * If it's readable, it's recoverable.  It would be very
@@ -633,8 +639,10 @@ rcv_read(
 		 * if we're using fcntl(2), there's no way to lock a file
 		 * descriptor that's not open for writing.
 		 */
-		if ((fd = open(recpath, O_RDWR, 0)) == -1)
+		if ((fd = open(recpath, O_RDWR, 0)) == -1) {
+			free(recpath);
 			continue;
+		}
 
 		switch (file_lock(sp, NULL, NULL, fd, 1)) {
 		case LOCK_FAILED:
@@ -703,14 +711,9 @@ rcv_read(
 		if (recp == NULL || rec_mtime < sb.st_mtime) {
 			p = recp;
 			t = pathp;
-			if ((recp = strdup(recpath)) == NULL) {
-				msgq(sp, M_SYSERR, NULL);
-				recp = p;
-				goto next;
-			}
+			recp = recpath;
 			if ((pathp = strdup(path)) == NULL) {
 				msgq(sp, M_SYSERR, NULL);
-				free(recp);
 				recp = p;
 				pathp = t;
 				goto next;
@@ -723,8 +726,10 @@ rcv_read(
 			if (sv_fd != -1)
 				(void)close(sv_fd);
 			sv_fd = fd;
-		} else
+		} else {
 next:			(void)close(fd);
+			free(recpath);
+		}
 	}
 	(void)closedir(dirp);
 
@@ -858,12 +863,14 @@ rcv_email(
 	char *fname)
 {
 	struct stat sb;
-	char buf[MAXPATHLEN * 2 + 20];
+	char *buf;
 
 	if (_PATH_SENDMAIL[0] != '/' || stat(_PATH_SENDMAIL, &sb))
-		msgq_str(sp, M_SYSERR,
+err:		msgq_str(sp, M_SYSERR,
 		    _PATH_SENDMAIL, "071|not sending email: %s");
 	else {
+		char *fn;
+		
 		/*
 		 * !!!
 		 * If you need to port this to a system that doesn't have
@@ -871,8 +878,13 @@ rcv_email(
 		 * for the recipients instead of specifying them some other
 		 * way.
 		 */
-		(void)snprintf(buf, sizeof(buf),
-		    "%s -t < %s", _PATH_SENDMAIL, fname);
+		if ((fn = quote(fname)) == NULL)
+			goto err;
+		(void)asprintf(&buf, "%s -t < %s", _PATH_SENDMAIL, fn);
+		free(fn);
+		if (buf == NULL)
+			goto err;
 		(void)system(buf);
+		free(buf);
 	}
 }
