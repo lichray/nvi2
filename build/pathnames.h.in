@@ -1,4 +1,7 @@
-/* @(#)pathnames.h.in	8.4 (Berkeley) 6/26/96 */
+/* $Id: pathnames.h.in,v 8.5 2012/04/13 04:54:57 zy Exp $ */
+
+/* Read standard system paths first. */
+#include <paths.h>
 
 #ifndef	_PATH_BSHELL
 #define	_PATH_BSHELL	"@vi_cv_path_shell@"
