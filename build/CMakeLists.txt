@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.3 2012/02/11 12:11:00 zy Exp $
+# $Id: CMakeLists.txt,v 1.4 2012/04/13 05:27:27 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -67,13 +67,7 @@ add_custom_command(OUTPUT ../ex/version.h
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
-check_function_exists(vfork HAVE_VFORK)
 check_function_exists(revoke HAVE_REVOKE)
-
-check_c_source_compiles("
-#include <sys/types.h>
-#include <sys/time.h>
-int main(void) { gettimeofday(0); }" HAVE_BROKEN_GETTIMEOFDAY)
 
 check_c_source_compiles("
 #include <fcntl.h>
