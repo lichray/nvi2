@@ -254,7 +254,7 @@ rcv_sync(
 {
 	EXF *ep;
 	int fd, rval;
-	char *dp, buf[1024];
+	char *dp, *buf;
 
 	/* Make sure that there's something to recover/sync. */
 	ep = sp->ep;
@@ -297,9 +297,14 @@ rcv_sync(
 		if (opts_empty(sp, O_RECDIR, 0))
 			goto err;
 		dp = O_STR(sp, O_RECDIR);
-		(void)snprintf(buf, sizeof(buf), "%s/vi.XXXXXX", dp);
-		if ((fd = rcv_mktemp(sp, buf, dp, S_IRUSR | S_IWUSR)) == -1)
+		if ((buf = join(dp, "vi.XXXXXX")) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
 			goto err;
+		}
+		if ((fd = rcv_mktemp(sp, buf, dp, S_IRUSR | S_IWUSR)) == -1) {
+			free(buf);
+			goto err;
+		}
 		sp->gp->scr_busy(sp,
 		    "061|Copying file for recovery...", BUSY_ON);
 		if (rcv_copy(sp, fd, ep->rcv_path) ||
@@ -308,6 +313,7 @@ rcv_sync(
 			(void)close(fd);
 			rval = 1;
 		}
+		free(buf);
 		sp->gp->scr_busy(sp, NULL, BUSY_OFF);
 	}
 	if (0) {
