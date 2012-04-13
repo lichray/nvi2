@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.55 2011/12/04 04:06:45 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.56 2012/04/13 03:32:54 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -479,7 +479,11 @@ file_spath(
 	/* Try the O_PATH option values. */
 	for (found = 0, p = t = O_STR(sp, O_PATH);; ++p)
 		if (*p == ':' || *p == '\0') {
-			if (t < p - 1) {
+			/*
+			 * Ignore the empty strings and ".", since we've already
+			 * tried the current directory.
+			 */
+			if (t < p && (p - t != 1 || *t != '.')) {
 				savech = *p;
 				*p = '\0';
 				if ((path = join(t, name)) == NULL) {
