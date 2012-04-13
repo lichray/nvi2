@@ -13,8 +13,7 @@
 static const char sccsid[] = "$Id: recover.c,v 10.34 2012/04/11 01:06:35 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 
@@ -499,7 +498,7 @@ rcv_list(SCR *sp)
 	DIR *dirp;
 	FILE *fp;
 	int found;
-	char *p, *t, file[MAXPATHLEN], path[MAXPATHLEN];
+	char *p, *t, file[PATH_MAX], path[PATH_MAX];
 
 	/* Open the recovery directory for reading. */
 	if (opts_empty(sp, O_RECDIR, 0))
@@ -605,7 +604,7 @@ rcv_read(
 	time_t rec_mtime;
 	int fd, found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
-	char file[MAXPATHLEN], path[MAXPATHLEN], *recpath;
+	char file[PATH_MAX], path[PATH_MAX], *recpath;
 
 	if (opts_empty(sp, O_RECDIR, 0))
 		return (1);
