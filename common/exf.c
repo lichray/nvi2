@@ -13,8 +13,7 @@
 static const char sccsid[] = "$Id: exf.c,v 10.55 2011/12/04 04:06:45 zy Exp $";
 #endif /* not lint */
 
-#include <sys/param.h>
-#include <sys/types.h>		/* XXX: param.h may not have included types.h */
+#include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 
@@ -134,7 +133,7 @@ file_init(
 	struct stat sb;
 	size_t psize;
 	int fd, exists, open_err, readonly;
-	char *oname, tname[MAXPATHLEN];
+	char *oname, *tname;
 
 	open_err = readonly = 0;
 
@@ -184,25 +183,26 @@ file_init(
 	if (LF_ISSET(FS_OPENERR) || oname == NULL || !exists) {
 		if (opts_empty(sp, O_TMPDIR, 0))
 			goto err;
-		(void)snprintf(tname, sizeof(tname),
-		    "%s/vi.XXXXXXXXXX", O_STR(sp, O_TMPDIR));
+		if ((tname =
+		    join(O_STR(sp, O_TMPDIR), "vi.XXXXXXXXXX")) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			goto err;
+		}
 		if ((fd = mkstemp(tname)) == -1) {
+			free(tname);
 			msgq(sp, M_SYSERR,
 			    "237|Unable to create temporary file");
 			goto err;
 		}
 		(void)close(fd);
 
-		if (frp->name == NULL)
+		frp->tname = tname;
+		if (frp->name == NULL) {
 			F_SET(frp, FR_TMPFILE);
-		if ((frp->tname = strdup(tname)) == NULL ||
-		    (frp->name == NULL &&
-		     (frp->name = strdup(tname)) == NULL)) {
-			if (frp->tname != NULL)
-				free(frp->tname);
-			msgq(sp, M_SYSERR, NULL);
-			(void)unlink(tname);
-			goto err;
+			if ((frp->name = strdup(tname)) == NULL) {
+				msgq(sp, M_SYSERR, NULL);
+				goto err;
+			}
 		}
 		oname = frp->tname;
 		psize = 1024;
@@ -450,10 +450,10 @@ file_spath(
 	struct stat *sbp,
 	int *existsp)
 {
-	CHAR_T savech;
+	int savech;
 	size_t len;
 	int found;
-	char *name, *p, *t, path[MAXPATHLEN];
+	char *name, *p, *t, *path;
 
 	/*
 	 * If the name is NULL or an explicit reference (i.e., the first
@@ -482,13 +482,18 @@ file_spath(
 			if (t < p - 1) {
 				savech = *p;
 				*p = '\0';
-				len = snprintf(path,
-				    sizeof(path), "%s/%s", t, name);
+				if ((path = join(t, name)) == NULL) {
+					msgq(sp, M_SYSERR, NULL);
+					break;
+				}
+				len = strlen(path);
 				*p = savech;
 				if (!stat(path, sbp)) {
+					free(path);
 					found = 1;
 					break;
 				}
+				free(path);
 			}
 			t = p + 1;
 			if (*p == '\0')
@@ -752,7 +757,7 @@ file_write(
 	size_t len;
 	u_long nlno, nch;
 	int fd, nf, noname, oflags, rval;
-	char *p, *s, *t, buf[MAXPATHLEN + 64];
+	char *p, *s, *t, buf[1024];
 	const char *msgstr;
 
 	ep = sp->ep;
