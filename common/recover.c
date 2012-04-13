@@ -406,8 +406,6 @@ rcv_mailfile(
 	else
 		++p;
 	(void)time(&now);
-	MALLOC_RET(sp, host, char *, hostmax + 1);
-	(void)gethostname(host, hostmax + 1);
 	len = snprintf(buf, sizeof(buf),
 	    "%s%s\n%s%s\n%s\n%s\n%s%s\n%s%s\n%s\n\n",
 	    VI_FHEADER, t,			/* Non-standard. */
@@ -422,6 +420,10 @@ rcv_mailfile(
 	if (write(fd, buf, len) != len)
 		goto werr;
 
+	MALLOC(sp, host, char *, hostmax + 1);
+	if (host == NULL)
+		goto err;
+	(void)gethostname(host, hostmax + 1);
 	len = snprintf(buf, sizeof(buf),
 	    "%s%.24s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n\n",
 	    "On ", ctime(&now), ", the user ", pw->pw_name,
