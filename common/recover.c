@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 10.34 2012/04/11 01:06:35 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -344,7 +344,7 @@ rcv_mailfile(
 	time_t now;
 	uid_t uid;
 	int fd;
-	char *dp, *p, *t, buf[4096], *mpath;
+	char *dp, *p, *t, *qt, buf[4096], *mpath;
 	char *t1, *t2, *t3;
 
 	/*
@@ -424,6 +424,11 @@ rcv_mailfile(
 	if (host == NULL)
 		goto err;
 	(void)gethostname(host, hostmax + 1);
+	if ((qt = quote(t)) == NULL) {
+		free(host);
+		msgq(sp, M_SYSERR, NULL);
+		goto err;
+	}
 	len = snprintf(buf, sizeof(buf),
 	    "%s%.24s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n\n",
 	    "On ", ctime(&now), ", the user ", pw->pw_name,
@@ -431,7 +436,8 @@ rcv_mailfile(
 	    host, ", when it was saved for recovery. ",
 	    "You can recover most, if not all, of the changes ",
 	    "to this file using the -r option to ", gp->progname, ":\n\n\t",
-	    gp->progname, " -r ", t);
+	    gp->progname, " -r ", qt);
+	free(qt);
 	free(host);
 	if (len > sizeof(buf) - 1) {
 lerr:		msgq(sp, M_ERR, "064|Recovery file buffer overrun");
