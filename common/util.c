@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.26 2012/04/11 03:19:53 zy Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.27 2012/04/13 00:36:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -138,6 +138,53 @@ join(
 	(void)asprintf(&p, path1[strlen(path1)-1] == '/' ?
 	    "%s%s" : "%s/%s", path1, path2);
 	return p;
+}
+
+/*
+ * quote --
+ *	Return a escaped string for /bin/sh; need free.
+ *
+ * PUBLIC: char *quote __P((char *));
+ */
+char *
+quote(char *str)
+{
+	char *p, *t;
+	size_t i = 0, n = 0;
+	int unsafe = 0;
+
+	for (p = str; *p != '\0'; p++, i++) {
+		if (*p == '\'')
+			n++;
+		if (unsafe)
+			continue;
+		if (isascii(*p)) {
+			if (isalnum(*p))
+				continue;
+			switch (*p) {
+			case '%': case '+': case ',': case '-': case '.':
+			case '/': case ':': case '=': case '@': case '_':
+				continue;
+			}
+		}
+		unsafe = 1;
+	}
+	if (!unsafe)
+		t = strdup(str);
+	else if ((p = t = malloc(i + n * 5 + 1)) != NULL) {
+		*p++ = '\'';
+		for (; *str != '\0'; str++) {
+#define SQT "'\"'\"'"
+			if (*str == '\'') {
+				(void)strncpy(p, SQT, sizeof(SQT) - 1);
+				p += sizeof(SQT) - 1;
+			} else
+				*p++ = *str;
+		}
+		*p++ = '\'';
+		*p = '\0';
+	}
+	return t;
 }
 
 /*
