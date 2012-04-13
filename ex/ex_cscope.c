@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cscope.c,v 10.22 2011/12/25 22:38:06 zy Exp $";
+static const char sccsid[] = "$Id: ex_cscope.c,v 10.23 2012/04/13 00:44:57 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -390,6 +390,7 @@ run_cscope(SCR *sp, CSC *csc, char *dbname)
 		goto err;
 	}
 	switch (csc->pid = vfork()) {
+		char *dn, *dbn;
 	case -1:
 		msgq(sp, M_SYSERR, "vfork");
 err:		if (to_cs[0] != -1)
@@ -411,11 +412,16 @@ err:		if (to_cs[0] != -1)
 		(void)close(from_cs[0]);
 
 		/* Run the cscope command. */
-#define	CSCOPE_CMD_FMT		"cd '%s' && exec cscope -dl -f %s"
-		(void)asprintf(&cmd, CSCOPE_CMD_FMT,
-		    csc->dname, dbname);
+#define	CSCOPE_CMD_FMT		"cd %s && exec cscope -dl -f %s"
+		dn = quote(csc->dname);
+		dbn = quote(dbname);
+		if (dn == NULL || dbn == NULL)
+			goto nomem;
+		(void)asprintf(&cmd, CSCOPE_CMD_FMT, dn, dbn);
+		free(dbn);
+		free(dn);
 		if (cmd == NULL) {
-			msgq(sp, M_SYSERR, NULL);
+nomem:			msgq(sp, M_SYSERR, NULL);
 			_exit (1);
 		}
 		(void)execl(_PATH_BSHELL, "sh", "-c", cmd, (char *)NULL);
