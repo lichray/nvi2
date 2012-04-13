@@ -413,10 +413,12 @@ err:		if (to_cs[0] != -1)
 
 		/* Run the cscope command. */
 #define	CSCOPE_CMD_FMT		"cd %s && exec cscope -dl -f %s"
-		dn = quote(csc->dname);
-		dbn = quote(dbname);
-		if (dn == NULL || dbn == NULL)
+		if ((dn = quote(csc->dname)) == NULL)
 			goto nomem;
+		if ((dbn = quote(dbname)) == NULL) {
+			free(dn);
+			goto nomem;
+		}
 		(void)asprintf(&cmd, CSCOPE_CMD_FMT, dn, dbn);
 		free(dbn);
 		free(dn);
