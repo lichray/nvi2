@@ -6,14 +6,8 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: common.h,v 10.21 2011/06/26 14:28:12 zy Exp $
+ *	$Id: common.h,v 10.22 2012/04/13 05:21:50 zy Exp $
  */
-
-/*
- * Porting information built at configuration time.  Included before
- * any of nvi's include files.
- */
-#include "port.h"
 
 /*
  * Pseudo-local includes.  These are files that are unlikely to exist

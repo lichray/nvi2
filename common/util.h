@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	@(#)util.h	10.5 (Berkeley) 3/16/96
+ *	$Id: util.h,v 10.6 2012/04/13 05:21:50 zy Exp $
  */
 
 /* Macros to init/set/clear/test flags. */
@@ -54,3 +54,7 @@ enum nresult { NUM_ERR, NUM_OK, NUM_OVER, NUM_UNDER };
 	 NUM_OK)
 #define	NADD_USLONG(sp, v1, v2)						\
 	(NPFITS(ULONG_MAX, (v1), (v2)) ? NUM_OK : NUM_OVER)
+
+/* Macros for min/max. */
+#define	MIN(_a,_b)	((_a)<(_b)?(_a):(_b))
+#define	MAX(_a,_b)	((_a)<(_b)?(_b):(_a))
