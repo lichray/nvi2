@@ -171,10 +171,10 @@ quote(char *str)
 	}
 	if (!unsafe)
 		t = strdup(str);
-	else if ((p = t = malloc(i + n * 5 + 1)) != NULL) {
+#define SQT "'\\''"
+	else if ((p = t = malloc(i + n * (sizeof(SQT) - 2) + 3)) != NULL) {
 		*p++ = '\'';
 		for (; *str != '\0'; str++) {
-#define SQT "'\"'\"'"
 			if (*str == '\'') {
 				(void)strncpy(p, SQT, sizeof(SQT) - 1);
 				p += sizeof(SQT) - 1;
