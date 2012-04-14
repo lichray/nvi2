@@ -384,7 +384,7 @@ rcv_mailfile(
 	 * and the lock, but it's pretty small.
 	 */
 	ep = sp->ep;
-	if (file_lock(sp, NULL, NULL, fd, 1) != LOCK_SUCCESS)
+	if (file_lock(sp, NULL, fd, 1) != LOCK_SUCCESS)
 		msgq(sp, M_SYSERR, "063|Unable to lock recovery file");
 	if (!issync) {
 		/* Save the recover file descriptor, and mail path. */
@@ -539,7 +539,7 @@ rcv_list(SCR *sp)
 		if ((fp = fopen(dp->d_name, "r+")) == NULL)
 			continue;
 
-		switch (file_lock(sp, NULL, NULL, fileno(fp), 1)) {
+		switch (file_lock(sp, NULL, fileno(fp), 1)) {
 		case LOCK_FAILED:
 			/*
 			 * XXX
@@ -657,7 +657,7 @@ rcv_read(
 			continue;
 		}
 
-		switch (file_lock(sp, NULL, NULL, fd, 1)) {
+		switch (file_lock(sp, NULL, fd, 1)) {
 		case LOCK_FAILED:
 			/*
 			 * XXX

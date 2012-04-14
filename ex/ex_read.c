@@ -265,7 +265,7 @@ ex_read(SCR *sp, EXCMD *cmdp)
 	}
 
 	/* Try and get a lock. */
-	if (file_lock(sp, NULL, NULL, fileno(fp), 0) == LOCK_UNAVAIL)
+	if (file_lock(sp, NULL, fileno(fp), 0) == LOCK_UNAVAIL)
 		msgq(sp, M_ERR, "146|%s: read lock was unavailable", name);
 
 	rval = ex_readfp(sp, name, fp, &cmdp->addr1, &nlines, 0);

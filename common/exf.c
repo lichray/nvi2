@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.56 2012/04/13 03:32:54 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.57 2012/04/14 05:53:43 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -333,8 +333,7 @@ file_init(
 	 * an error.
 	 */
 	if (rcv_name == NULL)
-		switch (file_lock(sp, oname,
-		    NULL, ep->db->fd(ep->db), 0)) {
+		switch (file_lock(sp, oname, ep->db->fd(ep->db), 0)) {
 		case LOCK_FAILED:
 			F_SET(frp, FR_UNLOCKED);
 			break;
@@ -883,7 +882,7 @@ success_open:
 	SIGUNBLOCK;
 
 	/* Try and get a lock. */
-	if (!noname && file_lock(sp, NULL, NULL, fd, 0) == LOCK_UNAVAIL)
+	if (!noname && file_lock(sp, NULL, fd, 0) == LOCK_UNAVAIL)
 		msgq_str(sp, M_ERR, name,
 		    "252|%s: write lock was unavailable");
 
@@ -1512,13 +1511,12 @@ set_alt_name(
  * file_lock --
  *	Get an exclusive lock on a file.
  *
- * PUBLIC: lockr_t file_lock __P((SCR *, char *, int *, int, int));
+ * PUBLIC: lockr_t file_lock __P((SCR *, char *, int, int));
  */
 lockr_t
 file_lock(
 	SCR *sp,
 	char *name,
-	int *fdp,
 	int fd,
 	int iswrite)
 {
