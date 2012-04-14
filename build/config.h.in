@@ -1,4 +1,4 @@
-/* $Id: config.h.in,v 9.2 2012/04/13 05:27:27 zy Exp $ */
+/* $Id: config.h.in,v 9.3 2012/04/14 06:13:48 zy Exp $ */
 
 /* Define if you want a debugging version. */
 #cmakedefine DEBUG
@@ -11,12 +11,6 @@
 
 /* Define if you have the Berkeley style revoke(2) system call. */
 #cmakedefine HAVE_REVOKE
-
-/* Define if you have flock(2) style locking. */
-#cmakedefine HAVE_LOCK_FLOCK
-
-/* Define if you have fcntl(2) style locking. */
-#cmakedefine HAVE_LOCK_FCNTL
 
 /* Define if you have the <ncursesw/ncurses.h> header file. */
 #cmakedefine HAVE_NCURSESW_NCURSES_H

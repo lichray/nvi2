@@ -1,12 +1,9 @@
-# $Id: CMakeLists.txt,v 1.4 2012/04/13 05:27:27 zy Exp $
+# $Id: CMakeLists.txt,v 1.5 2012/04/14 06:13:48 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
-include(CheckSymbolExists)
-include(CheckLibraryExists)
-include(CheckCSourceCompiles)
 
 # unused, just hide them
 mark_as_advanced(FORCE CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
@@ -68,16 +65,6 @@ FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
 check_function_exists(revoke HAVE_REVOKE)
-
-check_c_source_compiles("
-#include <fcntl.h>
-int main(void) { flock(0, 0); }" HAVE_LOCK_FLOCK)
-
-if(NOT HAVE_LOCK_FLOCK)
-	check_c_source_compiles("
-	#include <fcntl.h>
-	int main(void) { flock(0, F_SETLK, 0); }" HAVE_LOCK_FCNTL)
-endif(NOT HAVE_LOCK_FLOCK)
 
 include_directories(. ..)
 check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
