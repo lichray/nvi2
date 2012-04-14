@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: exf.h,v 10.8 2011/10/27 00:35:26 zy Exp $
+ *	$Id: exf.h,v 10.9 2012/04/14 05:52:19 zy Exp $
  */
 					/* Undo direction. */
 /*
@@ -42,8 +42,6 @@ struct _exf {
 	dev_t	 mdev;			/* Device. */
 	ino_t	 minode;		/* Inode. */
 	time_t	 mtime;			/* Last modification time. */
-
-	int	 fcntl_fd;		/* Fcntl locking fd; see exf.c. */
 
 	/*
 	 * Recovery in general, and these fields specifically, are described

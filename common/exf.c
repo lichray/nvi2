@@ -163,7 +163,7 @@ file_init(
 	 */
 	CALLOC_RET(sp, ep, EXF *, 1, sizeof(EXF));
 	ep->c_lno = ep->c_nlines = OOBLNO;
-	ep->rcv_fd = ep->fcntl_fd = -1;
+	ep->rcv_fd = -1;
 	F_SET(ep, F_FIRSTMODIFY);
 
 	/*
@@ -334,7 +334,7 @@ file_init(
 	 */
 	if (rcv_name == NULL)
 		switch (file_lock(sp, oname,
-		    &ep->fcntl_fd, ep->db->fd(ep->db), 0)) {
+		    NULL, ep->db->fd(ep->db), 0)) {
 		case LOCK_FAILED:
 			F_SET(frp, FR_UNLOCKED);
 			break;
@@ -721,8 +721,6 @@ file_end(
 		if (ep->rcv_mpath != NULL && unlink(ep->rcv_mpath))
 			msgq_str(sp, M_SYSERR, ep->rcv_mpath, "243|%s: remove");
 	}
-	if (ep->fcntl_fd != -1)
-		(void)close(ep->fcntl_fd);
 	if (ep->rcv_fd != -1)
 		(void)close(ep->rcv_fd);
 	if (ep->rcv_path != NULL)
@@ -1514,23 +1512,6 @@ set_alt_name(
  * file_lock --
  *	Get an exclusive lock on a file.
  *
- * XXX
- * The default locking is flock(2) style, not fcntl(2).  The latter is
- * known to fail badly on some systems, and its only advantage is that
- * it occasionally works over NFS.
- *
- * Furthermore, the semantics of fcntl(2) are wrong.  The problems are
- * two-fold: you can't close any file descriptor associated with the file
- * without losing all of the locks, and you can't get an exclusive lock
- * unless you have the file open for writing.  Someone ought to be shot,
- * but it's probably too late, they may already have reproduced.  To get
- * around these problems, nvi opens the files for writing when it can and
- * acquires a second file descriptor when it can't.  The recovery files
- * are examples of the former, they're always opened for writing.  The DB
- * files can't be opened for writing because the semantics of DB are that
- * files opened for writing are flushed back to disk when the DB session
- * is ended. So, in that case we have to acquire an extra file descriptor.
- *
  * PUBLIC: lockr_t file_lock __P((SCR *, char *, int *, int, int));
  */
 lockr_t
@@ -1544,7 +1525,6 @@ file_lock(
 	if (!O_ISSET(sp, O_LOCKFILES))
 		return (LOCK_SUCCESS);
 	
-#ifdef HAVE_LOCK_FLOCK			/* Hurrah!  We've got flock(2). */
 	/*
 	 * !!!
 	 * We need to distinguish a lock not being available for the file
@@ -1562,59 +1542,4 @@ file_lock(
 	    || errno == EWOULDBLOCK
 #endif
 	    ? LOCK_UNAVAIL : LOCK_FAILED);
-#endif
-#ifdef HAVE_LOCK_FCNTL			/* Gag me.  We've got fcntl(2). */
-{
-	struct flock arg;
-	int didopen, sverrno;
-
-	arg.l_type = F_WRLCK;
-	arg.l_whence = 0;		/* SEEK_SET */
-	arg.l_start = arg.l_len = 0;
-	arg.l_pid = 0;
-
-	/*
-	 * If the file descriptor isn't opened for writing, it must fail.
-	 * If we fail because we can't get a read/write file descriptor,
-	 * we return LOCK_SUCCESS, believing that the file is readonly
-	 * and that will be sufficient to warn the user.
-	 */
-	if (!iswrite) {
-		if (name == NULL || fdp == NULL)
-			return (LOCK_FAILED);
-		if ((fd = open(name, O_RDWR, 0)) == -1)
-			return (LOCK_SUCCESS);
-		*fdp = fd;
-		didopen = 1;
-	}
-
-	errno = 0;
-	if (!fcntl(fd, F_SETLK, &arg)) {
-		fcntl(fd, F_SETFD, 1);
-		return (LOCK_SUCCESS);
-	}
-
-	if (didopen) {
-		sverrno = errno;
-		(void)close(fd);
-		errno = sverrno;
-	}
-
-	/*
-	 * !!!
-	 * We need to distinguish a lock not being available for the file
-	 * from the file system not supporting locking.  Fcntl is documented
-	 * as returning EACCESS and EAGAIN; add EWOULDBLOCK for good measure,
-	 * and assume they are the former.  There's no portable way to do this.
-	 */
-	return (errno == EACCES || errno == EAGAIN
-#ifdef EWOULDBLOCK
-	|| errno == EWOULDBLOCK
-#endif
-	?  LOCK_UNAVAIL : LOCK_FAILED);
-}
-#endif
-#if !defined(HAVE_LOCK_FLOCK) && !defined(HAVE_LOCK_FCNTL)
-	return (LOCK_SUCCESS);
-#endif
 }
