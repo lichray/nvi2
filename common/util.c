@@ -50,10 +50,6 @@ binc(
 	REALLOC(sp, bp, void *, csize);
 
 	if (bp == NULL) {
-		/*
-		 * Theoretically, realloc is supposed to leave any already
-		 * held memory alone if it can't get more.  Don't trust it.
-		 */
 		*bsizep = 0;
 		return (NULL);
 	}

@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.15 2011/12/10 03:45:09 zy Exp $
+ *	$Id: mem.h,v 10.16 2012/04/14 03:51:52 zy Exp $
  */
 
 #ifdef DEBUG
@@ -187,14 +187,19 @@
 		return (1);						\
 	}								\
 }
+
 /*
- * XXX
- * Don't depend on realloc(NULL, size) working.
+ * Resize a buffer, free any already held memory if we can't get more.
+ * FreeBSD's reallocf(3) does the same thing, but it's not portable yet.
  */
 #define	REALLOC(sp, p, cast, size) {					\
-	if ((p = (cast)(p == NULL ?					\
-	    malloc(size) : realloc(p, size))) == NULL)			\
+	cast newp;							\
+	if ((newp = (cast)realloc(p, size)) == NULL) {			\
+		if (p != NULL)						\
+			free(p);					\
 		msgq(sp, M_SYSERR, NULL);				\
+	}								\
+	p = newp;							\
 }
 
 /*
