@@ -528,15 +528,8 @@ rcv_list(SCR *sp)
 		if (strncmp(dp->d_name, "recover.", 8))
 			continue;
 
-		/*
-		 * If it's readable, it's recoverable.
-		 *
-		 * XXX
-		 * Should be "r", we don't want to write the file.  However,
-		 * if we're using fcntl(2), there's no way to lock a file
-		 * descriptor that's not open for writing.
-		 */
-		if ((fp = fopen(dp->d_name, "r+")) == NULL)
+		/* If it's readable, it's recoverable. */
+		if ((fp = fopen(dp->d_name, "r")) == NULL)
 			continue;
 
 		switch (file_lock(sp, NULL, fileno(fp), 1)) {
@@ -646,13 +639,8 @@ rcv_read(
 		 * require closing and then reopening the file so that we
 		 * could have a lock and still close the FP.  Another tip
 		 * of the hat to fcntl(2).
-		 *
-		 * XXX
-		 * Should be O_RDONLY, we don't want to write it.  However,
-		 * if we're using fcntl(2), there's no way to lock a file
-		 * descriptor that's not open for writing.
 		 */
-		if ((fd = open(recpath, O_RDWR, 0)) == -1) {
+		if ((fd = open(recpath, O_RDONLY, 0)) == -1) {
 			free(recpath);
 			continue;
 		}
