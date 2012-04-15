@@ -106,7 +106,7 @@ static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp 
 static int	 rcv_copy __P((SCR *, int, char *));
 static void	 rcv_email __P((SCR *, char *));
 static int	 rcv_mailfile __P((SCR *, int, char *));
-static int	 rcv_mktemp __P((SCR *, char *, char *, int));
+static int	 rcv_mktemp __P((SCR *, char *, char *));
 
 /*
  * rcv_tmp --
@@ -155,10 +155,11 @@ rcv_tmp(
 
 	if ((path = join(dp, "vi.XXXXXX")) == NULL)
 		goto err;
-	if ((fd = rcv_mktemp(sp, path, dp, S_IRWXU)) == -1) {
+	if ((fd = rcv_mktemp(sp, path, dp)) == -1) {
 		free(path);
 		goto err;
 	}
+	(void)fchmod(fd, S_IRWXU);
 	(void)close(fd);
 
 	ep->rcv_path = path;
@@ -295,7 +296,7 @@ rcv_sync(
 			msgq(sp, M_SYSERR, NULL);
 			goto err;
 		}
-		if ((fd = rcv_mktemp(sp, buf, dp, S_IRUSR | S_IWUSR)) == -1) {
+		if ((fd = rcv_mktemp(sp, buf, dp)) == -1) {
 			free(buf);
 			goto err;
 		}
@@ -366,7 +367,7 @@ rcv_mailfile(
 		msgq(sp, M_SYSERR, NULL);
 		return (1);
 	}
-	if ((fd = rcv_mktemp(sp, mpath, dp, S_IRUSR | S_IWUSR)) == -1) {
+	if ((fd = rcv_mktemp(sp, mpath, dp)) == -1) {
 		free(mpath);
 		return (1);
 	}
@@ -797,25 +798,12 @@ static int
 rcv_mktemp(
 	SCR *sp,
 	char *path,
-	char *dname,
-	int perms)
+	char *dname)
 {
 	int fd;
 
-	/*
-	 * !!!
-	 * We expect mkstemp(3) to set the permissions correctly.  On
-	 * historic System V systems, mkstemp didn't.  Do it here, on
-	 * GP's.
-	 *
-	 * XXX
-	 * The variable perms should really be a mode_t, and it would
-	 * be nice to use fchmod(2) instead of chmod(2), here.
-	 */
 	if ((fd = mkstemp(path)) == -1)
 		msgq_str(sp, M_SYSERR, dname, "%s");
-	else
-		(void)chmod(path, perms);
 	return (fd);
 }
 
