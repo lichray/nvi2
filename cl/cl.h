@@ -9,21 +9,17 @@
  *	$Id: cl.h,v 10.34 2011/08/15 20:07:32 zy Exp $
  */
 
-#ifdef USE_SLANG_CURSES
-#include <slcurses.h>
-#else
 #ifdef HAVE_NCURSESW_NCURSES_H /* { */
 #include <ncursesw/ncurses.h>
 #else /* } { */
-#if defined(USE_WIDECHAR) && !defined(_XOPEN_SOURCE_EXTENDED)
-#define _XOPEN_SOURCE_EXTENDED 1
+#ifdef USE_WIDECHAR
+#define _XOPEN_SOURCE_EXTENDED
 #endif
 #ifdef HAVE_NCURSES_H /* { */
 #include <ncurses.h>
 #else /* } { */
 #include <curses.h>
 #endif /* } */
-#endif
 #endif
 
 typedef struct _cl_private {
