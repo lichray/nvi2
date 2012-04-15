@@ -659,8 +659,10 @@ cl_rename(SCR *sp, char *name, int on)
 
 		if (clp->oname == NULL && (wid = getenv("WINDOWID"))) {
 			snprintf(cmd, sizeof(cmd), "xprop -id %s WM_NAME", wid);
-			if ((pfp = popen(cmd, "r")) && fgets(buf, sizeof(buf), pfp) &&
-					(s = strchr(buf, '"')) && (e = strrchr(buf, '"')))
+			if ((pfp = popen(cmd, "r")) != NULL &&
+			    fgets(buf, sizeof(buf), pfp) != NULL &&
+			    (s = strchr(buf, '"')) != NULL &&
+			    (e = strrchr(buf, '"')) != NULL)
 				clp->oname = strndup(s + 1, e - s - 1);
 		}
 
