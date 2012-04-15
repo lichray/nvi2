@@ -338,7 +338,8 @@ rcv_mailfile(
 	time_t now;
 	uid_t uid;
 	int fd;
-	char *dp, *p, *t, *qt, buf[4096], *mpath;
+	FILE *fp;
+	char *dp, *p, *t, *qt, *buf, *mpath;
 	char *t1, *t2, *t3;
 
 	/*
@@ -369,6 +370,11 @@ rcv_mailfile(
 		free(mpath);
 		return (1);
 	}
+	if ((fp = fdopen(fd, "w")) == NULL) {
+		free(mpath);
+		close(fd);
+		return (1);
+	}
 
 	/*
 	 * XXX
@@ -382,26 +388,18 @@ rcv_mailfile(
 		msgq(sp, M_SYSERR, "063|Unable to lock recovery file");
 	if (!issync) {
 		/* Save the recover file descriptor, and mail path. */
-		ep->rcv_fd = fd;
+		ep->rcv_fd = dup(fd);
 		ep->rcv_mpath = mpath;
 		cp_path = ep->rcv_path;
 	}
 
-	/*
-	 * XXX
-	 * We can't use stdio(3) here.  The problem is that we may be using
-	 * fcntl(2), so if ANY file descriptor into the file is closed, the
-	 * lock is lost.  So, we could never close the FILE *, even if we
-	 * dup'd the fd first.
-	 */
 	t = sp->frp->name;
 	if ((p = strrchr(t, '/')) == NULL)
 		p = t;
 	else
 		++p;
 	(void)time(&now);
-	len = snprintf(buf, sizeof(buf),
-	    "%s%s\n%s%s\n%s\n%s\n%s%s\n%s%s\n%s\n\n",
+	len = fprintf(fp, "%s%s\n%s%s\n%s\n%s\n%s%s\n%s%.40s\n%s\n\n",
 	    VI_FHEADER, t,			/* Non-standard. */
 	    VI_PHEADER, cp_path,		/* Non-standard. */
 	    "Reply-To: root",
@@ -409,9 +407,7 @@ rcv_mailfile(
 	    "To: ", pw->pw_name,
 	    "Subject: Nvi saved the file ", p,
 	    "Precedence: bulk");		/* For vacation(1). */
-	if (len > sizeof(buf) - 1)
-		goto lerr;
-	if (write(fd, buf, len) != len)
+	if (len < 0)
 		goto werr;
 
 	MALLOC(sp, host, char *, hostmax + 1);
@@ -423,8 +419,7 @@ rcv_mailfile(
 		msgq(sp, M_SYSERR, NULL);
 		goto err;
 	}
-	len = snprintf(buf, sizeof(buf),
-	    "%s%.24s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n\n",
+	len = asprintf(&buf, "%s%.24s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n\n",
 	    "On ", ctime(&now), ", the user ", pw->pw_name,
 	    " was editing a file named ", t, " on the machine ",
 	    host, ", when it was saved for recovery. ",
@@ -433,8 +428,8 @@ rcv_mailfile(
 	    gp->progname, " -r ", qt);
 	free(qt);
 	free(host);
-	if (len > sizeof(buf) - 1) {
-lerr:		msgq(sp, M_ERR, "064|Recovery file buffer overrun");
+	if (buf == NULL) {
+		msgq(sp, M_SYSERR, NULL);
 		goto err;
 	}
 
@@ -468,23 +463,26 @@ lerr:		msgq(sp, M_ERR, "064|Recovery file buffer overrun");
 wout:		*t2++ = '\n';
 
 		/* t2 points one after the last character to display. */
-		if (write(fd, t1, t2 - t1) != t2 - t1)
+		if (fwrite(t1, 1, t2 - t1, fp) != t2 - t1)
 			goto werr;
 	}
 
 	if (issync) {
+		fflush(fp);
 		rcv_email(sp, mpath);
-		if (close(fd)) {
-werr:			msgq(sp, M_SYSERR, "065|Recovery file");
-			goto err;
-		}
 	}
+	if (fclose(fp)) {
+werr:		free(buf);
+		msgq(sp, M_SYSERR, "065|Recovery file");
+		goto err;
+	}
+	free(buf);
 	return (0);
 
 err:	if (!issync)
 		ep->rcv_fd = -1;
-	if (fd != -1)
-		(void)close(fd);
+	if (fp != NULL)
+		(void)fclose(fp);
 	return (1);
 }
 
