@@ -56,12 +56,7 @@ static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp 
  *		file exists, and is exclusively locked.
  *
  * In the EXF structure we maintain a file descriptor that is the locked
- * file descriptor for the mail recovery file.  NOTE: we sometimes have to
- * do locking with fcntl(2).  This is a problem because if you close(2) any
- * file descriptor associated with the file, ALL of the locks go away.  Be
- * sure to remember that if you have to modify the recovery code.  (It has
- * been rhetorically asked of what the designers could have been thinking
- * when they did that interface.  The answer is simple: they weren't.)
+ * file descriptor for the mail recovery file.
  *
  * To find out if a recovery file/backing file pair are in use, try to get
  * a lock on the recovery file.
@@ -110,7 +105,6 @@ static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp 
 
 static int	 rcv_copy __P((SCR *, int, char *));
 static void	 rcv_email __P((SCR *, char *));
-static char	*rcv_gets __P((char *, size_t, int));
 static int	 rcv_mailfile __P((SCR *, int, char *));
 static int	 rcv_mktemp __P((SCR *, char *, char *, int));
 
@@ -607,9 +601,10 @@ rcv_read(
 	struct dirent *dp;
 	struct stat sb;
 	DIR *dirp;
+	FILE *fp;
 	EXF *ep;
 	time_t rec_mtime;
-	int fd, found, locked = 0, requested, sv_fd;
+	int found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
 	char file[PATH_MAX], path[PATH_MAX], *recpath;
 
@@ -633,19 +628,13 @@ rcv_read(
 			continue;
 		}
 
-		/*
-		 * If it's readable, it's recoverable.  It would be very
-		 * nice to use stdio(3), but, we can't because that would
-		 * require closing and then reopening the file so that we
-		 * could have a lock and still close the FP.  Another tip
-		 * of the hat to fcntl(2).
-		 */
-		if ((fd = open(recpath, O_RDONLY, 0)) == -1) {
+		/* If it's readable, it's recoverable. */
+		if ((fp = fopen(recpath, "r")) == NULL) {
 			free(recpath);
 			continue;
 		}
 
-		switch (file_lock(sp, NULL, fd, 1)) {
+		switch (file_lock(sp, NULL, fileno(fp), 1)) {
 		case LOCK_FAILED:
 			/*
 			 * XXX
@@ -661,15 +650,15 @@ rcv_read(
 			break;
 		case LOCK_UNAVAIL:
 			/* If it's locked, it's live. */
-			(void)close(fd);
+			(void)fclose(fp);
 			continue;
 		}
 
 		/* Check the headers. */
-		if (rcv_gets(file, sizeof(file), fd) == NULL ||
+		if (fgets(file, sizeof(file), fp) == NULL ||
 		    strncmp(file, VI_FHEADER, sizeof(VI_FHEADER) - 1) ||
 		    (p = strchr(file, '\n')) == NULL ||
-		    rcv_gets(path, sizeof(path), fd) == NULL ||
+		    fgets(path, sizeof(path), fp) == NULL ||
 		    strncmp(path, VI_PHEADER, sizeof(VI_PHEADER) - 1) ||
 		    (t = strchr(path, '\n')) == NULL) {
 			msgq_str(sp, M_ERR, recpath,
@@ -708,7 +697,7 @@ rcv_read(
 		 * we only get a single second granularity, instead of
 		 * getting it right.
 		 */
-		(void)fstat(fd, &sb);
+		(void)fstat(fileno(fp), &sb);
 		if (recp == NULL || rec_mtime < sb.st_mtime) {
 			p = recp;
 			t = pathp;
@@ -726,11 +715,10 @@ rcv_read(
 			rec_mtime = sb.st_mtime;
 			if (sv_fd != -1)
 				(void)close(sv_fd);
-			sv_fd = fd;
-		} else {
-next:			(void)close(fd);
-			free(recpath);
-		}
+			sv_fd = dup(fileno(fp));
+		} else
+next:			free(recpath);
+		(void)fclose(fp);
 	}
 	(void)closedir(dirp);
 
@@ -801,27 +789,6 @@ rcv_copy(
 
 err:	msgq_str(sp, M_SYSERR, fname, "%s");
 	return (1);
-}
-
-/*
- * rcv_gets --
- *	Fgets(3) for a file descriptor.
- */
-static char *
-rcv_gets(
-	char *buf,
-	size_t len,
-	int fd)
-{
-	int nr;
-	char *p;
-
-	if ((nr = read(fd, buf, len - 1)) == -1)
-		return (NULL);
-	if ((p = strchr(buf, '\n')) == NULL)
-		return (NULL);
-	(void)lseek(fd, (off_t)((p - buf) + 1), SEEK_SET);
-	return (buf);
 }
 
 /*
