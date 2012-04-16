@@ -369,20 +369,20 @@ alloc_err:
  * msgq_wstr --
  *	Display a message with an embedded string.
  *
- * PUBLIC: void msgq_wstr __P((SCR *, mtype_t, CHAR_T *, char *));
+ * PUBLIC: void msgq_wstr __P((SCR *, mtype_t, const CHAR_T *, const char *));
  */
 void
 msgq_wstr(
 	SCR *sp,
 	mtype_t mtype,
-	CHAR_T *str,
-	char *fmt)
+	const CHAR_T *str,
+	const char *fmt)
 {
 	size_t nlen;
 	char *nstr;
 
 	if (str == NULL) {
-		msgq(sp, mtype, fmt);
+		msgq(sp, mtype, "%s", fmt);
 		return;
 	}
 	INT2CHAR(sp, str, STRLEN(str) + 1, nstr, nlen);
@@ -393,20 +393,20 @@ msgq_wstr(
  * msgq_str --
  *	Display a message with an embedded string.
  *
- * PUBLIC: void msgq_str __P((SCR *, mtype_t, char *, char *));
+ * PUBLIC: void msgq_str __P((SCR *, mtype_t, const char *, const char *));
  */
 void
 msgq_str(
 	SCR *sp,
 	mtype_t mtype,
-	char *str,
-	char *fmt)
+	const char *str,
+	const char *fmt)
 {
 	int nf, sv_errno;
 	char *p;
 
 	if (str == NULL) {
-		msgq(sp, mtype, fmt);
+		msgq(sp, mtype, "%s", fmt);
 		return;
 	}
 
