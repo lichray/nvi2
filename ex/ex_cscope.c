@@ -816,6 +816,7 @@ csc_file(SCR *sp, CSC *csc, char *name, char **dirp, size_t *dlenp, int *isolder
 	for (pp = csc->paths; *pp != NULL; ++pp) {
 		if ((buf = join(*pp, name)) == NULL) {
 			msgq(sp, M_SYSERR, NULL);
+			*dlenp = 0;
 			return;
 		}
 		if (stat(buf, &sb) == 0) {
