@@ -10,12 +10,14 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 10.36 2012/04/16 02:24:11 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 /*
  * We include <sys/file.h>, because the open #defines were found there
@@ -30,6 +32,7 @@ static const char sccsid[] = "$Id: recover.c,v 10.35 2012/04/13 07:06:59 zy Exp 
 #include <fcntl.h>
 #include <limits.h>
 #include <pwd.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -817,28 +820,94 @@ rcv_email(
 	char *fname)
 {
 	struct stat sb;
-	char *buf;
+	struct passwd *pw;
+	FILE *fp = NULL;
+	int mfd, fd;
+	char buf[BUFSIZ], *p, *t;
+	ssize_t len;
+	int ignore = 2;		/* Skip the X-vi-* lines. */
+	off_t off = 0;
+	char *host = NULL;
+	long hostmax;
+	struct addrinfo *res0, *res = NULL, *ai;
+	struct addrinfo hints = { 0, PF_UNSPEC, SOCK_STREAM, IPPROTO_TCP };
 
-	if (_PATH_SENDMAIL[0] != '/' || stat(_PATH_SENDMAIL, &sb))
-err:		msgq_str(sp, M_SYSERR,
-		    _PATH_SENDMAIL, "071|not sending email: %s");
-	else {
-		char *fn;
-		
-		/*
-		 * !!!
-		 * If you need to port this to a system that doesn't have
-		 * sendmail, the -t flag causes sendmail to read the message
-		 * for the recipients instead of specifying them some other
-		 * way.
-		 */
-		if ((fn = quote(fname)) == NULL)
-			goto err;
-		(void)asprintf(&buf, "%s -t < %s", _PATH_SENDMAIL, fn);
-		free(fn);
-		if (buf == NULL)
-			goto err;
-		(void)system(buf);
-		free(buf);
+	/* Prepare the email file and the recipient. */
+	if ((mfd = open(fname, O_RDONLY)) == -1)
+		goto err;
+	(void)fstat(mfd, &sb);
+	if ((pw = getpwuid(sb.st_uid)) == NULL)
+		goto err;
+refill:	len = read(mfd, buf, sizeof(buf));
+	p = buf;
+	while (ignore) {
+		if ((t = memchr(p, '\n', len)) == NULL) {
+			off += len;
+			goto refill;
+		}
+		t += 1;
+		len -= t - p;
+		off += t - p;
+		p = t;
+		ignore--;
 	}
+
+	/* Prepare the required socket(2) info. */
+	hostmax = sysconf(_SC_HOST_NAME_MAX);
+	if (hostmax < 0)
+		hostmax = _POSIX_HOST_NAME_MAX;
+	if ((host = malloc(hostmax)) == NULL)
+		goto err;
+	if (getaddrinfo(host, "smtp", &hints, &res0))
+		goto err;
+
+	/* XXX Prefer IPv4. */
+	for (res = res0, ai = NULL; res != NULL; res = res->ai_next) {
+		if (res->ai_family == AF_INET) {
+			ai = res;
+			break;
+		}
+		if (res->ai_family == AF_INET6)
+			ai = res;
+	}
+	if (ai == NULL)
+		goto err;
+
+	/* Prepare a stream over socket(2). */
+	if ((fd = socket(ai->ai_family, ai->ai_socktype,
+	    ai->ai_protocol)) == -1)
+		goto err;
+	if (connect(fd, ai->ai_addr, ai->ai_addrlen) == -1) {
+		(void)close(fd);
+		goto err;
+	}
+	if ((fp = fdopen(fd, "w")) == NULL)
+		goto err;
+
+	/* Send the email. */
+	if (fprintf(fp,
+	    "HELO %s\r\n"
+	    "MAIL FROM: root@%s\r\n"
+	    "RCPT TO: %s@%s\r\n"
+	    "DATA\r\n",
+	    host, host, pw->pw_name, host) < 0)
+		goto err;
+	(void)fflush(fp);
+	if (sendfile(mfd, fd, off, 0,
+	    NULL, NULL, SF_SYNC) == -1)
+		goto err;
+	(void)fprintf(fp, ".\r\nQUIT\r\n");
+
+	if (0)
+err:		msgq_str(sp, M_SYSERR,
+		    __FILE__, "071|not sending email: %s");
+
+	if (fp != NULL)
+		(void)fclose(fp);
+	if (res0 != NULL)
+		freeaddrinfo(res0);
+	if (host != NULL)
+		free(host);
+	if (mfd != -1)
+		(void)close(mfd);
 }
