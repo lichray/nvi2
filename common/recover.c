@@ -829,6 +829,7 @@ rcv_email(
 	off_t off = 0;
 	char *host = NULL;
 	long hostmax;
+	int eno;
 	struct addrinfo *res0;
 	struct addrinfo hints = { AI_ADDRCONFIG, PF_UNSPEC,
 				  SOCK_STREAM, IPPROTO_TCP };
@@ -859,8 +860,8 @@ refill:	len = read(mfd, buf, sizeof(buf));
 		hostmax = _POSIX_HOST_NAME_MAX;
 	if ((host = malloc(hostmax)) == NULL)
 		goto err;
-	if (getaddrinfo(host, "smtp", &hints, &res0))
-		goto err;
+	if ((eno = getaddrinfo(host, "smtp", &hints, &res0)))
+		goto aierr;
 
 	/* Prepare a stream over socket(2). */
 	if ((fd = socket(res0->ai_family, res0->ai_socktype,
@@ -888,13 +889,15 @@ refill:	len = read(mfd, buf, sizeof(buf));
 	(void)fprintf(fp, ".\r\nQUIT\r\n");
 
 	if (0)
-err:		msgq_str(sp, M_SYSERR,
-		    __FILE__, "071|not sending email: %s");
-
+err:		msgq_str(sp, M_ERR, strerror(errno),
+		    "071|not sending email: %s");
 	if (fp != NULL)
 		(void)fclose(fp);
 	if (res0 != NULL)
 		freeaddrinfo(res0);
+	if (0)
+aierr:		msgq_str(sp, M_ERR, gai_strerror(eno),
+		    "071|not sending email: %s");
 	if (host != NULL)
 		free(host);
 	if (mfd != -1)
