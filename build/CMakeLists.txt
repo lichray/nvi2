@@ -19,6 +19,7 @@ endfunction()
 
 if(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O0 -g"
+		"-DCOMLOG"
 		"-Wall"
 		"-Wno-parentheses"
 		"-Wno-uninitialized"	# meaningless without -O

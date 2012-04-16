@@ -2345,7 +2345,7 @@ ex_comlog(sp, ecp)
 	SCR *sp;
 	EXCMD *ecp;
 {
-	TRACE(sp, "ecmd: %s", ecp->cmd->name);
+	TRACE(sp, "ecmd: "WS, ecp->cmd->name);
 	if (ecp->addrcnt > 0) {
 		TRACE(sp, " a1 %d", ecp->addr1.lno);
 		if (ecp->addrcnt > 1)
@@ -2355,11 +2355,13 @@ ex_comlog(sp, ecp)
 		TRACE(sp, " line %d", ecp->lineno);
 	if (ecp->flags)
 		TRACE(sp, " flags 0x%x", ecp->flags);
-	if (F_ISSET(&exc, E_BUFFER))
+	if (FL_ISSET(ecp->iflags, E_C_BUFFER))
 		TRACE(sp, " buffer "WC, ecp->buffer);
-	if (ecp->argc)
+	if (ecp->argc) {
+		int cnt;
 		for (cnt = 0; cnt < ecp->argc; ++cnt)
-			TRACE(sp, " arg %d: {%s}", cnt, ecp->argv[cnt]->bp);
+			TRACE(sp, " arg %d: {"WS"}", cnt, ecp->argv[cnt]->bp);
+	}
 	TRACE(sp, "\n");
 }
 #endif

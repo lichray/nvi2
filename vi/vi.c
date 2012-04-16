@@ -1235,9 +1235,9 @@ v_comlog(
 	SCR *sp,
 	VICMD *vp)
 {
-	TRACE(sp, "vcmd: %c", vp->key);
+	TRACE(sp, "vcmd: "WC, vp->key);
 	if (F_ISSET(vp, VC_BUFFER))
-		TRACE(sp, " buffer: %c", vp->buffer);
+		TRACE(sp, " buffer: "WC, vp->buffer);
 	if (F_ISSET(vp, VC_C1SET))
 		TRACE(sp, " c1: %lu", vp->count);
 	if (F_ISSET(vp, VC_C2SET))
