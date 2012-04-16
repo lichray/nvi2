@@ -829,8 +829,9 @@ rcv_email(
 	off_t off = 0;
 	char *host = NULL;
 	long hostmax;
-	struct addrinfo *res0, *res = NULL, *ai;
-	struct addrinfo hints = { 0, PF_UNSPEC, SOCK_STREAM, IPPROTO_TCP };
+	struct addrinfo *res0;
+	struct addrinfo hints = { AI_ADDRCONFIG, PF_UNSPEC,
+				  SOCK_STREAM, IPPROTO_TCP };
 
 	/* Prepare the email file and the recipient. */
 	if ((mfd = open(fname, O_RDONLY)) == -1)
@@ -861,23 +862,11 @@ refill:	len = read(mfd, buf, sizeof(buf));
 	if (getaddrinfo(host, "smtp", &hints, &res0))
 		goto err;
 
-	/* XXX Prefer IPv4. */
-	for (res = res0, ai = NULL; res != NULL; res = res->ai_next) {
-		if (res->ai_family == AF_INET) {
-			ai = res;
-			break;
-		}
-		if (res->ai_family == AF_INET6)
-			ai = res;
-	}
-	if (ai == NULL)
-		goto err;
-
 	/* Prepare a stream over socket(2). */
-	if ((fd = socket(ai->ai_family, ai->ai_socktype,
-	    ai->ai_protocol)) == -1)
+	if ((fd = socket(res0->ai_family, res0->ai_socktype,
+	    res0->ai_protocol)) == -1)
 		goto err;
-	if (connect(fd, ai->ai_addr, ai->ai_addrlen) == -1) {
+	if (connect(fd, res0->ai_addr, res0->ai_addrlen) == -1) {
 		(void)close(fd);
 		goto err;
 	}
