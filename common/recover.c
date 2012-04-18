@@ -20,6 +20,14 @@ static const char sccsid[] = "$Id: recover.c,v 10.36 2012/04/16 02:24:11 zy Exp 
 #include <netinet/in.h>
 
 /*
+ * SF_SYNC is known to identify the existence of the FreeBSD sendfile(2);
+ * if you don't have it, we simulate it with mmap(2).
+ */
+#ifndef SF_SYNC
+#include <sys/mman.h>
+#endif
+
+/*
  * We include <sys/file.h>, because the open #defines were found there
  * on historical systems.  We also include <fcntl.h> because the open(2)
  * #defines are found there on newer systems.
@@ -110,6 +118,7 @@ static int	 rcv_copy __P((SCR *, int, char *));
 static void	 rcv_email __P((SCR *, char *));
 static int	 rcv_mailfile __P((SCR *, int, char *));
 static int	 rcv_mktemp __P((SCR *, char *, char *));
+static int	 rcv_sendfile __P((int, char *));
 
 /*
  * rcv_tmp --
@@ -822,7 +831,7 @@ rcv_email(
 	struct stat sb;
 	struct passwd *pw;
 	FILE *fp = NULL;
-	int mfd, fd;
+	int fd;
 	char *host = NULL;
 	long hostmax;
 	int eno;
@@ -830,10 +839,9 @@ rcv_email(
 	struct addrinfo hints = { AI_ADDRCONFIG, PF_UNSPEC,
 				  SOCK_STREAM, IPPROTO_TCP };
 
-	/* Prepare the email file and the recipient. */
-	if ((mfd = open(fname, O_RDONLY)) == -1)
+	/* Prepare the the recipient. */
+	if (stat(fname, &sb))
 		goto err;
-	(void)fstat(mfd, &sb);
 	if ((pw = getpwuid(sb.st_uid)) == NULL)
 		goto err;
 
@@ -866,7 +874,7 @@ rcv_email(
 	    host, host, pw->pw_name, host) < 0)
 		goto err;
 	(void)fflush(fp);
-	if (sendfile(mfd, fd, 0, 0, NULL, NULL, SF_SYNC) == -1)
+	if (rcv_sendfile(fd, fname))
 		goto err;
 	(void)fprintf(fp, ".\r\nQUIT\r\n");
 
@@ -882,6 +890,38 @@ aierr:		msgq_str(sp, M_ERR, gai_strerror(eno),
 		    "071|not sending email: %s");
 	if (host != NULL)
 		free(host);
-	if (mfd != -1)
+}
+
+/*
+ * rcv_sendfile --
+ *	Send a file out a stream socket.
+ */
+static int
+rcv_sendfile(
+	int fd,
+	char *fname)
+{
+	int rval;
+	int mfd;
+#ifndef SF_SYNC
+	char *s;
+	struct stat sb;
+#endif
+
+	if ((mfd = open(fname, O_RDONLY)) == -1)
+		return (-1);
+#ifdef SF_SYNC
+	rval = sendfile(mfd, fd, 0, 0, NULL, NULL, SF_SYNC);
+#else
+	if (stat(fname, &sb) ||
+	    (s = mmap(NULL, sb.st_size,
+	    PROT_READ, MAP_PRIVATE, mfd, 0)) == MAP_FAILED) {
 		(void)close(mfd);
+		return (-1);
+	}
+	rval = send(fd, s, sb.st_size, 0) == -1 ? -1 : 0;
+	(void)munmap(s, sb.st_size);
+#endif
+	(void)close(mfd);
+	return (rval);
 }
