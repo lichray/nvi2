@@ -823,10 +823,6 @@ rcv_email(
 	struct passwd *pw;
 	FILE *fp = NULL;
 	int mfd, fd;
-	char buf[BUFSIZ], *p, *t;
-	ssize_t len;
-	int ignore = 2;		/* Skip the X-vi-* lines. */
-	off_t off = 0;
 	char *host = NULL;
 	long hostmax;
 	int eno;
@@ -840,19 +836,6 @@ rcv_email(
 	(void)fstat(mfd, &sb);
 	if ((pw = getpwuid(sb.st_uid)) == NULL)
 		goto err;
-refill:	len = read(mfd, buf, sizeof(buf));
-	p = buf;
-	while (ignore) {
-		if ((t = memchr(p, '\n', len)) == NULL) {
-			off += len;
-			goto refill;
-		}
-		t += 1;
-		len -= t - p;
-		off += t - p;
-		p = t;
-		ignore--;
-	}
 
 	/* Prepare the required socket(2) info. */
 	hostmax = sysconf(_SC_HOST_NAME_MAX);
@@ -883,8 +866,7 @@ refill:	len = read(mfd, buf, sizeof(buf));
 	    host, host, pw->pw_name, host) < 0)
 		goto err;
 	(void)fflush(fp);
-	if (sendfile(mfd, fd, off, 0,
-	    NULL, NULL, SF_SYNC) == -1)
+	if (sendfile(mfd, fd, 0, 0, NULL, NULL, SF_SYNC) == -1)
 		goto err;
 	(void)fprintf(fp, ".\r\nQUIT\r\n");
 
