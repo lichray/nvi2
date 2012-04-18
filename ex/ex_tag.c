@@ -17,11 +17,7 @@ static const char sccsid[] = "$Id: ex_tag.c,v 10.54 2012/04/12 07:17:30 zy Exp $
 #endif /* not lint */
 
 #include <sys/types.h>
-
-#ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
-#endif
-
 #include <sys/queue.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -1049,25 +1045,9 @@ ctag_sfile(SCR *sp, TAGF *tfp, TAGQ *tqp, char *tname)
 		return (1);
 	}
 
-	/*
-	 * XXX
-	 * Some old BSD systems require MAP_FILE as an argument when mapping
-	 * regular files.
-	 */
-#ifndef MAP_FILE
-#define	MAP_FILE	0
-#endif
-	/*
-	 * XXX
-	 * We'd like to test if the file is too big to mmap.  Since we don't
-	 * know what size or type off_t's or size_t's are, what the largest
-	 * unsigned integral type is, or what random insanity the local C
-	 * compiler will perpetrate, doing the comparison in a portable way
-	 * is flatly impossible.  Hope mmap fails if the file is too large.
-	 */
 	if (fstat(fd, &sb) != 0 ||
-	    (map = mmap(NULL, (size_t)sb.st_size, PROT_READ | PROT_WRITE,
-	    MAP_FILE | MAP_PRIVATE, fd, (off_t)0)) == (caddr_t)-1) {
+	    (map = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE,
+	    MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
 		tfp->errnum = errno;
 		(void)close(fd);
 		return (1);
@@ -1174,7 +1154,7 @@ corrupt:		p = msg_print(sp, tname, &nf1);
 		tqp->current = TAILQ_FIRST(tqp->tagq);
 
 alloc_err:
-done:	if (munmap(map, (size_t)sb.st_size))
+done:	if (munmap(map, sb.st_size))
 		msgq(sp, M_SYSERR, "munmap");
 	if (close(fd))
 		msgq(sp, M_SYSERR, "close");
