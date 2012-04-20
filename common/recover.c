@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 10.36 2012/04/16 02:24:11 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 11.0 2012/04/20 09:08:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -41,6 +41,7 @@ static const char sccsid[] = "$Id: recover.c,v 10.36 2012/04/16 02:24:11 zy Exp 
 #include <limits.h>
 #include <pwd.h>
 #include <netdb.h>
+#include <resolv.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,27 +99,25 @@ static const char sccsid[] = "$Id: recover.c,v 10.36 2012/04/16 02:24:11 zy Exp 
  * means that the data structures (SCR, EXF, the underlying tree structures)
  * must be consistent when the signal arrives.
  *
- * The recovery mail file contains normal mail headers, with two additions,
- * which occur in THIS order, as the FIRST TWO headers:
+ * The recovery mail file contains normal mail headers, with two additional
  *
- *	X-vi-recover-file: file_name
- *	X-vi-recover-path: recover_path
+ *	X-vi-data: <file|path>;<base64 encoded path>
  *
- * Since newlines delimit the headers, this means that file names cannot have
- * newlines in them, but that's probably okay.  As these files aren't intended
- * to be long-lived, changing their format won't be too painful.
+ * MIME headers; the folding character is limited to ' '.
  *
- * Btree files are named "vi.XXXX" and recovery files are named "recover.XXXX".
+ * Btree files are named "vi.XXXXXX" and recovery files are named
+ * "recover.XXXXXX".
  */
 
-#define	VI_FHEADER	"X-vi-recover-file: "
-#define	VI_PHEADER	"X-vi-recover-path: "
+#define	VI_DHEADER	"X-vi-data:"
 
 static int	 rcv_copy __P((SCR *, int, char *));
 static void	 rcv_email __P((SCR *, char *));
 static int	 rcv_mailfile __P((SCR *, int, char *));
 static int	 rcv_mktemp __P((SCR *, char *, char *));
 static int	 rcv_sendfile __P((int, char *));
+static int	 rcv_dlnwrite __P((SCR *, const char *, const char *, FILE *));
+static int	 rcv_dlnread __P((SCR *, char **, char **, FILE *));
 
 /*
  * rcv_tmp --
@@ -156,13 +155,6 @@ rcv_tmp(
 			goto err;
 		}
 		(void)chmod(dp, S_IRWXU | S_IRWXG | S_IRWXO | S_ISVTX);
-	}
-
-	/* Newlines delimit the mail messages. */
-	if (strchr(name, '\n')) {
-		msgq(sp, M_ERR,
-		    "055|Files with newlines in the name are unrecoverable");
-		goto err;
 	}
 
 	if ((path = join(dp, "vi.XXXXXX")) == NULL)
@@ -347,13 +339,14 @@ rcv_mailfile(
 	EXF *ep;
 	GS *gp;
 	struct passwd *pw;
-	size_t len;
+	int len;
 	time_t now;
 	uid_t uid;
 	int fd;
 	FILE *fp;
 	char *dp, *p, *t, *qt, *buf, *mpath;
 	char *t1, *t2, *t3;
+	int st;
 
 	/*
 	 * XXX
@@ -412,9 +405,19 @@ rcv_mailfile(
 	else
 		++p;
 	(void)time(&now);
-	len = fprintf(fp, "%s%s\n%s%s\n%s\n%s\n%s%s\n%s%.40s\n%s\n\n",
-	    VI_FHEADER, t,			/* Non-standard. */
-	    VI_PHEADER, cp_path,		/* Non-standard. */
+
+	if ((st = rcv_dlnwrite(sp, "file", t, fp))) {
+		if (st == 1)
+			goto werr;
+		goto err;
+	}
+	if ((st = rcv_dlnwrite(sp, "path", cp_path, fp))) {
+		if (st == 1)
+			goto werr;
+		goto err;
+	}
+
+	len = fprintf(fp, "%s\n%s\n%s%s\n%s%.40s\n%s\n\n",
 	    "Reply-To: root",
 	    "From: root (Nvi recovery program)",
 	    "To: ", pw->pw_name,
@@ -476,8 +479,10 @@ rcv_mailfile(
 wout:		*t2++ = '\n';
 
 		/* t2 points one after the last character to display. */
-		if (fwrite(t1, 1, t2 - t1, fp) != t2 - t1)
+		if (fwrite(t1, 1, t2 - t1, fp) != t2 - t1) {
+			free(buf);
 			goto werr;
+		}
 	}
 
 	if (issync) {
@@ -485,8 +490,8 @@ wout:		*t2++ = '\n';
 		rcv_email(sp, mpath);
 	}
 	if (fclose(fp)) {
-werr:		free(buf);
-		msgq(sp, M_SYSERR, "065|Recovery file");
+		free(buf);
+werr:		msgq(sp, M_SYSERR, "065|Recovery file");
 		goto err;
 	}
 	free(buf);
@@ -517,7 +522,9 @@ rcv_list(SCR *sp)
 	DIR *dirp;
 	FILE *fp;
 	int found;
-	char *p, *t, file[PATH_MAX], path[PATH_MAX];
+	char *p, *file, *path;
+	char *dtype, *data;
+	int st;
 
 	/* Open the recovery directory for reading. */
 	if (opts_empty(sp, O_RECDIR, 0))
@@ -556,17 +563,23 @@ rcv_list(SCR *sp)
 		}
 
 		/* Check the headers. */
-		if (fgets(file, sizeof(file), fp) == NULL ||
-		    strncmp(file, VI_FHEADER, sizeof(VI_FHEADER) - 1) ||
-		    (p = strchr(file, '\n')) == NULL ||
-		    fgets(path, sizeof(path), fp) == NULL ||
-		    strncmp(path, VI_PHEADER, sizeof(VI_PHEADER) - 1) ||
-		    (t = strchr(path, '\n')) == NULL) {
-			msgq_str(sp, M_ERR, dp->d_name,
-			    "066|%s: malformed recovery file");
-			goto next;
+		for (file = NULL, path = NULL;
+		    file == NULL || path == NULL;) {
+			if ((st = rcv_dlnread(sp, &dtype, &data, fp))) {
+				if (st == 1)
+					msgq_str(sp, M_ERR, dp->d_name,
+					    "066|%s: malformed recovery file");
+				goto next;
+			}
+			if (dtype == NULL)
+				continue;
+			if (!strcmp(dtype, "file"))
+				file = data;
+			else if (!strcmp(dtype, "path"))
+				path = data;
+			else
+				free(data);
 		}
-		*p = *t = '\0';
 
 		/*
 		 * If the file doesn't exist, it's an orphaned recovery file,
@@ -577,7 +590,7 @@ rcv_list(SCR *sp)
 		 * before deleting the email file.
 		 */
 		errno = 0;
-		if (stat(path + sizeof(VI_PHEADER) - 1, &sb) &&
+		if (stat(path, &sb) &&
 		    errno == ENOENT) {
 			(void)unlink(dp->d_name);
 			goto next;
@@ -586,11 +599,15 @@ rcv_list(SCR *sp)
 		/* Get the last modification time and display. */
 		(void)fstat(fileno(fp), &sb);
 		(void)printf("%.24s: %s\n",
-		    ctime(&sb.st_mtime), file + sizeof(VI_FHEADER) - 1);
+		    ctime(&sb.st_mtime), file);
 		found = 1;
 
 		/* Close, discarding lock. */
 next:		(void)fclose(fp);
+		if (file != NULL)
+			free(file);
+		if (path != NULL)
+			free(path);
 	}
 	if (found == 0)
 		(void)printf("%s: No files to recover\n", sp->gp->progname);
@@ -617,7 +634,9 @@ rcv_read(
 	time_t rec_mtime;
 	int found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
-	char file[PATH_MAX], path[PATH_MAX], *recpath;
+	char *file, *path, *recpath;
+	char *dtype, *data;
+	int st;
 
 	if (opts_empty(sp, O_RECDIR, 0))
 		return (1);
@@ -666,17 +685,23 @@ rcv_read(
 		}
 
 		/* Check the headers. */
-		if (fgets(file, sizeof(file), fp) == NULL ||
-		    strncmp(file, VI_FHEADER, sizeof(VI_FHEADER) - 1) ||
-		    (p = strchr(file, '\n')) == NULL ||
-		    fgets(path, sizeof(path), fp) == NULL ||
-		    strncmp(path, VI_PHEADER, sizeof(VI_PHEADER) - 1) ||
-		    (t = strchr(path, '\n')) == NULL) {
-			msgq_str(sp, M_ERR, recpath,
-			    "067|%s: malformed recovery file");
-			goto next;
+		for (file = NULL, path = NULL;
+		    file == NULL || path == NULL;) {
+			if ((st = rcv_dlnread(sp, &dtype, &data, fp))) {
+				if (st == 1)
+					msgq_str(sp, M_ERR, dp->d_name,
+					    "067|%s: malformed recovery file");
+				goto next;
+			}
+			if (dtype == NULL)
+				continue;
+			if (!strcmp(dtype, "file"))
+				file = data;
+			else if (!strcmp(dtype, "path"))
+				path = data;
+			else
+				free(data);
 		}
-		*p = *t = '\0';
 		++found;
 
 		/*
@@ -688,14 +713,14 @@ rcv_read(
 		 * before deleting the email file.
 		 */
 		errno = 0;
-		if (stat(path + sizeof(VI_PHEADER) - 1, &sb) &&
+		if (stat(path, &sb) &&
 		    errno == ENOENT) {
 			(void)unlink(dp->d_name);
 			goto next;
 		}
 
 		/* Check the file name. */
-		if (strcmp(file + sizeof(VI_FHEADER) - 1, name))
+		if (strcmp(file, name))
 			goto next;
 
 		++requested;
@@ -713,12 +738,7 @@ rcv_read(
 			p = recp;
 			t = pathp;
 			recp = recpath;
-			if ((pathp = strdup(path)) == NULL) {
-				msgq(sp, M_SYSERR, NULL);
-				recp = p;
-				pathp = t;
-				goto next;
-			}
+			pathp = path;
 			if (p != NULL) {
 				free(p);
 				free(t);
@@ -727,9 +747,14 @@ rcv_read(
 			if (sv_fd != -1)
 				(void)close(sv_fd);
 			sv_fd = dup(fileno(fp));
-		} else
+		} else {
 next:			free(recpath);
+			if (path != NULL)
+				free(path);
+		}
 		(void)fclose(fp);
+		if (file != NULL)
+			free(file);
 	}
 	(void)closedir(dirp);
 
@@ -753,7 +778,7 @@ next:			free(recpath);
 	 * XXX
 	 * file_init() is going to set ep->rcv_path.
 	 */
-	if (file_init(sp, frp, pathp + sizeof(VI_PHEADER) - 1, 0)) {
+	if (file_init(sp, frp, pathp, 0)) {
 		free(recp);
 		free(pathp);
 		(void)close(sv_fd);
@@ -924,4 +949,126 @@ rcv_sendfile(
 #endif
 	(void)close(mfd);
 	return (rval);
+}
+
+/*
+ * rcv_dlnwrite --
+ *	Encode a string into an X-vi-data line and write it.
+ */
+static int
+rcv_dlnwrite(
+	SCR *sp,
+	const char *dtype,
+	const char *src,
+	FILE *fp)
+{
+	char *bp = NULL, *p;
+	size_t blen = 0;
+	size_t dlen, len;
+	int plen, xlen;
+
+	len = strlen(src);
+	dlen = strlen(dtype);
+	GET_SPACE_GOTOC(sp, bp, blen, (len + 2) / 3 * 4 + dlen + 2);
+	(void)strncpy(bp, dtype, dlen);
+	bp[dlen] = ';';
+	if ((xlen = b64_ntop((u_char *)src,
+	    len, bp + dlen + 1, blen)) == -1)
+		goto err;
+	xlen += dlen + 1;
+
+	/* Output as an MIME folding header. */
+	if ((plen = fprintf(fp, VI_DHEADER " %.*s\n",
+	    FMTCOLS - (int)sizeof(VI_DHEADER), bp)) < 0)
+		goto err;
+	plen -= (int)sizeof(VI_DHEADER) + 1;
+	for (p = bp, xlen -= plen; xlen > 0; xlen -= plen) {
+		p += plen;
+		if ((plen = fprintf(fp, " %.*s\n", FMTCOLS - 1, p)) < 0)
+			goto err;
+		plen -= 2;
+	}
+	FREE_SPACE(sp, bp, blen);
+	return (0);
+
+err:	FREE_SPACE(sp, bp, blen);
+	return (1);
+alloc_err:
+	msgq(sp, M_SYSERR, NULL);
+	return (-1);
+}
+
+/*
+ * rcv_dlnread --
+ *	Read an X-vi-data line and decode it.
+ */
+static int
+rcv_dlnread(
+	SCR *sp,
+	char **dtypep,
+	char **datap,		/* free *datap if != NULL after use. */
+	FILE *fp)
+{
+	int ch;
+	char buf[1024];
+	char *bp = NULL, *p, *src;
+	size_t blen = 0;
+	size_t len, off, dlen;
+	char *dtype, *data;
+	int xlen;
+
+	if (fgets(buf, sizeof(buf), fp) == NULL)
+		return (1);
+	if (strncmp(buf, VI_DHEADER, sizeof(VI_DHEADER) - 1)) {
+		*dtypep = NULL;
+		*datap = NULL;
+		return (0);
+	}
+
+	/* Fetch an MIME folding header. */
+	len = strlen(buf) - sizeof(VI_DHEADER) + 1;
+	GET_SPACE_GOTOC(sp, bp, blen, len);
+	(void)strcpy(bp, buf + sizeof(VI_DHEADER) - 1);
+	p = bp + len;
+	while ((ch = fgetc(fp)) == ' ') {
+		if (fgets(buf, sizeof(buf), fp) == NULL)
+			goto err;
+		off = strlen(buf);
+		len += off;
+		ADD_SPACE_GOTO(sp, char, bp, blen, len);
+		p = bp + len - off;
+		(void)strcpy(p, buf);
+	}
+	(void)ungetc(ch, fp);
+
+	for (p = bp; *p == ' ' || *p == '\n'; p++);
+	if ((src = strchr(p, ';')) == NULL)
+		goto err;
+	dlen = src - p;
+	src += 1;
+	len -= src - bp;
+
+	/* Memory looks like: "<data>\0<dtype>\0". */
+	MALLOC(sp, data, char *, dlen + len / 4 * 3 + 2);
+	if (data == NULL)
+		goto err;
+	if ((xlen = (b64_pton(p + dlen + 1,
+	    (u_char *)data, len / 4 * 3 + 1))) == -1) {
+		free(dtype);
+		goto err;
+	}
+	data[xlen] = '\0';
+	dtype = data + xlen + 1;
+	(void)strncpy(dtype, p, dlen);
+	dtype[dlen] = '\0';
+	FREE_SPACE(sp, bp, blen);
+	*dtypep = dtype;
+	*datap = data;
+	return (0);
+
+err: 	FREE_SPACE(sp, bp, blen);
+	return (1);
+alloc_err:
+	msgq(sp, M_SYSERR, NULL);
+	return (-1);
 }
