@@ -488,6 +488,7 @@ wout:		*t2++ = '\n';
 	if (issync) {
 		fflush(fp);
 		rcv_email(sp, mpath);
+		free(mpath);
 	}
 	if (fclose(fp)) {
 		free(buf);
@@ -784,6 +785,7 @@ next:			free(recpath);
 		(void)close(sv_fd);
 		return (1);
 	}
+	free(pathp);
 
 	/*
 	 * We keep an open lock on the file so that the recover option can
@@ -874,8 +876,9 @@ rcv_email(
 	hostmax = sysconf(_SC_HOST_NAME_MAX);
 	if (hostmax < 0)
 		hostmax = _POSIX_HOST_NAME_MAX;
-	if ((host = malloc(hostmax)) == NULL)
+	if ((host = malloc(hostmax + 1)) == NULL)
 		goto err;
+	(void)gethostname(host, hostmax + 1);
 	if ((eno = getaddrinfo(host, "smtp", &hints, &res0)))
 		goto aierr;
 
@@ -1054,7 +1057,7 @@ rcv_dlnread(
 		goto err;
 	if ((xlen = (b64_pton(p + dlen + 1,
 	    (u_char *)data, len / 4 * 3 + 1))) == -1) {
-		free(dtype);
+		free(data);
 		goto err;
 	}
 	data[xlen] = '\0';
