@@ -1,13 +1,13 @@
 #!/bin/sh -
 #
-#	$Id: recover.in,v 9.0 2012/04/20 09:17:03 zy Exp $
+#	$Id: recover.in,v 9.1 2012/04/20 10:01:11 zy Exp $
 #
 # Script to recover nvi edit sessions.
 
 RECDIR="@vi_cv_path_preserve@"
 SENDMAIL="@vi_cv_path_sendmail@"
 
-echo 'Recovering nvi editor sessions.'
+echo -n 'Recovering nvi editor sessions.'
 
 # Check editor backup files.
 vibackup=`echo $RECDIR/vi.*`
@@ -44,8 +44,10 @@ if [ "$virecovery" != "$RECDIR/recover.*" ]; then
 		    while(getline) }' < $i | uudecode -mr`
 		if test -n "$recfile" -a -s "$recfile"; then
 			$SENDMAIL -oi -t < $i
+			echo -n '.'
 		else
 			rm $i
 		fi
 	done
 fi
+echo ' Done.'
