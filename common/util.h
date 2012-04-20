@@ -56,5 +56,7 @@ enum nresult { NUM_ERR, NUM_OK, NUM_OVER, NUM_UNDER };
 	(NPFITS(ULONG_MAX, (v1), (v2)) ? NUM_OK : NUM_OVER)
 
 /* Macros for min/max. */
+#undef	MIN
+#undef	MAX
 #define	MIN(_a,_b)	((_a)<(_b)?(_a):(_b))
 #define	MAX(_a,_b)	((_a)<(_b)?(_b):(_a))
