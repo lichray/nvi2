@@ -287,7 +287,7 @@ nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 			uc = decode_utf8(sp->cname);
 #ifdef USE_ICONV
 		else {
-			char buf[sizeof(sp->cname)];
+			char buf[sizeof(sp->cname)] = "";
 			size_t left = sizeof(sp->cname);
 			char *in = sp->cname;
 			char *out = buf;
