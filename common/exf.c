@@ -492,7 +492,6 @@ file_spath(
 				len = strlen(path);
 				*p = savech;
 				if (!stat(path, sbp)) {
-					free(path);
 					found = 1;
 					break;
 				}
@@ -505,10 +504,8 @@ file_spath(
 
 	/* If we found it, build a new pathname and discard the old one. */
 	if (found) {
-		MALLOC_RET(sp, p, char *, len + 1);
-		memcpy(p, path, len + 1);
 		free(frp->name);
-		frp->name = p;
+		frp->name = path;
 	}
 	*existsp = found;
 	return (0);
