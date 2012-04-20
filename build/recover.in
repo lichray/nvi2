@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-#	@(#)recover.in	8.8 (Berkeley) 10/10/96
+#	$Id: recover.in,v 9.0 2012/04/20 09:17:03 zy Exp $
 #
 # Script to recover nvi edit sessions.
 
@@ -39,9 +39,11 @@ if [ "$virecovery" != "$RECDIR/recover.*" ]; then
 		# Delete any recovery files that are zero length, corrupted,
 		# or that have no corresponding backup file.  Else send mail
 		# to the user.
-		recfile=`awk '/^X-vi-recover-path:/{print $2}' < $i`
+		recfile=`awk '/^X-vi-data: *file;/ { sub(/^.*;/, " "); \
+		    do { if (substr($0,1,1) == " ") print; else exit } \
+		    while(getline) }' < $i | uudecode -mr`
 		if test -n "$recfile" -a -s "$recfile"; then
-			$SENDMAIL -t < $i
+			$SENDMAIL -oi -t < $i
 		else
 			rm $i
 		fi
