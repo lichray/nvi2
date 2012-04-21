@@ -894,12 +894,11 @@ rcv_email(
 		goto err;
 
 	/* Send the email. */
-	if (fprintf(fp,
-	    "HELO %s\r\n"
-	    "MAIL FROM: root@%s\r\n"
-	    "RCPT TO: %s@%s\r\n"
-	    "DATA\r\n",
-	    host, host, pw->pw_name, host) < 0)
+	if (fprintf(fp, "%s%s\r\n%s%s\r\n%s%s%s%s\r\n%s\r\n",
+	    "HELO ", host,
+	    "MAIL FROM: root@", host,
+	    "RCPT TO: ", pw->pw_name, "@", host,
+	    "DATA") < 0)
 		goto err;
 	(void)fflush(fp);
 	if (rcv_sendfile(fd, fname))
