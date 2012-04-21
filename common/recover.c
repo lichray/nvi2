@@ -48,6 +48,7 @@ static const char sccsid[] = "$Id: recover.c,v 11.0 2012/04/20 09:08:53 zy Exp $
 #include <time.h>
 #include <unistd.h>
 
+#include "../ex/version.h"
 #include "common.h"
 #include "pathnames.h"
 
@@ -901,6 +902,9 @@ rcv_email(
 	    "MAIL FROM: root@", host,
 	    "RCPT TO: ", pw->pw_name, "@", host,
 	    "DATA") < 0)
+		goto err;
+	if (fputs(
+	    "User-Agent: nvi/" VI_VERSION "\n", fp) == EOF)
 		goto err;
 	(void)fflush(fp);
 	if (rcv_sendfile(fd, fname))
