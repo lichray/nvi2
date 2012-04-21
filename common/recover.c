@@ -417,19 +417,21 @@ rcv_mailfile(
 		goto err;
 	}
 
-	len = fprintf(fp, "%s\n%s\n%s%s\n%s%.40s\n%s\n\n",
-	    "Reply-To: root",
-	    "From: root (Nvi recovery program)",
-	    "To: ", pw->pw_name,
-	    "Subject: Nvi saved the file ", p,
-	    "Precedence: bulk");		/* For vacation(1). */
-	if (len < 0)
-		goto werr;
-
 	MALLOC(sp, host, char *, hostmax + 1);
 	if (host == NULL)
 		goto err;
 	(void)gethostname(host, hostmax + 1);
+
+	len = fprintf(fp, "%s%s%s\n%s%s%s%s\n%s%.40s\n%s\n\n",
+	    "From: root@", host, " (Nvi recovery program)",
+	    "To: ", pw->pw_name, "@", host,
+	    "Subject: Nvi saved the file ", p,
+	    "Precedence: bulk");		/* For vacation(1). */
+	if (len < 0) {
+		free(host);
+		goto werr;
+	}
+
 	if ((qt = quote(t)) == NULL) {
 		free(host);
 		msgq(sp, M_SYSERR, NULL);
