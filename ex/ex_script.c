@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.39 2011/12/02 17:40:46 zy Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.40 2012/04/21 01:41:12 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -699,7 +699,8 @@ ptym_open(char *pts_name)
 	int fdm;
 	char *ptr, *ptsname();
 
-	strcpy(pts_name, _PATH_SYSV_PTY);
+	strlcpy(pts_name, _PATH_SYSV_PTY,
+	    sizeof(((SCRIPT *)0)->sh_name));
 	if ((fdm = open(pts_name, O_RDWR)) < 0 )
 		return (-1);
 
@@ -723,7 +724,8 @@ ptym_open(char *pts_name)
 		close(fdm);
 		return (-3);
 	}
-	strcpy(pts_name, ptr);
+	strlcpy(pts_name, ptr,
+	    sizeof(((SCRIPT *)0)->sh_name));
 	return (fdm);
 }
 
@@ -800,7 +802,8 @@ sscr_pty(amaster, aslave, name, termp, winp)
 					*amaster = master;
 					*aslave = slave;
 					if (name)
-						strcpy(name, line);
+						strlcpy(name, line, sizeof(
+						    ((SCRIPT *)0)->sh_name));
 					if (termp)
 						(void) tcsetattr(slave, 
 							TCSAFLUSH, termp);
