@@ -1,3 +1,5 @@
+/*	$NetBSD: cname.h,v 1.2 2008/12/05 22:51:42 christos Exp $ */
+
 /*-
  * Copyright (c) 1992, 1993, 1994 Henry Spencer.
  * Copyright (c) 1992, 1993, 1994
@@ -39,7 +41,7 @@
 
 /* character-name table */
 static struct cname {
-	RCHAR_T *name;
+	const RCHAR_T *name;
 	char code;
 } cnames[] = {
 	{ L("NUL"),		'\0' },

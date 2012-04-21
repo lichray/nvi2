@@ -1,3 +1,5 @@
+/*	$NetBSD: regexec.c,v 1.4 2009/10/31 20:11:53 dsl Exp $ */
+
 /*-
  * Copyright (c) 1992, 1993, 1994 Henry Spencer.
  * Copyright (c) 1992, 1993, 1994
@@ -171,8 +173,8 @@ regexec(const regex_t *preg, const RCHAR_T *string, size_t nmatch, regmatch_t *p
 		return(REG_BADPAT);
 	eflags = GOODFLAGS(eflags);
 
-	if (g->nstates <= CHAR_BIT*sizeof(states1) && !(eflags&REG_LARGE))
-		return(smatcher(g, (RCHAR_T *)string, nmatch, pmatch, eflags));
+	if (g->nstates <= (int)(CHAR_BIT*sizeof(states1)) && !(eflags&REG_LARGE))
+		return(smatcher(g, string, nmatch, pmatch, eflags));
 	else
-		return(lmatcher(g, (RCHAR_T *)string, nmatch, pmatch, eflags));
+		return(lmatcher(g, string, nmatch, pmatch, eflags));
 }
