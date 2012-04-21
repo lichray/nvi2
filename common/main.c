@@ -347,13 +347,11 @@ editor(
 	if (*argv != NULL) {
 		if (sp->frp != NULL) {
 			/* Cheat -- we know we have an extra argv slot. */
-			MALLOC_NOMSG(sp,
-			    *--argv, char *, strlen(sp->frp->name) + 1);
+			*--argv = strdup(sp->frp->name);
 			if (*argv == NULL) {
 				v_estr(gp->progname, errno, NULL);
 				goto err;
 			}
-			(void)strcpy(*argv, sp->frp->name);
 		}
 		sp->argv = sp->cargv = argv;
 		F_SET(sp, SC_ARGNOFREE);
@@ -548,28 +546,26 @@ v_obsolete(
 	while (*++argv && strcmp(argv[0], "--"))
 		if (argv[0][0] == '+') {
 			if (argv[0][1] == '\0') {
-				MALLOC_NOMSG(NULL, argv[0], char *, 4);
+				argv[0] = strdup("-c$");
 				if (argv[0] == NULL)
 					goto nomem;
-				(void)strcpy(argv[0], "-c$");
 			} else  {
 				p = argv[0];
 				len = strlen(argv[0]);
-				MALLOC_NOMSG(NULL, argv[0], char *, len + 2);
+				argv[0] = malloc(len + 2);
 				if (argv[0] == NULL)
 					goto nomem;
 				argv[0][0] = '-';
 				argv[0][1] = 'c';
-				(void)strcpy(argv[0] + 2, p + 1);
+				(void)strlcpy(argv[0] + 2, p + 1, len);
 			}
 		} else if (argv[0][0] == '-')
 			if (argv[0][1] == '\0') {
-				MALLOC_NOMSG(NULL, argv[0], char *, 3);
+				argv[0] = strdup("-s");
 				if (argv[0] == NULL) {
 nomem:					v_estr(name, errno, NULL);
 					return (1);
 				}
-				(void)strcpy(argv[0], "-s");
 			} else
 				if ((argv[0][1] == 'c' || argv[0][1] == 'T' ||
 				    argv[0][1] == 't' || argv[0][1] == 'w') &&

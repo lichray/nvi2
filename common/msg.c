@@ -558,7 +558,7 @@ msgq_status(
 	size_t blen, len;
 	int cnt, needsep;
 	const char *t;
-	char **ap, *bp, *np, *p, *s;
+	char **ap, *bp, *np, *p, *s, *ep;
 	CHAR_T *wp;
 	size_t wlen;
 
@@ -566,6 +566,7 @@ msgq_status(
 	len = strlen(sp->frp->name);
 	GET_SPACE_GOTOC(sp, bp, blen, len * MAX_CHARACTER_COLUMNS + 128);
 	p = bp;
+	ep = bp + blen;
 
 	/* Convert the filename. */
 	CHAR2INT(sp, sp->frp->name, len + 1, wp, wlen);
@@ -584,7 +585,7 @@ msgq_status(
 	if (F_ISSET(sp, SC_STATUS_CNT) && sp->argv != NULL) {
 		for (cnt = 0, ap = sp->argv; *ap != NULL; ++ap, ++cnt);
 		if (cnt > 1) {
-			(void)sprintf(p,
+			(void)snprintf(p, ep - p,
 			    msg_cat(sp, "317|%d files to edit", NULL), cnt);
 			p += strlen(p);
 			*p++ = ':';
@@ -659,16 +660,17 @@ msgq_status(
 			p += len;
 		} else {
 			t = msg_cat(sp, "027|line %lu of %lu [%ld%%]", &len);
-			(void)sprintf(p, t, lno, last, ((u_long)lno * 100) / last);
+			(void)snprintf(p, ep - p, t, lno, last,
+			    ((u_long)lno * 100) / last);
 			p += strlen(p);
 		}
 	} else {
 		t = msg_cat(sp, "029|line %lu", &len);
-		(void)sprintf(p, t, (u_long)lno);
+		(void)snprintf(p, ep - p, t, (u_long)lno);
 		p += strlen(p);
 	}
 #ifdef DEBUG
-	(void)sprintf(p, " (pid %lu)", (u_long)getpid());
+	(void)snprintf(p, ep - p, " (pid %lu)", (u_long)getpid());
 	p += strlen(p);
 #endif
 	*p++ = '\n';
