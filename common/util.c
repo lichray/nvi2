@@ -172,7 +172,7 @@ quote(char *str)
 		*p++ = '\'';
 		for (; *str != '\0'; str++) {
 			if (*str == '\'') {
-				(void)strncpy(p, SQT, sizeof(SQT) - 1);
+				(void)memcpy(p, SQT, sizeof(SQT) - 1);
 				p += sizeof(SQT) - 1;
 			} else
 				*p++ = *str;

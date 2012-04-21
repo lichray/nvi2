@@ -974,7 +974,7 @@ rcv_dlnwrite(
 	len = strlen(src);
 	dlen = strlen(dtype);
 	GET_SPACE_GOTOC(sp, bp, blen, (len + 2) / 3 * 4 + dlen + 2);
-	(void)strncpy(bp, dtype, dlen);
+	(void)memcpy(bp, dtype, dlen);
 	bp[dlen] = ';';
 	if ((xlen = b64_ntop((u_char *)src,
 	    len, bp + dlen + 1, blen)) == -1)
@@ -1032,7 +1032,7 @@ rcv_dlnread(
 	/* Fetch an MIME folding header. */
 	len = strlen(buf) - sizeof(VI_DHEADER) + 1;
 	GET_SPACE_GOTOC(sp, bp, blen, len);
-	(void)strcpy(bp, buf + sizeof(VI_DHEADER) - 1);
+	(void)memcpy(bp, buf + sizeof(VI_DHEADER) - 1, len);
 	p = bp + len;
 	while ((ch = fgetc(fp)) == ' ') {
 		if (fgets(buf, sizeof(buf), fp) == NULL)
@@ -1041,8 +1041,9 @@ rcv_dlnread(
 		len += off;
 		ADD_SPACE_GOTO(sp, char, bp, blen, len);
 		p = bp + len - off;
-		(void)strcpy(p, buf);
+		(void)memcpy(p, buf, off);
 	}
+	bp[len] = '\0';
 	(void)ungetc(ch, fp);
 
 	for (p = bp; *p == ' ' || *p == '\n'; p++);
@@ -1063,7 +1064,7 @@ rcv_dlnread(
 	}
 	data[xlen] = '\0';
 	dtype = data + xlen + 1;
-	(void)strncpy(dtype, p, dlen);
+	(void)memcpy(dtype, p, dlen);
 	dtype[dlen] = '\0';
 	FREE_SPACE(sp, bp, blen);
 	*dtypep = dtype;
