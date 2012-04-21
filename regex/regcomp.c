@@ -1271,19 +1271,20 @@ static void
 mcadd(register struct parse *p, register cset *cs, register const char *cp)
 {
 	register size_t oldend = cs->smultis;
+	void *np;
 
 	cs->smultis += strlen(cp) + 1;
-	if (cs->multis == NULL)
-		cs->multis = malloc(cs->smultis);
-	else
-		cs->multis = realloc(cs->multis, cs->smultis);
-	if (cs->multis == NULL) {
+	np = realloc(cs->multis, cs->smultis);
+	if (np == NULL) {
+		if (cs->multis)
+			free(cs->multis);
+		cs->multis = NULL;
 		SETERROR(REG_ESPACE);
 		return;
 	}
+	cs->multis = np;
 
-	(void) strcpy(cs->multis + oldend - 1, cp);
-	cs->multis[cs->smultis - 1] = '\0';
+	(void) strlcpy(cs->multis + oldend - 1, cp, cs->smultis - oldend + 1);
 }
 
 #ifdef notdef

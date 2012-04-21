@@ -131,11 +131,12 @@ regerror(int errcode, const regex_t *preg, char *errbuf, size_t errbuf_size)
 				break;
 	
 		if (errcode&REG_ITOA) {
-			if (r->code != 0)
-				(void) strcpy(convbuf, r->name);
-			else
-				sprintf(convbuf, "REG_0x%x", target);
-			assert(strlen(convbuf) < sizeof(convbuf));
+			if (r->code != 0) {
+				assert(strlen(r->name) < sizeof(convbuf));
+				(void) strlcpy(convbuf, r->name, sizeof(convbuf));
+			} else
+				(void) snprintf(convbuf, sizeof(convbuf),
+				    "REG_0x%x", target);
 			s = convbuf;
 		} else
 			s = r->explain;
@@ -143,12 +144,7 @@ regerror(int errcode, const regex_t *preg, char *errbuf, size_t errbuf_size)
 
 	len = strlen(s) + 1;
 	if (errbuf_size > 0) {
-		if (errbuf_size > len)
-			(void) strcpy(errbuf, s);
-		else {
-			(void) strncpy(errbuf, s, errbuf_size-1);
-			errbuf[errbuf_size-1] = '\0';
-		}
+		(void) strlcpy(errbuf, s, errbuf_size);
 	}
 
 	return(len);
