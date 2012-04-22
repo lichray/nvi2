@@ -19,9 +19,7 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.41 2012/04/22 00:10:04 zy Ex
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/queue.h>
-#ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/wait.h>
@@ -29,9 +27,9 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.41 2012/04/22 00:10:04 zy Ex
 #include <bitstring.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>		/* XXX: OSF/1 bug: include before <grp.h> */
 #include <grp.h>
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>

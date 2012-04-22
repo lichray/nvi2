@@ -15,12 +15,6 @@
 /* Define if you have <ncurses.h> */
 #cmakedefine HAVE_NCURSES_H
 
-/* Define if you have <sys/mman.h> */
-#cmakedefine HAVE_SYS_MMAN_H
-
-/* Define if you have <sys/select.h> */
-#cmakedefine HAVE_SYS_SELECT_H
-
 /* Define if you have <libutil.h> */
 #cmakedefine HAVE_LIBUTIL_H
 

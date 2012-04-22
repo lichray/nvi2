@@ -99,8 +99,6 @@ if(USE_ICONV)
 	include_directories(${ICONV_INCLUDE_DIR})
 endif(USE_ICONV)
 
-check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
-check_include_files(sys/select.h HAVE_SYS_SELECT_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(term.h HAVE_TERM_H)
 
