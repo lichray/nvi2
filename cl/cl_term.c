@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_term.c,v 10.32 2011/12/02 18:20:54 zy Exp $";
+static const char sccsid[] = "$Id: cl_term.c,v 10.33 2012/04/21 23:51:46 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -351,9 +351,7 @@ cl_omesg(SCR *sp, CL_PRIVATE *clp, int on)
 int
 cl_ssize(SCR *sp, int sigwinch, size_t *rowp, size_t *colp, int *changedp)
 {
-#ifdef TIOCGWINSZ
 	struct winsize win;
-#endif
 	size_t col, row;
 	int rval;
 	char *p;
@@ -374,12 +372,10 @@ cl_ssize(SCR *sp, int sigwinch, size_t *rowp, size_t *colp, int *changedp)
 	 * Try TIOCGWINSZ.
 	 */
 	row = col = 0;
-#ifdef TIOCGWINSZ
 	if (ioctl(STDERR_FILENO, TIOCGWINSZ, &win) != -1) {
 		row = win.ws_row;
 		col = win.ws_col;
 	}
-#endif
 	/* If here because of suspend or a signal, only trust TIOCGWINSZ. */
 	if (sigwinch) {
 		/*

@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: script.h,v 10.2 1996/03/06 19:53:00 bostic Exp $
+ *	$Id: script.h,v 10.3 2012/04/21 23:51:46 zy Exp $
  */
 
 struct _script {
@@ -16,8 +16,6 @@ struct _script {
 	char	*sh_prompt;		/* Prompt. */
 	size_t	 sh_prompt_len;		/* Prompt length. */
 	char	 sh_name[64];		/* Pty name */
-#ifdef TIOCGWINSZ
 	struct winsize sh_win;		/* Window size. */
-#endif
 	struct termios sh_term;		/* Terminal information. */
 };

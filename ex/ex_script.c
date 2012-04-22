@@ -116,7 +116,6 @@ sscr_init(SCR *sp)
 	sc->sh_term.c_oflag &= ~OPOST;
 	sc->sh_term.c_cflag &= ~(ECHO|ECHOE|ECHONL|ECHOK);
 
-#ifdef TIOCGWINSZ
 	if (ioctl(STDIN_FILENO, TIOCGWINSZ, &sc->sh_win) == -1) {
 		msgq(sp, M_SYSERR, "tcgetattr");
 		goto err;
@@ -127,13 +126,6 @@ sscr_init(SCR *sp)
 		msgq(sp, M_SYSERR, "pty");
 		goto err;
 	}
-#else
-	if (sscr_pty(&sc->sh_master,
-	    &sc->sh_slave, sc->sh_name, &sc->sh_term, NULL) == -1) {
-		msgq(sp, M_SYSERR, "pty");
-		goto err;
-	}
-#endif
 
 	/*
 	 * __TK__ huh?
