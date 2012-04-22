@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.5 2012/04/14 06:13:48 zy Exp $
+# $Id: CMakeLists.txt,v 1.6 2012/04/22 00:10:04 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -65,7 +65,10 @@ add_custom_command(OUTPUT ../ex/version.h
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
-check_function_exists(revoke HAVE_REVOKE)
+check_function_exists(openpty UTIL_IN_LIBC)
+if(NOT UTIL_IN_LIBC)
+	find_library(UTIL_LIBRARY util)
+endif(NOT UTIL_IN_LIBC)
 
 include_directories(. ..)
 check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
@@ -98,10 +101,8 @@ endif(USE_ICONV)
 
 check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
 check_include_files(sys/select.h HAVE_SYS_SELECT_H)
-check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)
+check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(term.h HAVE_TERM_H)
-
-check_function_exists(grantpt HAVE_SYS5_PTY)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_SOURCE_DIR}/config.h)
 
@@ -130,7 +131,7 @@ configure_file(${CMAKE_SOURCE_DIR}/recover.in
 	${CMAKE_SOURCE_DIR}/recover @ONLY)
 
 add_executable(nvi ${MAIN_SRCS})
-target_link_libraries(nvi ${CURSES_LIBRARY})
+target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY})
 if(USE_WIDECHAR)
 	target_link_libraries(nvi regex)
 	if(USE_ICONV)

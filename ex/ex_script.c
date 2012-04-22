@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.40 2012/04/21 01:41:12 zy Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.41 2012/04/22 00:10:04 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -23,9 +23,6 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.40 2012/04/21 01:41:12 zy Ex
 #include <sys/select.h>
 #endif
 #include <sys/stat.h>
-#ifdef HAVE_SYS_STROPTS_H
-#include <sys/stropts.h>
-#endif
 #include <sys/time.h>
 #include <sys/wait.h>
 
@@ -39,6 +36,11 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.40 2012/04/21 01:41:12 zy Ex
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#ifdef HAVE_LIBUTIL_H
+#include <libutil.h>
+#else
+#include <util.h>
+#endif
 
 #include "../common/common.h"
 #include "../vi/vi.h"
@@ -50,7 +52,6 @@ static int	sscr_getprompt __P((SCR *));
 static int	sscr_init __P((SCR *));
 static int	sscr_insert __P((SCR *));
 static int	sscr_matchprompt __P((SCR *, CHAR_T *, size_t, size_t *));
-static int	sscr_pty __P((int *, int *, char *, struct termios *, void *));
 static int	sscr_setprompt __P((SCR *, CHAR_T *, size_t));
 
 /*
@@ -121,9 +122,9 @@ sscr_init(SCR *sp)
 		goto err;
 	}
 
-	if (sscr_pty(&sc->sh_master,
+	if (openpty(&sc->sh_master,
 	    &sc->sh_slave, sc->sh_name, &sc->sh_term, &sc->sh_win) == -1) {
-		msgq(sp, M_SYSERR, "pty");
+		msgq(sp, M_SYSERR, "openpty");
 		goto err;
 	}
 
@@ -646,171 +647,3 @@ sscr_check(SCR *sp)
 		}
 	F_CLR(gp, G_SCRWIN);
 }
-
-#ifdef HAVE_SYS5_PTY
-static int ptys_open __P((int, char *));
-static int ptym_open __P((char *));
-
-static int
-sscr_pty(int *amaster, int *aslave, char *name, struct termios *termp, void *winp)
-{
-	int master, slave, ttygid;
-
-	/* open master terminal */
-	if ((master = ptym_open(name)) < 0)  {
-		errno = ENOENT;	/* out of ptys */
-		return (-1);
-	}
-
-	/* open slave terminal */
-	if ((slave = ptys_open(master, name)) >= 0) {
-		*amaster = master;
-		*aslave = slave;
-	} else {
-		errno = ENOENT;	/* out of ptys */
-		return (-1);
-	}
-
-	if (termp)
-		(void) tcsetattr(slave, TCSAFLUSH, termp);
-#ifdef TIOCSWINSZ
-	if (winp != NULL)
-		(void) ioctl(slave, TIOCSWINSZ, (struct winsize *)winp);
-#endif
-	return (0);
-}
-
-/*
- * ptym_open --
- *	This function opens a master pty and returns the file descriptor
- *	to it.  pts_name is also returned which is the name of the slave.
- */
-static int
-ptym_open(char *pts_name)
-{
-	int fdm;
-	char *ptr, *ptsname();
-
-	strlcpy(pts_name, _PATH_SYSV_PTY,
-	    sizeof(((SCRIPT *)0)->sh_name));
-	if ((fdm = open(pts_name, O_RDWR)) < 0 )
-		return (-1);
-
-	if (grantpt(fdm) < 0) {
-		close(fdm);
-		return (-2);
-	}
-
-	if (unlockpt(fdm) < 0) {
-		close(fdm);
-		return (-3);
-	}
-
-	if (unlockpt(fdm) < 0) {
-		close(fdm);
-		return (-3);
-	}
-
-	/* get slave's name */
-	if ((ptr = ptsname(fdm)) == NULL) {
-		close(fdm);
-		return (-3);
-	}
-	strlcpy(pts_name, ptr,
-	    sizeof(((SCRIPT *)0)->sh_name));
-	return (fdm);
-}
-
-/*
- * ptys_open --
- *	This function opens the slave pty.
- */
-static int
-ptys_open(int fdm, char *pts_name)
-{
-	int fds;
-
-	if ((fds = open(pts_name, O_RDWR)) < 0) {
-		close(fdm);
-		return (-5);
-	}
-
-	if (ioctl(fds, I_PUSH, "ptem") < 0) {
-		close(fds);
-		close(fdm);
-		return (-6);
-	}
-
-	if (ioctl(fds, I_PUSH, "ldterm") < 0) {
-		close(fds);
-		close(fdm);
-		return (-7);
-	}
-
-	if (ioctl(fds, I_PUSH, "ttcompat") < 0) {
-		close(fds);
-		close(fdm);
-		return (-8);
-	}
-
-	return (fds);
-}
-
-#else /* !HAVE_SYS5_PTY */
-
-static int
-sscr_pty(amaster, aslave, name, termp, winp)
-	int *amaster, *aslave;
-	char *name;
-	struct termios *termp;
-	void *winp;
-{
-	static char line[] = "/dev/ptyXX";
-	register char *cp1, *cp2;
-	register int master, slave, ttygid;
-	struct group *gr;
-
-	if ((gr = getgrnam("tty")) != NULL)
-		ttygid = gr->gr_gid;
-	else
-		ttygid = -1;
-
-	for (cp1 = "pqrs"; *cp1; cp1++) {
-		line[8] = *cp1;
-		for (cp2 = "0123456789abcdef"; *cp2; cp2++) {
-			line[5] = 'p';
-			line[9] = *cp2;
-			if ((master = open(line, O_RDWR, 0)) == -1) {
-				if (errno == ENOENT)
-					return (-1);	/* out of ptys */
-			} else {
-				line[5] = 't';
-				(void) chown(line, getuid(), ttygid);
-				(void) chmod(line, S_IRUSR|S_IWUSR|S_IWGRP);
-#ifdef HAVE_REVOKE
-				(void) revoke(line);
-#endif
-				if ((slave = open(line, O_RDWR, 0)) != -1) {
-					*amaster = master;
-					*aslave = slave;
-					if (name)
-						strlcpy(name, line, sizeof(
-						    ((SCRIPT *)0)->sh_name));
-					if (termp)
-						(void) tcsetattr(slave, 
-							TCSAFLUSH, termp);
-#ifdef TIOCSWINSZ
-					if (winp)
-						(void) ioctl(slave, TIOCSWINSZ, 
-							(char *)winp);
-#endif
-					return (0);
-				}
-				(void) close(master);
-			}
-		}
-	}
-	errno = ENOENT;	/* out of ptys */
-	return (-1);
-}
-#endif /* HAVE_SYS5_PTY */
