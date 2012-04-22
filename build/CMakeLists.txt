@@ -71,8 +71,6 @@ if(NOT UTIL_IN_LIBC)
 endif(NOT UTIL_IN_LIBC)
 
 include_directories(. ..)
-check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
-check_include_files(ncurses.h HAVE_NCURSES_H)
 
 find_library(_curses_lib NAMES ncurses curses)
 find_library(_cursesw_lib NAMES ncursesw cursesw)
@@ -100,6 +98,7 @@ if(USE_ICONV)
 endif(USE_ICONV)
 
 check_include_files(libutil.h HAVE_LIBUTIL_H)
+check_include_files(ncurses.h HAVE_NCURSES_H)
 check_include_files(term.h HAVE_TERM_H)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_SOURCE_DIR}/config.h)

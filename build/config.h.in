@@ -9,14 +9,11 @@
 /* Define when iconv can be used */
 #cmakedefine USE_ICONV
 
-/* Define if you have the <ncursesw/ncurses.h> header file. */
-#cmakedefine HAVE_NCURSESW_NCURSES_H
+/* Define if you have <libutil.h> */
+#cmakedefine HAVE_LIBUTIL_H
 
 /* Define if you have <ncurses.h> */
 #cmakedefine HAVE_NCURSES_H
-
-/* Define if you have <libutil.h> */
-#cmakedefine HAVE_LIBUTIL_H
 
 /* Define if you have <term.h> */
 #cmakedefine HAVE_TERM_H
