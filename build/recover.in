@@ -1,37 +1,40 @@
-#!/bin/sh -
+#!/bin/sh
 #
-#	$Id: recover.in,v 9.1 2012/04/20 10:01:11 zy Exp $
+#	$Id: recover.in,v 9.2 2012/04/23 09:24:56 zy Exp $
 #
 # Script to recover nvi edit sessions.
 
 RECDIR="@vi_cv_path_preserve@"
 
-echo -n 'Recovering nvi editor sessions.'
+[ -d ${RECDIR} ] || exit 1
+find ${RECDIR} ! -type f -a ! -type d -delete
 
 # Check editor backup files.
-vibackup=`echo $RECDIR/vi.*`
-if [ "$vibackup" != "$RECDIR/vi.*" ]; then
-	for i in $vibackup; do
+vibackup=`echo ${RECDIR}/vi.*`
+if [ "${vibackup}" != '${RECDIR}/vi.*' ]; then
+	echo -n 'Recovering vi editor sessions:'
+	for i in ${RECDIR}/vi.*; do
 		# Only test files that are readable.
-		if test ! -r $i; then
+		if [ ! -r "${i}" ]; then
 			continue
 		fi
 
 		# Unmodified nvi editor backup files either have the
 		# execute bit set or are zero length.  Delete them.
-		if test -x $i -o ! -s $i; then
-			rm $i
+		if [ -x "${i}" -o ! -s "${i}" ]; then
+			rm -f "${i}"
 		fi
 	done
+else exit
 fi
 
 # It is possible to get incomplete recovery files, if the editor crashes
 # at the right time.
-virecovery=`echo $RECDIR/recover.*`
-if [ "$virecovery" != "$RECDIR/recover.*" ]; then
-	for i in $virecovery; do
+virecovery=`echo ${RECDIR}/recover.*`
+if [ "${virecovery}" != "${RECDIR}/recover.*" ]; then
+	for i in ${RECDIR}/recover.*; do
 		# Only test files that are readable.
-		if test ! -r $i; then
+		if [ ! -r "${i}" ]; then
 			continue
 		fi
 
@@ -40,13 +43,13 @@ if [ "$virecovery" != "$RECDIR/recover.*" ]; then
 		# to the user.
 		recfile=`awk '/^X-vi-data: *file;/ { sub(/^.*;/, " "); \
 		    do { if (substr($0,1,1) == " ") print; else exit } \
-		    while(getline) }' < $i | uudecode -mr`
-		if test -n "$recfile" -a -s "$recfile"; then
-			sendmail -t < $i
+		    while(getline) }' < "${i}" | uudecode -mr`
+		if [ -n "${recfile}" -a -s "${recfile}" ]; then
+			sendmail -t < "${i}"
 			echo -n '.'
 		else
-			rm $i
+			rm -f "${i}"
 		fi
 	done
 fi
-echo ' Done.'
+echo ' done.'
