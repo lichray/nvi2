@@ -5,7 +5,6 @@
 # Script to recover nvi edit sessions.
 
 RECDIR="@vi_cv_path_preserve@"
-SENDMAIL="@vi_cv_path_sendmail@"
 
 echo -n 'Recovering nvi editor sessions.'
 
@@ -43,7 +42,7 @@ if [ "$virecovery" != "$RECDIR/recover.*" ]; then
 		    do { if (substr($0,1,1) == " ") print; else exit } \
 		    while(getline) }' < $i | uudecode -mr`
 		if test -n "$recfile" -a -s "$recfile"; then
-			$SENDMAIL -oi -t < $i
+			sendmail -t < $i
 			echo -n '.'
 		else
 			rm $i
