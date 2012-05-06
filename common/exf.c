@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.57 2012/04/14 05:53:43 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.58 2012/05/06 05:32:01 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1260,9 +1260,19 @@ file_encinit(SCR *sp)
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
 			break;
 		default:
-			/* Fallback to the locale/preset encoding. */
-			if (!O_ISSET(sp, O_FILEENCODING))
-				o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
+			/*
+			 * Fallback to the locale/preset encoding.
+			 *
+			 * XXX
+			 * A manually set O_FILEENCODING indicates the
+			 * "fallback encoding", so the encodings, utf-8 and
+			 * utf-16, which can be safely detected, are not
+			 * inheritable from the old screen.
+			 */
+			if (O_ISSET(sp, O_FILEENCODING) &&
+			    strncasecmp(O_STR(sp, O_FILEENCODING), "utf-", 4))
+				break;
+			o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 		}
 	}
 

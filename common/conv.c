@@ -368,7 +368,6 @@ conv_init(SCR *orig, SCR *sp)
 #ifdef USE_ICONV
     conv_enc(sp, O_INPUTENCODING, 0);
 #endif
-    /* XXX Do not inherit fileencoding from the old screen. */
 }
 
 /*
