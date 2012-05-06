@@ -247,6 +247,7 @@ cl_vi_init(SCR *sp)
 	 * The HP/UX newterm doesn't support the NULL first argument, so we
 	 * have to specify the terminal type.
 	 */
+	(void)del_curterm(cur_term);
 	errno = 0;
 	if (newterm(ttype, stdout, stdin) == NULL) {
 		if (errno)
