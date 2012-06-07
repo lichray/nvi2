@@ -654,7 +654,7 @@ cl_rename(SCR *sp, char *name, int on)
 	if (on) {
 		clp->focus = sp;
 		if (!F_ISSET(clp, CL_RENAME_OK) ||
-				strcmp(OG_STR(gp, GO_TERM), "xterm"))
+				strncmp(OG_STR(gp, GO_TERM), "xterm", 5))
 			return (0);
 
 		if (clp->oname == NULL && (wid = getenv("WINDOWID"))) {
