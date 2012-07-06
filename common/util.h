@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: util.h,v 10.6 2012/04/13 05:21:50 zy Exp $
+ *	$Id: util.h,v 10.7 2012/07/06 16:03:37 zy Exp $
  */
 
 /* Macros to init/set/clear/test flags. */
@@ -60,3 +60,9 @@ enum nresult { NUM_ERR, NUM_OK, NUM_OVER, NUM_UNDER };
 #undef	MAX
 #define	MIN(_a,_b)	((_a)<(_b)?(_a):(_b))
 #define	MAX(_a,_b)	((_a)<(_b)?(_b):(_a))
+
+/* timespeccmp without the pointers. */
+#define	TS_CMP(tv, uv, cmp)						\
+	(((tv).tv_sec == (uv).tv_sec) ?					\
+	    ((tv).tv_nsec cmp (uv).tv_nsec) :				\
+	    ((tv).tv_sec cmp (uv).tv_sec))

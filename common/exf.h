@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: exf.h,v 10.9 2012/04/14 05:52:19 zy Exp $
+ *	$Id: exf.h,v 10.10 2012/07/06 16:03:37 zy Exp $
  */
 					/* Undo direction. */
 /*
@@ -35,13 +35,9 @@ struct _exf {
 					/* Linked list of file MARK's. */
 	SLIST_HEAD(_markh, _lmark) marks[1];
 
-	/*
-	 * XXX
-	 * Mtime should be a struct timespec, but time_t is more portable.
-	 */
-	dev_t	 mdev;			/* Device. */
-	ino_t	 minode;		/* Inode. */
-	time_t	 mtime;			/* Last modification time. */
+	dev_t		 mdev;		/* Device. */
+	ino_t		 minode;	/* Inode. */
+	struct timespec	 mtim;		/* Last modification time. */
 
 	/*
 	 * Recovery in general, and these fields specifically, are described

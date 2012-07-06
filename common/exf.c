@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.58 2012/05/06 05:32:01 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 16:03:37 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -209,7 +209,7 @@ file_init(
 		if (!LF_ISSET(FS_OPENERR))
 			F_SET(frp, FR_NEWFILE);
 
-		time(&ep->mtime);
+		(void)clock_gettime(CLOCK_REALTIME, &ep->mtim);
 	} else {
 		/*
 		 * XXX
@@ -228,7 +228,7 @@ file_init(
 		ep->mdev = sb.st_dev;
 		ep->minode = sb.st_ino;
 
-		ep->mtime = sb.st_mtime;
+		ep->mtim = sb.st_mtimespec;
 
 		if (!S_ISREG(sb.st_mode))
 			msgq_str(sp, M_ERR, oname,
@@ -820,7 +820,7 @@ file_write(
 		if (noname && !LF_ISSET(FS_FORCE | FS_APPEND) &&
 		    ((F_ISSET(ep, F_DEVSET) &&
 		    (sb.st_dev != ep->mdev || sb.st_ino != ep->minode)) ||
-		    sb.st_mtime != ep->mtime)) {
+		    TS_CMP(sb.st_mtimespec, ep->mtim, !=))) {
 			msgq_str(sp, M_ERR, name, LF_ISSET(FS_POSSIBLE) ?
 "250|%s: file modified more recently than this copy; use ! to override" :
 "251|%s: file modified more recently than this copy");
@@ -916,13 +916,13 @@ success_open:
 	 */
 	if (noname)
 		if (stat(name, &sb))
-			time(&ep->mtime);
+			(void)clock_gettime(CLOCK_REALTIME, &ep->mtim);
 		else {
 			F_SET(ep, F_DEVSET);
 			ep->mdev = sb.st_dev;
 			ep->minode = sb.st_ino;
 
-			ep->mtime = sb.st_mtime;
+			ep->mtim = sb.st_mtimespec;
 		}
 
 	/*
