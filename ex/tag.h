@@ -8,7 +8,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: tag.h,v 10.8 2000/07/14 14:29:22 skimo Exp $
+ *	$Id: tag.h,v 10.9 2012/07/06 16:38:36 zy Exp $
  */
 
 /*
@@ -18,10 +18,10 @@
 struct _csc {
 	SLIST_ENTRY(_csc) q;	/* Linked list of cscope connections. */
 
-	char	*dname;		/* Base directory of this cscope connection. */
-	size_t	 dlen;		/* Length of base directory. */
-	pid_t	 pid;		/* PID of the connected cscope process. */
-	time_t	 mtime;		/* Last modification time of cscope database. */
+	char		*dname;	/* Base directory of this cscope connection. */
+	size_t		 dlen;	/* Length of base directory. */
+	pid_t		 pid;	/* PID of the connected cscope process. */
+	struct timespec	 mtim;	/* Last modification time of cscope database. */
 
 	FILE	*from_fp;	/* from cscope: FILE. */
 	int	 from_fd;	/* from cscope: file descriptor. */

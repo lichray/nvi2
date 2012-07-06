@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cscope.c,v 10.23 2012/04/13 00:44:57 zy Exp $";
+static const char sccsid[] = "$Id: ex_cscope.c,v 10.24 2012/07/06 16:38:36 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -266,7 +266,7 @@ cscope_add(SCR *sp, EXCMD *cmdp, CHAR_T *dname)
 	csc->dname = csc->buf;
 	csc->dlen = len;
 	memcpy(csc->dname, np, len);
-	csc->mtime = sb.st_mtime;
+	csc->mtim = sb.st_mtimespec;
 
 	/* Get the search paths for the cscope. */
 	if (get_paths(sp, csc))
@@ -823,7 +823,7 @@ csc_file(SCR *sp, CSC *csc, char *name, char **dirp, size_t *dlenp, int *isolder
 			free(buf);
 			*dirp = *pp;
 			*dlenp = strlen(*pp);
-			*isolderp = sb.st_mtime < csc->mtime;
+			*isolderp = TS_CMP(sb.st_mtimespec, csc->mtim, <);
 			return;
 		}
 		free(buf);
