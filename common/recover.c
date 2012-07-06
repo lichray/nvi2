@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 11.0 2012/04/20 09:08:53 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 11.1 2012/07/06 16:19:20 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -635,7 +635,7 @@ rcv_read(
 	DIR *dirp;
 	FILE *fp;
 	EXF *ep;
-	time_t rec_mtime;
+	struct timespec rec_mtim = { 0, 0 };
 	int found, locked = 0, requested, sv_fd;
 	char *name, *p, *t, *rp, *recp, *pathp;
 	char *file, *path, *recpath;
@@ -652,7 +652,6 @@ rcv_read(
 
 	name = frp->name;
 	sv_fd = -1;
-	rec_mtime = 0;
 	recp = pathp = NULL;
 	for (found = requested = 0; (dp = readdir(dirp)) != NULL;) {
 		if (strncmp(dp->d_name, "recover.", 8))
@@ -729,16 +728,9 @@ rcv_read(
 
 		++requested;
 
-		/*
-		 * If we've found more than one, take the most recent.
-		 *
-		 * XXX
-		 * Since we're using st_mtime, for portability reasons,
-		 * we only get a single second granularity, instead of
-		 * getting it right.
-		 */
+		/* If we've found more than one, take the most recent. */
 		(void)fstat(fileno(fp), &sb);
-		if (recp == NULL || rec_mtime < sb.st_mtime) {
+		if (recp == NULL || TS_CMP(rec_mtim, sb.st_mtimespec, <)) {
 			p = recp;
 			t = pathp;
 			recp = recpath;
@@ -747,7 +739,7 @@ rcv_read(
 				free(p);
 				free(t);
 			}
-			rec_mtime = sb.st_mtime;
+			rec_mtim = sb.st_mtimespec;
 			if (sv_fd != -1)
 				(void)close(sv_fd);
 			sv_fd = dup(fileno(fp));
