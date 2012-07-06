@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 10.39 2003/11/05 17:11:54 skimo Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 10.40 2012/07/06 14:41:09 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -531,11 +531,6 @@ argv_lexp(SCR *sp, EXCMD *excp, char *path)
 	}
 	nlen = strlen(name);
 
-	/*
-	 * XXX
-	 * We don't use the d_namlen field, it's not portable enough; we
-	 * assume that d_name is nul terminated, instead.
-	 */
 	if ((dirp = opendir(dname)) == NULL) {
 		msgq_str(sp, M_SYSERR, dname, "%s");
 		return (1);
@@ -544,9 +539,9 @@ argv_lexp(SCR *sp, EXCMD *excp, char *path)
 		if (nlen == 0) {
 			if (dp->d_name[0] == '.')
 				continue;
-			len = strlen(dp->d_name);
+			len = dp->d_namlen;
 		} else {
-			len = strlen(dp->d_name);
+			len = dp->d_namlen;
 			if (len < nlen || memcmp(dp->d_name, name, nlen))
 				continue;
 		}
