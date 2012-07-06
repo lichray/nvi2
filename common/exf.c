@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 16:03:37 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 17:14:19 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -181,6 +181,8 @@ file_init(
 	 */
 	oname = frp->name;
 	if (LF_ISSET(FS_OPENERR) || oname == NULL || !exists) {
+		struct stat sb;
+
 		if (opts_empty(sp, O_TMPDIR, 0))
 			goto err;
 		if ((tname =
@@ -188,7 +190,7 @@ file_init(
 			msgq(sp, M_SYSERR, NULL);
 			goto err;
 		}
-		if ((fd = mkstemp(tname)) == -1) {
+		if ((fd = mkstemp(tname)) == -1 || fstat(fd, &sb)) {
 			free(tname);
 			msgq(sp, M_SYSERR,
 			    "237|Unable to create temporary file");
@@ -209,7 +211,7 @@ file_init(
 		if (!LF_ISSET(FS_OPENERR))
 			F_SET(frp, FR_NEWFILE);
 
-		(void)clock_gettime(CLOCK_REALTIME, &ep->mtim);
+		ep->mtim = sb.st_mtimespec;
 	} else {
 		/*
 		 * XXX
