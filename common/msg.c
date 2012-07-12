@@ -378,7 +378,7 @@ msgq_wstr(
 	const char *fmt)
 {
 	size_t nlen;
-	char *nstr;
+	CONST char *nstr;
 
 	if (str == NULL) {
 		msgq(sp, mtype, "%s", fmt);
