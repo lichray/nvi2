@@ -254,7 +254,7 @@ typedef struct _vi_private {
 	size_t	busy_fx;	/* Busy character x coordinate. */
 	size_t	busy_oldy;	/* Saved y coordinate. */
 	size_t	busy_oldx;	/* Saved x coordinate. */
-	struct timeval busy_tv;	/* Busy timer. */
+	struct timespec busy_ts;/* Busy timer. */
 
 	MARK	sel;		/* Select start position. */
 
