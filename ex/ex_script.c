@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.41 2012/04/22 00:10:04 zy Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.42 2012/07/12 18:28:58 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -348,47 +348,6 @@ err1:			rval = 1;
 	if (matchprompt)
 		FREE_SPACEW(sp, bp, blen);
 	return (rval);
-}
-
-/*
- * sscr_check_input -
- *	Check whether any input from shell or passed set.
- *
- * PUBLIC: int sscr_check_input __P((SCR *sp, fd_set *rdfd, int maxfd));
- */
-int
-sscr_check_input(SCR *sp, fd_set *fdset, int maxfd)
-{
-	fd_set rdfd;
-	SCR *tsp;
-	GS *gp;
-
-	gp = sp->gp;
-
-loop:	memcpy(&rdfd, fdset, sizeof(fd_set));
-
-	TAILQ_FOREACH(tsp, gp->dq, q)
-		if (F_ISSET(sp, SC_SCRIPT)) {
-			FD_SET(sp->script->sh_master, &rdfd);
-			if (sp->script->sh_master > maxfd)
-				maxfd = sp->script->sh_master;
-		}
-	switch (select(maxfd + 1, &rdfd, NULL, NULL, NULL)) {
-	case 0:
-		abort();
-	case -1:
-		return 1;
-	default:
-		break;
-	}
-	TAILQ_FOREACH(tsp, gp->dq, q)
-		if (F_ISSET(sp, SC_SCRIPT) &&
-		    FD_ISSET(sp->script->sh_master, &rdfd)) {
-			if (sscr_input(sp))
-				return 1;
-			goto loop;
-		}
-	return 0;
 }
 
 /*

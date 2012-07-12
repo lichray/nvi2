@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_read.c,v 10.29 2001/08/18 21:51:59 skimo Exp $";
+static const char sccsid[] = "$Id: cl_read.c,v 10.30 2012/07/12 18:28:58 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -149,6 +149,7 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 	struct timeval poll;
 	CL_PRIVATE *clp;
 	GS *gp;
+	SCR *tsp;
 	fd_set rdfd;
 	input_t rval;
 	int maxfd, nr, term_reset;
@@ -227,11 +228,28 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 	 * the only way to keep from locking out scripting windows.
 	 */
 	if (F_ISSET(gp, G_SCRWIN)) {
-		FD_ZERO(&rdfd);
+loop:		FD_ZERO(&rdfd);
 		FD_SET(STDIN_FILENO, &rdfd);
 		maxfd = STDIN_FILENO;
-		if (sscr_check_input(sp, &rdfd, maxfd))
+		TAILQ_FOREACH(tsp, gp->dq, q)
+			if (F_ISSET(sp, SC_SCRIPT)) {
+				FD_SET(sp->script->sh_master, &rdfd);
+				if (sp->script->sh_master > maxfd)
+					maxfd = sp->script->sh_master;
+			}
+		switch (select(maxfd + 1, &rdfd, NULL, NULL, NULL)) {
+		case 0:
+			abort();
+		case -1:
 			goto err;
+		default:
+			break;
+		}
+		if (!FD_ISSET(STDIN_FILENO, &rdfd)) {
+			if (sscr_input(sp))
+				return (INP_ERR);
+			goto loop;
+		}
 	}
 
 	/*
