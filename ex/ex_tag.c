@@ -1237,7 +1237,8 @@ ctag_file(SCR *sp, TAGF *tfp, char *name, char **dirp, size_t *dlenp)
 #define	GREATER		1
 #define	LESS		(-1)
 
-#define	SKIP_PAST_NEWLINE(p, back)	while (p < back && *p++ != '\n');
+#define	SKIP_PAST_NEWLINE(p, back)					\
+	while (p < back && *p++ != '\n') continue;
 
 static char *
 binary_search(register char *string, register char *front, register char *back)
