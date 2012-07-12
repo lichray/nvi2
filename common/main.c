@@ -24,7 +24,6 @@ static const char sccsid[] = "$Id: main.c,v 10.64 2011/07/04 14:33:38 zy Exp $";
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 
 #include <bitstring.h>
 #include <errno.h>

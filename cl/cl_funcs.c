@@ -15,7 +15,6 @@ static const char sccsid[] = "$Id: cl_funcs.c,v 10.73 2011/08/15 19:55:33 zy Exp
 
 #include <sys/types.h>
 #include <sys/queue.h>
-#include <sys/time.h>
 
 #include <bitstring.h>
 #include <ctype.h>
