@@ -15,6 +15,11 @@ static const char sccsid[] = "$Id: recover.c,v 11.1 2012/07/06 16:19:20 zy Exp $
 
 #include <sys/types.h>
 #include <sys/queue.h>
+
+#define _KERNEL		/* XXX: timespec macros may be protected. */
+#include <sys/time.h>
+#undef _KERNEL
+
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -730,7 +735,8 @@ rcv_read(
 
 		/* If we've found more than one, take the most recent. */
 		(void)fstat(fileno(fp), &sb);
-		if (recp == NULL || TS_CMP(rec_mtim, sb.st_mtimespec, <)) {
+		if (recp == NULL ||
+		    timespeccmp(&rec_mtim, &sb.st_mtimespec, <)) {
 			p = recp;
 			t = pathp;
 			recp = recpath;

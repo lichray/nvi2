@@ -15,6 +15,11 @@ static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 17:14:19 zy Exp $";
 
 #include <sys/types.h>
 #include <sys/queue.h>
+
+#define _KERNEL		/* XXX: timespec macros may be protected. */
+#include <sys/time.h>
+#undef _KERNEL
+
 #include <sys/stat.h>
 
 /*
@@ -32,6 +37,7 @@ static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 17:14:19 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -822,7 +828,7 @@ file_write(
 		if (noname && !LF_ISSET(FS_FORCE | FS_APPEND) &&
 		    ((F_ISSET(ep, F_DEVSET) &&
 		    (sb.st_dev != ep->mdev || sb.st_ino != ep->minode)) ||
-		    TS_CMP(sb.st_mtimespec, ep->mtim, !=))) {
+		    timespeccmp(&sb.st_mtimespec, &ep->mtim, !=))) {
 			msgq_str(sp, M_ERR, name, LF_ISSET(FS_POSSIBLE) ?
 "250|%s: file modified more recently than this copy; use ! to override" :
 "251|%s: file modified more recently than this copy");

@@ -15,6 +15,11 @@ static const char sccsid[] = "$Id: ex_cscope.c,v 10.24 2012/07/06 16:38:36 zy Ex
 
 #include <sys/types.h>
 #include <sys/queue.h>
+
+#define _KERNEL		/* XXX: timespec macros may be protected. */
+#include <sys/time.h>
+#undef _KERNEL
+
 #include <sys/stat.h>
 #include <sys/wait.h>
 
@@ -822,7 +827,8 @@ csc_file(SCR *sp, CSC *csc, char *name, char **dirp, size_t *dlenp, int *isolder
 			free(buf);
 			*dirp = *pp;
 			*dlenp = strlen(*pp);
-			*isolderp = TS_CMP(sb.st_mtimespec, csc->mtim, <);
+			*isolderp = timespeccmp(
+			    &sb.st_mtimespec, &csc->mtim, <);
 			return;
 		}
 		free(buf);
