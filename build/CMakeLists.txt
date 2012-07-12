@@ -24,6 +24,7 @@ if(DEBUG)
 		"-Wno-parentheses"
 		"-Wno-uninitialized"	# meaningless without -O
 		"-Wmissing-prototypes"
+		"-Wsystem-headers"
 		"-fstack-protector -Wstack-protector"
 		"-fstrict-aliasing -Wstrict-aliasing")
 	join("${_arg_str}" CMAKE_C_FLAGS)
