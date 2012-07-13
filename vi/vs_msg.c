@@ -66,7 +66,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 	VI_PRIVATE *vip;
 	static const char flagc[] = "|/-\\";
 	struct timespec ts, ts_diff;
-	static const struct timespec ts_min = { 0, 125000000 };
+	const struct timespec ts_min = { 0, 125000000 };
 	size_t len, notused;
 	const char *p;
 
