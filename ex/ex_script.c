@@ -201,7 +201,6 @@ sscr_getprompt(SCR *sp)
 	fd_set fdset;
 	recno_t lline;
 	size_t llen, len;
-	e_key_t value;
 	int nr;
 	CHAR_T *wp;
 	size_t wlen;
@@ -245,8 +244,7 @@ more:	len = sizeof(buf) - (endp - buf);
 
 	/* If any complete lines, push them into the file. */
 	for (p = t = buf; p < endp; ++p) {
-		value = KEY_VAL(sp, *p);
-		if (value == K_CR || value == K_NL) {
+		if (*p == '\r' || *p == '\n') {
 			rc = INPUT2INT5(sp, clp->cw, t, p - t, wp, wlen);
 			if (rc)
 				msgq(sp, M_ERR,
@@ -432,7 +430,6 @@ sscr_insert(SCR *sp)
 	fd_set rdfd;
 	recno_t lno;
 	size_t blen, len = 0, tlen;
-	e_key_t value;
 	int nr, rval;
 	char *bp;
 	CHAR_T *wp;
@@ -468,8 +465,7 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 
 	/* Append the lines into the file. */
 	for (p = t = bp; p < endp; ++p) {
-		value = KEY_VAL(sp, *p);
-		if (value == K_CR || value == K_NL) {
+		if (*p == '\r' || *p == '\n') {
 			len = p - t;
 			rc = INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
 			if (rc)
