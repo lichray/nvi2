@@ -204,7 +204,7 @@ sscr_getprompt(SCR *sp)
 	int nr;
 	CHAR_T *wp;
 	size_t wlen;
-	int rc;
+	int rc = 0;
 
 	clp = CLP(sp);
 
@@ -245,10 +245,7 @@ more:	len = sizeof(buf) - (endp - buf);
 	/* If any complete lines, push them into the file. */
 	for (p = t = buf; p < endp; ++p) {
 		if (*p == '\r' || *p == '\n') {
-			rc = INPUT2INT5(sp, clp->cw, t, p - t, wp, wlen);
-			if (rc)
-				msgq(sp, M_ERR,
-				    "323|Invalid input. Truncated.");
+			rc |= INPUT2INT5(sp, clp->cw, t, p - t, wp, wlen);
 			if (db_last(sp, &lline) ||
 			    db_append(sp, 0, lline, wp, wlen))
 				goto prompterr;
@@ -280,13 +277,13 @@ more:	len = sizeof(buf) - (endp - buf);
 	endp = buf;
 
 	/* Append the line into the file. */
-	rc = INPUT2INT5(sp, clp->cw, buf, llen, wp, wlen);
-	if (rc)
-		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+	rc |= INPUT2INT5(sp, clp->cw, buf, llen, wp, wlen);
 	if (db_last(sp, &lline) || db_append(sp, 0, lline, wp, wlen)) {
 prompterr:	sscr_end(sp);
 		return (1);
 	}
+	if (rc)
+		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 
 	return (sscr_setprompt(sp, buf, llen));
 }
@@ -434,7 +431,7 @@ sscr_insert(SCR *sp)
 	char *bp;
 	CHAR_T *wp;
 	size_t wlen;
-	int rc;
+	int rc = 0;
 
 	clp = CLP(sp);
 
@@ -467,10 +464,7 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 	for (p = t = bp; p < endp; ++p) {
 		if (*p == '\r' || *p == '\n') {
 			len = p - t;
-			rc = INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
-			if (rc)
-				msgq(sp, M_ERR,
-				    "323|Invalid input. Truncated.");
+			rc |= INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
 			if (db_append(sp, 1, lno++, wp, wlen))
 				goto ret;
 			t = p + 1;
@@ -499,9 +493,7 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 		}
 		if (sscr_setprompt(sp, t, len))
 			return (1);
-		rc = INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
-		if (rc)
-			msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+		rc |= INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
 		if (db_append(sp, 1, lno++, wp, wlen))
 			goto ret;
 	}
@@ -510,6 +502,8 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 	sp->lno = lno;
 	sp->cno = wlen ? wlen - 1 : 0;
 	rval = vs_refresh(sp, 1);
+	if (rc)
+		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 
 ret:	FREE_SPACE(sp, bp, blen);
 	return (rval);
