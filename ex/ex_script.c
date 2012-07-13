@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.42 2012/07/12 18:28:58 zy Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.43 2012/07/13 01:35:39 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -28,6 +28,7 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.42 2012/07/12 18:28:58 zy Ex
 #include <fcntl.h>
 #include <grp.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +41,7 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.42 2012/07/12 18:28:58 zy Ex
 #endif
 
 #include "../common/common.h"
+#include "../cl/cl.h"
 #include "../vi/vi.h"
 #include "script.h"
 #include "pathnames.h"
@@ -48,8 +50,8 @@ static void	sscr_check __P((SCR *));
 static int	sscr_getprompt __P((SCR *));
 static int	sscr_init __P((SCR *));
 static int	sscr_insert __P((SCR *));
-static int	sscr_matchprompt __P((SCR *, CHAR_T *, size_t, size_t *));
-static int	sscr_setprompt __P((SCR *, CHAR_T *, size_t));
+static int	sscr_matchprompt __P((SCR *, char *, size_t, size_t *));
+static int	sscr_setprompt __P((SCR *, char *, size_t));
 
 /*
  * ex_script -- : sc[ript][!] [file]
@@ -192,14 +194,20 @@ err:		if (sc->sh_master != -1)
 static int
 sscr_getprompt(SCR *sp)
 {
+	CL_PRIVATE *clp;
 	struct timeval tv;
-	CHAR_T *endp, *p, *t, buf[1024];
+	char *endp, *p, *t, buf[1024];
 	SCRIPT *sc;
 	fd_set fdset;
 	recno_t lline;
 	size_t llen, len;
 	e_key_t value;
 	int nr;
+	CHAR_T *wp;
+	size_t wlen;
+	int rc;
+
+	clp = CLP(sp);
 
 	FD_ZERO(&fdset);
 	endp = buf;
@@ -239,14 +247,18 @@ more:	len = sizeof(buf) - (endp - buf);
 	for (p = t = buf; p < endp; ++p) {
 		value = KEY_VAL(sp, *p);
 		if (value == K_CR || value == K_NL) {
+			rc = INPUT2INT5(sp, clp->cw, t, p - t, wp, wlen);
+			if (rc)
+				msgq(sp, M_ERR,
+				    "323|Invalid input. Truncated.");
 			if (db_last(sp, &lline) ||
-			    db_append(sp, 0, lline, t, p - t))
+			    db_append(sp, 0, lline, wp, wlen))
 				goto prompterr;
 			t = p + 1;
 		}
 	}
 	if (p > buf) {
-		MEMMOVE(buf, t, endp - t);
+		memmove(buf, t, endp - t);
 		endp = buf + (endp - t);
 	}
 	if (endp == buf)
@@ -270,7 +282,10 @@ more:	len = sizeof(buf) - (endp - buf);
 	endp = buf;
 
 	/* Append the line into the file. */
-	if (db_last(sp, &lline) || db_append(sp, 0, lline, buf, llen)) {
+	rc = INPUT2INT5(sp, clp->cw, buf, llen, wp, wlen);
+	if (rc)
+		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+	if (db_last(sp, &lline) || db_append(sp, 0, lline, wp, wlen)) {
 prompterr:	sscr_end(sp);
 		return (1);
 	}
@@ -291,31 +306,34 @@ sscr_exec(SCR *sp, recno_t lno)
 	recno_t last_lno;
 	size_t blen, len, last_len, tlen;
 	int isempty, matchprompt, nw, rval;
-	CHAR_T *bp = NULL;
-	CHAR_T *p;
+	char *bp = NULL, *p;
+	CHAR_T *wp;
+	size_t wlen;
 
 	/* If there's a prompt on the last line, append the command. */
 	if (db_last(sp, &last_lno))
 		return (1);
-	if (db_get(sp, last_lno, DBG_FATAL, &p, &last_len))
+	if (db_get(sp, last_lno, DBG_FATAL, &wp, &wlen))
 		return (1);
+	INT2CHAR(sp, wp, wlen, p, last_len);
 	if (sscr_matchprompt(sp, p, last_len, &tlen) && tlen == 0) {
 		matchprompt = 1;
-		GET_SPACE_RETW(sp, bp, blen, last_len + 128);
-		MEMMOVEW(bp, p, last_len);
+		GET_SPACE_RETC(sp, bp, blen, last_len + 128);
+		memmove(bp, p, last_len);
 	} else
 		matchprompt = 0;
 
 	/* Get something to execute. */
-	if (db_eget(sp, lno, &p, &len, &isempty)) {
+	if (db_eget(sp, lno, &wp, &wlen, &isempty)) {
 		if (isempty)
 			goto empty;
 		goto err1;
 	}
 
 	/* Empty lines aren't interesting. */
-	if (len == 0)
+	if (wlen == 0)
 		goto empty;
+	INT2CHAR(sp, wp, wlen, p, len);
 
 	/* Delete any prompt. */
 	if (sscr_matchprompt(sp, p, len, &tlen)) {
@@ -340,13 +358,14 @@ err2:		if (nw == 0)
 	}
 
 	if (matchprompt) {
-		ADD_SPACE_RETW(sp, bp, blen, last_len + len);
-		MEMMOVEW(bp + last_len, p, len);
-		if (db_set(sp, last_lno, bp, last_len + len))
+		ADD_SPACE_RET(sp, char, bp, blen, last_len + len);
+		memmove(bp + last_len, p, len);
+		CHAR2INT(sp, bp, last_len + len, wp, wlen);
+		if (db_set(sp, last_lno, wp, wlen))
 err1:			rval = 1;
 	}
 	if (matchprompt)
-		FREE_SPACEW(sp, bp, blen);
+		FREE_SPACE(sp, bp, blen);
 	return (rval);
 }
 
@@ -406,22 +425,29 @@ loop:	maxfd = 0;
 static int
 sscr_insert(SCR *sp)
 {
+	CL_PRIVATE *clp;
 	struct timeval tv;
-	CHAR_T *endp, *p, *t;
+	char *endp, *p, *t;
 	SCRIPT *sc;
 	fd_set rdfd;
 	recno_t lno;
 	size_t blen, len = 0, tlen;
 	e_key_t value;
 	int nr, rval;
-	CHAR_T *bp;
+	char *bp;
+	CHAR_T *wp;
+	size_t wlen;
+	int rc;
+
+	clp = CLP(sp);
+
 
 	/* Find out where the end of the file is. */
 	if (db_last(sp, &lno))
 		return (1);
 
 #define	MINREAD	1024
-	GET_SPACE_RETW(sp, bp, blen, MINREAD);
+	GET_SPACE_RETC(sp, bp, blen, MINREAD);
 	endp = bp;
 
 	/* Read the characters. */
@@ -445,7 +471,11 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 		value = KEY_VAL(sp, *p);
 		if (value == K_CR || value == K_NL) {
 			len = p - t;
-			if (db_append(sp, 1, lno++, t, len))
+			rc = INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
+			if (rc)
+				msgq(sp, M_ERR,
+				    "323|Invalid input. Truncated.");
+			if (db_append(sp, 1, lno++, wp, wlen))
 				goto ret;
 			t = p + 1;
 		}
@@ -466,23 +496,26 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 			FD_SET(sc->sh_master, &rdfd);
 			if (select(sc->sh_master + 1,
 			    &rdfd, NULL, NULL, &tv) == 1) {
-				MEMMOVE(bp, t, len);
+				memmove(bp, t, len);
 				endp = bp + len;
 				goto more;
 			}
 		}
 		if (sscr_setprompt(sp, t, len))
 			return (1);
-		if (db_append(sp, 1, lno++, t, len))
+		rc = INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
+		if (rc)
+			msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+		if (db_append(sp, 1, lno++, wp, wlen))
 			goto ret;
 	}
 
 	/* The cursor moves to EOF. */
 	sp->lno = lno;
-	sp->cno = len ? len - 1 : 0;
+	sp->cno = wlen ? wlen - 1 : 0;
 	rval = vs_refresh(sp, 1);
 
-ret:	FREE_SPACEW(sp, bp, blen);
+ret:	FREE_SPACE(sp, bp, blen);
 	return (rval);
 }
 
@@ -493,11 +526,9 @@ ret:	FREE_SPACEW(sp, bp, blen);
  *
  */
 static int
-sscr_setprompt(SCR *sp, CHAR_T *buf, size_t len)
+sscr_setprompt(SCR *sp, char *buf, size_t len)
 {
 	SCRIPT *sc;
-	char *np;
-	size_t nlen;
 
 	sc = sp->script;
 	if (sc->sh_prompt)
@@ -507,8 +538,7 @@ sscr_setprompt(SCR *sp, CHAR_T *buf, size_t len)
 		sscr_end(sp);
 		return (1);
 	}
-	INT2CHAR(sp, buf, len, np, nlen);
-	memmove(sc->sh_prompt, np, nlen);
+	memmove(sc->sh_prompt, buf, len);
 	sc->sh_prompt_len = len;
 	sc->sh_prompt[len] = '\0';
 	return (0);
@@ -520,7 +550,7 @@ sscr_setprompt(SCR *sp, CHAR_T *buf, size_t len)
  *	parts that can change, in both content and size.
  */
 static int
-sscr_matchprompt(SCR *sp, CHAR_T *lp, size_t line_len, size_t *lenp)
+sscr_matchprompt(SCR *sp, char *lp, size_t line_len, size_t *lenp)
 {
 	SCRIPT *sc;
 	size_t prompt_len;
