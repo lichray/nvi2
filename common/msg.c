@@ -22,16 +22,11 @@ static const char sccsid[] = "$Id: msg.c,v 10.53 2012/04/12 07:00:49 zy Exp $";
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#ifdef __STDC__
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 #include "common.h"
 #include "../vi/vi.h"
@@ -43,15 +38,11 @@ static const char sccsid[] = "$Id: msg.c,v 10.53 2012/04/12 07:00:49 zy Exp $";
  * PUBLIC: void msgq __P((SCR *, mtype_t, const char *, ...));
  */
 void
-#ifdef __STDC__
-msgq(SCR *sp, mtype_t mt, const char *fmt, ...)
-#else
-msgq(sp, mt, fmt, va_alist)
-	SCR *sp;
-	mtype_t mt;
-        const char *fmt;
-        va_dcl
-#endif
+msgq(
+	SCR *sp,
+	mtype_t mt,
+	const char *fmt,
+	...)
 {
 #ifndef NL_ARGMAX
 #define	__NL_ARGMAX	20		/* Set to 9 by System V. */
@@ -282,11 +273,7 @@ retry:		FREE_SPACE(sp, bp, blen);
 #ifndef NL_ARGMAX
 format:	/* Format the arguments into the string. */
 #endif
-#ifdef __STDC__
         va_start(ap, fmt);
-#else
-        va_start(ap);
-#endif
 	len = vsnprintf(mp, REM, fmt, ap);
 	va_end(ap);
 	if (len >= nlen)

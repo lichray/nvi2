@@ -19,14 +19,9 @@ static const char sccsid[] = "$Id: ex_print.c,v 10.25 2011/12/12 22:12:20 zy Exp
 #include <bitstring.h>
 #include <ctype.h>
 #include <limits.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifdef __STDC__
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 #include "../common/common.h"
 
@@ -254,14 +249,10 @@ intr:	*colp = col;
  * PUBLIC: int ex_printf __P((SCR *, const char *, ...));
  */
 int
-#ifdef __STDC__
-ex_printf(SCR *sp, const char *fmt, ...)
-#else
-ex_printf(sp, fmt, va_alist)
-	SCR *sp;
-	const char *fmt;
-	va_dcl
-#endif
+ex_printf(
+	SCR *sp,
+	const char *fmt,
+	...)
 {
 	EX_PRIVATE *exp;
 	va_list ap;
@@ -269,11 +260,7 @@ ex_printf(sp, fmt, va_alist)
 
 	exp = EXP(sp);
 
-#ifdef __STDC__
 	va_start(ap, fmt);
-#else
-	va_start(ap);
-#endif
 	exp->obp_len += n = vsnprintf(exp->obp + exp->obp_len,
 	    sizeof(exp->obp) - exp->obp_len, fmt, ap);
 	va_end(ap);

@@ -275,11 +275,7 @@ nget_slong(
 }
 
 #ifdef DEBUG
-#ifdef __STDC__
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 /*
  * TRACE --
@@ -288,25 +284,17 @@ nget_slong(
  * PUBLIC: void TRACE __P((SCR *, const char *, ...));
  */
 void
-#ifdef __STDC__
-TRACE(SCR *sp, const char *fmt, ...)
-#else
-TRACE(sp, fmt, va_alist)
-	SCR *sp;
-	char *fmt;
-	va_dcl
-#endif
+TRACE(
+	SCR *sp,
+	const char *fmt,
+	...)
 {
 	FILE *tfp;
 	va_list ap;
 
 	if ((tfp = sp->gp->tracefp) == NULL)
 		return;
-#ifdef __STDC__
 	va_start(ap, fmt);
-#else
-	va_start(ap);
-#endif
 	(void)vfprintf(tfp, fmt, ap);
 	va_end(ap);
 
