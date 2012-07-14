@@ -146,7 +146,6 @@ static input_t
 cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeval *tp)
 {
 	struct termios term1, term2;
-	struct timeval poll;
 	CL_PRIVATE *clp;
 	GS *gp;
 	fd_set rdfd;
@@ -180,13 +179,10 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 	 * 2: A read with an associated timeout, e.g., trying to complete
 	 *    a map sequence.  If input exists, we fall into #3.
 	 */
-	FD_ZERO(&rdfd);
-	poll.tv_sec = 0;
-	poll.tv_usec = 0;
 	if (tp != NULL) {
+		FD_ZERO(&rdfd);
 		FD_SET(STDIN_FILENO, &rdfd);
-		switch (select(STDIN_FILENO + 1,
-		    &rdfd, NULL, NULL, tp == NULL ? &poll : tp)) {
+		switch (select(STDIN_FILENO + 1, &rdfd, NULL, NULL, tp)) {
 		case 0:
 			return (INP_TIMEOUT);
 		case -1:
