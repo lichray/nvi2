@@ -149,7 +149,6 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 	struct timeval poll;
 	CL_PRIVATE *clp;
 	GS *gp;
-	SCR *tsp;
 	fd_set rdfd;
 	input_t rval;
 	int maxfd, nr, term_reset;
@@ -231,12 +230,11 @@ cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeva
 loop:		FD_ZERO(&rdfd);
 		FD_SET(STDIN_FILENO, &rdfd);
 		maxfd = STDIN_FILENO;
-		TAILQ_FOREACH(tsp, gp->dq, q)
-			if (F_ISSET(sp, SC_SCRIPT)) {
-				FD_SET(sp->script->sh_master, &rdfd);
-				if (sp->script->sh_master > maxfd)
-					maxfd = sp->script->sh_master;
-			}
+		if (F_ISSET(sp, SC_SCRIPT)) {
+			FD_SET(sp->script->sh_master, &rdfd);
+			if (sp->script->sh_master > maxfd)
+				maxfd = sp->script->sh_master;
+		}
 		switch (select(maxfd + 1, &rdfd, NULL, NULL, NULL)) {
 		case 0:
 			abort();
