@@ -121,11 +121,11 @@ read:
 		else
 		    msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 		break;
-	case INP_ERR:
-		evp->e_event = E_ERR;
-		break;
 	case INP_EOF:
 		evp->e_event = E_EOF;
+		break;
+	case INP_ERR:
+		evp->e_event = E_ERR;
 		break;
 	case INP_INTR:
 		goto retest;
