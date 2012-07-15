@@ -859,12 +859,12 @@ rcv_email(
 	struct stat sb;
 	struct passwd *pw;
 	FILE *fp = NULL;
-	int fd;
+	int fd = -1;
 	char *host = NULL;
 	long hostmax;
 	int eno;
-	struct addrinfo *res0;
-	struct addrinfo hints = { AI_ADDRCONFIG, PF_UNSPEC,
+	struct addrinfo *res0 = NULL, *res;
+	struct addrinfo hints = { 0, PF_UNSPEC,
 				  SOCK_STREAM, IPPROTO_TCP };
 
 	/* Prepare the the recipient. */
@@ -884,13 +884,19 @@ rcv_email(
 		goto aierr;
 
 	/* Prepare a stream over socket(2). */
-	if ((fd = socket(res0->ai_family, res0->ai_socktype,
-	    res0->ai_protocol)) == -1)
-		goto err;
-	if (connect(fd, res0->ai_addr, res0->ai_addrlen) == -1) {
-		(void)close(fd);
-		goto err;
+	for (res = res0; res != NULL; res = res->ai_next) {
+		if ((fd = socket(res->ai_family, res->ai_socktype,
+		    res->ai_protocol)) < 0)
+			continue;
+		if (connect(fd, res->ai_addr, res->ai_addrlen) == -1) {
+			(void)close(fd);
+			fd = -1;
+			continue;
+		}
+		break;
 	}
+	if (fd < 0)
+		goto err;
 	if ((fp = fdopen(fd, "w")) == NULL)
 		goto err;
 
