@@ -23,7 +23,7 @@ typedef struct _cl_private {
 
 	size_t	 skip;		/* Remaining keys. */
 
-	CONVWIN cw;		/* Conversion buffer. */
+	CONVWIN	 cw;		/* Conversion buffer. */
 
 	int	 eof_count;	/* EOF count. */
 
