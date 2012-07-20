@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.113 2012/02/13 19:22:25 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 10.114 2012/07/20 18:56:25 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1997,12 +1997,11 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	CHAR_T s_ch;
 	EXCMD cmd;
 	size_t indx, len, nlen, off;
-	int argc, trydir;
+	int argc;
 	CHAR_T *p, *t;
 	char *np;
 	size_t nplen;
 
-	trydir = 0;
 	*redrawp = 0;
 
 	/*
@@ -2013,7 +2012,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		len = 0;
 		p = tp->lb;
 	} else
-retry:		for (len = 0,
+		for (len = 0,
 		    off = tp->cno - 1, p = tp->lb + off;; --off, --p) {
 			if (cmdskip(*p)) {
 				++p;
@@ -2051,8 +2050,7 @@ retry:		for (len = 0,
 
 	switch (argc) {
 	case 0:				/* No matches. */
-		if (!trydir)
-			(void)sp->gp->scr_bell(sp);
+		(void)sp->gp->scr_bell(sp);
 		return (0);
 	case 1:				/* One match. */
 		/* If something changed, do the exchange. */
@@ -2063,15 +2061,13 @@ retry:		for (len = 0,
 		/* If haven't done a directory test, do it now. */
 		INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
 			 np, nplen);
-		if (!trydir &&
-		    !stat(np, &sb) && S_ISDIR(sb.st_mode)) {
+		if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
 			p += len;
 			goto isdir;
 		}
 
 		/* If nothing changed, period, ring the bell. */
-		if (!trydir)
-			(void)sp->gp->scr_bell(sp);
+		(void)sp->gp->scr_bell(sp);
 		return (0);
 	default:			/* Multiple matches. */
 		*redrawp = 1;
@@ -2119,7 +2115,7 @@ retry:		for (len = 0,
 			*p++ = *t++;
 	}
 
-	/* If a single match and it's a directory, retry it. */
+	/* If a single match and it's a directory, append a '/'. */
 	INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1, np, nplen);
 	if (argc == 1 && !stat(np, &sb) && S_ISDIR(sb.st_mode)) {
 isdir:		if (tp->owrite == 0) {
@@ -2134,9 +2130,6 @@ isdir:		if (tp->owrite == 0) {
 
 		++tp->cno;
 		*p++ = '/';
-
-		trydir = 1;
-		goto retry;
 	}
 	return (0);
 }
