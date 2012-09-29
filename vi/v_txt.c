@@ -2001,6 +2001,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	CHAR_T *p, *t;
 	char *np;
 	size_t nplen;
+	int fstwd = 1;
 
 	*redrawp = 0;
 
@@ -2011,17 +2012,21 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	if (tp->cno == 1) {
 		len = 0;
 		p = tp->lb;
-	} else
+	} else {
+		CHAR_T *ap;
+
 		for (len = 0,
-		    off = tp->cno - 1, p = tp->lb + off;; --off, --p) {
-			if (cmdskip(*p)) {
-				++p;
-				break;
-			}
-			++len;
-			if (off == tp->ai || off == tp->offset)
-				break;
+		    off = MAX(tp->ai, tp->offset), ap = tp->lb + off, p = ap;
+		    off < tp->cno; ++off, ++ap) {
+			if (cmdskip(*ap)) {
+				p = ap + 1;
+				if (len > 0)
+					fstwd = 0;
+				len = 0;
+			} else
+				++len;
 		}
+	}
 
 	/*
 	 * Get enough space for a wildcard character.
