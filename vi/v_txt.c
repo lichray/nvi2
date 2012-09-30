@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 10.114 2012/07/20 18:56:25 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 11.1 2012/09/30 05:06:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1987,7 +1987,7 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 
 /*
  * txt_fc --
- *	File name completion.
+ *	File name and ex command completion.
  */
 static int
 txt_fc(SCR *sp, TEXT *tp, int *redrawp)
@@ -2039,19 +2039,24 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	BINC_RETW(sp, tp->lb, tp->lb_len, tp->len + 1);
 	p = tp->lb + off;
 
-	s_ch = p[len];
-	p[len] = '*';
-
-	/* Build an ex command, and call the ex expansion routines. */
+	/*
+	 * If we are at the first word, do ex command completion instead of
+	 * file name completion.
+	 */
 	ex_cinit(sp, &cmd, 0, 0, OOBLNO, OOBLNO, 0);
-	if (argv_exp2(sp, &cmd, p, len + 1)) {
+	if (fstwd)
+		(void)argv_flt0(sp, &cmd, p, len);
+	else {
+		s_ch = p[len];
+		p[len] = '*';
+		if (argv_exp2(sp, &cmd, p, len + 1)) {
+			p[len] = s_ch;
+			return (0);
+		}
 		p[len] = s_ch;
-		return (0);
 	}
 	argc = cmd.argc;
 	argv = cmd.argv;
-
-	p[len] = s_ch;
 
 	switch (argc) {
 	case 0:				/* No matches. */
@@ -2064,11 +2069,13 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 			break;
 
 		/* If haven't done a directory test, do it now. */
-		INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
-			 np, nplen);
-		if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
-			p += len;
-			goto isdir;
+		if (!fstwd) {
+			INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
+				 np, nplen);
+			if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
+				p += len;
+				goto isdir;
+			}
 		}
 
 		/* If nothing changed, period, ring the bell. */
@@ -2119,6 +2126,10 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		while (nlen--)
 			*p++ = *t++;
 	}
+
+	/* If we're completing an ex command, we've done. */
+	if (fstwd)
+		return (0);
 
 	/* If a single match and it's a directory, append a '/'. */
 	INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1, np, nplen);
