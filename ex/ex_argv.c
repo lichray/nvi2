@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 10.40 2012/07/06 14:41:09 zy Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 10.41 2012/09/30 04:37:12 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -297,6 +297,41 @@ argv_exp3(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 	for (cnt = 0; cnt < exp->argsoff; ++cnt)
 		TRACE(sp, "arg %d: {%s}\n", cnt, exp->argv[cnt]);
 #endif
+	return (0);
+}
+
+/*
+ * argv_flt0 --
+ *	Filter the ex commands with a prefix, and append the results to
+ *	the argument list.
+ *
+ * PUBLIC: int argv_flt0 __P((SCR *, EXCMD *, CHAR_T *, size_t));
+ */
+int
+argv_flt0(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
+{
+	EX_PRIVATE *exp;
+	EXCMDLIST const *cp;
+	int off;
+	size_t len;
+
+	exp = EXP(sp);
+
+	for (off = exp->argsoff, cp = cmds; cp->name != NULL; ++cp) {
+		len = STRLEN(cp->name);
+		if (cmdlen > 0 &&
+		    (cmdlen > len || MEMCMP(cmd, cp->name, cmdlen)))
+			continue;
+
+		/* Copy the matched ex command name. */
+		argv_alloc(sp, len + 1);
+		MEMCPY(exp->args[exp->argsoff]->bp, cp->name, len + 1);
+		exp->args[exp->argsoff]->len = len;
+		++exp->argsoff;
+		excp->argv = exp->args;
+		excp->argc = exp->argsoff;
+	}
+
 	return (0);
 }
 
