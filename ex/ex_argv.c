@@ -760,3 +760,58 @@ alloc_err:	rval = SEXP_ERR;
 
 	return (rval == SEXP_OK ? 0 : 1);
 }
+
+/*
+ * argv_esc --
+ *	Escape a string into an ex and shell argument.
+ *
+ * PUBLIC: CHAR_T *argv_esc __P((SCR *, EXCMD *, CHAR_T *, size_t));
+ */
+CHAR_T *
+argv_esc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
+{
+	size_t blen, off;
+	CHAR_T *bp, *p;
+	int ch;
+
+	GET_SPACE_GOTOW(sp, bp, blen, len + 1);
+
+	/*
+	 * To properly double escape the meta characters used by both ex
+	 * and shell, like '!' in csh, the "shellmeta" option must contain
+	 * no whitespace or <escape> character.
+	 */
+	for (p = bp; len > 0; ++str, --len) {
+		ch = *str;
+		off = p - bp;
+		if (blen / sizeof(CHAR_T) - off < 3) {
+			ADD_SPACE_GOTOW(sp, bp, blen, off + 3);
+			p = bp + off;
+		}
+		if (cmdskip(ch) || ch == '\n' ||
+		    IS_ESCAPE(sp, excp, ch))			/* Ex. */
+			*p++ = CH_LITERAL;
+		else switch (ch) {
+		case '!': case '%': case '#':			/* Ex exp. */
+		case '+':					/* Ex +cmd. */
+			if (p != bp || ch != '+')
+				*p++ = '\\';
+			if (IS_SHELLMETA(sp, ch))
+				*p++ = '\\';
+			break;
+		case ',': case '-': case '.': case '/':		/* Safe. */
+		case ':': case '=': case '@': case '_':
+			break;
+		default:					/* Unsafe. */
+			if (isascii(ch) && !isalnum(ch))
+				*p++ = '\\';
+		}
+		*p++ = ch;
+	}
+	*p = '\0';
+
+	return bp;
+
+alloc_err:
+	return NULL;
+}
