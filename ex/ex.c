@@ -377,10 +377,10 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 	 * from vi mode, and displayed lines 2, 3, and 4, so we do a default
 	 * command for each separator.
 	 */
-#define	SINGLE_CHAR_COMMANDS	"\004!#&*<=>@~"
+#define	SINGLE_CHAR_COMMANDS	L("\004!#&*<=>@~")
 	newscreen = 0;
 	if (ecp->clen != 0 && ecp->cp[0] != '|' && ecp->cp[0] != '\n') {
-		if (strchr(SINGLE_CHAR_COMMANDS, *ecp->cp)) {
+		if (STRCHR(SINGLE_CHAR_COMMANDS, *ecp->cp)) {
 			p = ecp->cp;
 			++ecp->cp;
 			--ecp->clen;
@@ -1832,7 +1832,7 @@ ex_line(SCR *sp, EXCMD *ecp, MARK *mp, int *isaddrp, int *errp)
 	F_CLR(ecp, E_DELTA);
 
 	/* No addresses permitted until a file has been read in. */
-	if (sp->ep == NULL && strchr("$0123456789'\\/?.+-^", *ecp->cp)) {
+	if (sp->ep == NULL && STRCHR(L("$0123456789'\\/?.+-^"), *ecp->cp)) {
 		ex_badaddr(sp, NULL, A_EMPTY, NUM_OK);
 		*errp = 1;
 		return (0);

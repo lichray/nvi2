@@ -1202,7 +1202,7 @@ re_tag_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 		if (p[0] == '\\' && (p[1] == '/' || p[1] == '?')) {
 			++p;
 			--len;
-		} else if (strchr("^.[]$*", p[0]))
+		} else if (STRCHR(L("^.[]$*"), p[0]))
 			*t++ = '\\';
 		*t++ = *p++;
 	}
@@ -1261,7 +1261,7 @@ re_cscope_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 			MEMCPYW(t, wp, wlen);
 			t += wlen;
 		} else {
-			if (strchr("\\^.[]$*+?()|{}", *p))
+			if (STRCHR(L("\\^.[]$*+?()|{}"), *p))
 				*t++ = '\\';
 			*t++ = *p;
 		}

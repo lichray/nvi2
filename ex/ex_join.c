@@ -106,7 +106,7 @@ ex_join(SCR *sp, EXCMD *cmdp)
 			if (isblank(echar))
 				for (; len && isblank(*p); --len, ++p);
 			else if (p[0] != ')') {
-				if (strchr(".?!", echar)) {
+				if (STRCHR(L(".?!"), echar)) {
 					*tbp++ = ' ';
 					++clen;
 					extra = 1;
