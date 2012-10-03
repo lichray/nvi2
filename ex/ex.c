@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex.c,v 10.79 2011/12/26 23:37:01 zy Exp $";
+static const char sccsid[] = "$Id: ex.c,v 10.80 2012/10/03 16:24:40 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -818,7 +818,10 @@ skip_srch:	if (ecp->cmd == &cmds[C_VISUAL_EX] && F_ISSET(sp, SC_VI))
 	 */
 	if (ecp->cmd == &cmds[C_SET])
 		for (p = ecp->cp, len = ecp->clen; len > 0; --len, ++p)
-			if (*p == '\\')
+			if (IS_ESCAPE(sp, ecp, *p) && len > 1) {
+				--len;
+				++p;
+			} else if (*p == '\\')
 				*p = CH_LITERAL;
 
 	/*
