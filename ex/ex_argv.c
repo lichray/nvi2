@@ -129,7 +129,6 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 	size_t blen, len, n;
 	int rval;
 	CHAR_T *bp, *p;
-	char *mp, *np;
 
 	GET_SPACE_RETW(sp, bp, blen, 512);
 
@@ -161,28 +160,15 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 	 * but then, if your shell was csh, the above example will behave
 	 * differently in nvi than in vi.  If you want to get other characters
 	 * passed through to your shell, change the "meta" option.
-	 *
-	 * To avoid a function call per character, we do a first pass through
-	 * the meta characters looking for characters that aren't expected
-	 * to be there, and then we can ignore them in the user's argument.
 	 */
 	if (opts_empty(sp, O_SHELL, 1) || opts_empty(sp, O_SHELLMETA, 1))
 		n = 0;
 	else {
-		for (np = mp = O_STR(sp, O_SHELLMETA); *np != '\0'; ++np)
-			if (cmdskip(*np) || isalnum(*np))
-				break;
 		p = bp + SHELLOFFSET;
 		n = len - SHELLOFFSET;
-		if (*p != '\0') {
-			for (; n > 0; --n, ++p)
-				if (strchr(mp, *p) != NULL)
-					break;
-		} else
-			for (; n > 0; --n, ++p)
-				if (!cmdskip(*p) &&
-				    !isalnum(*p) && strchr(mp, *p) != NULL)
-					break;
+		for (; n > 0; --n, ++p)
+			if (IS_SHELLMETA(sp, *p))
+				break;
 	}
 
 	/*

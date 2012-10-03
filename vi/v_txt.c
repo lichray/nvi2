@@ -2586,7 +2586,7 @@ txt_isrch(SCR *sp, VICMD *vp, TEXT *tp, u_int8_t *is_flagsp)
 	 * If it's a magic shell character, and not quoted, reset the cursor
 	 * to the starting point.
 	 */
-	if (strchr(O_STR(sp, O_SHELLMETA), tp->lb[tp->cno - 1]) != NULL &&
+	if (IS_SHELLMETA(sp, tp->lb[tp->cno - 1]) &&
 	    (tp->cno == 2 || tp->lb[tp->cno - 2] != '\\'))
 		vp->m_final = vp->m_start;
 

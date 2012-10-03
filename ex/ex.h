@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: ex.h,v 10.30 2004/03/16 14:11:33 skimo Exp $
+ *	$Id: ex.h,v 10.31 2012/10/03 02:33:24 zy Exp $
  */
 
 #define	PROMPTCHAR	':'		/* Prompt using a colon. */
@@ -48,6 +48,9 @@ extern EXCMDLIST const cmds[];		/* Table of ex commands. */
 #define	IS_ESCAPE(sp, cmdp, ch)						\
 	(F_ISSET(cmdp, E_VLITONLY) ?					\
 	    (ch) == CH_LITERAL : KEY_VAL(sp, ch) == K_VLNEXT)
+
+#define	IS_SHELLMETA(sp, ch)						\
+	((ch) <= CHAR_MAX && strchr(O_STR(sp, O_SHELLMETA), ch) != NULL)
 
 /*
  * File state must be checked for each command -- any ex command may be entered
