@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 11.1 2012/09/30 05:06:53 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 11.2 2012/10/03 16:19:45 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -2063,24 +2063,9 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		(void)sp->gp->scr_bell(sp);
 		return (0);
 	case 1:				/* One match. */
-		/* If something changed, do the exchange. */
+		/* Always overwrite the old text. */
 		nlen = STRLEN(cmd.argv[0]->bp);
-		if (len != nlen || MEMCMP(cmd.argv[0]->bp, p, len))
-			break;
-
-		/* If haven't done a directory test, do it now. */
-		if (!fstwd) {
-			INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1,
-				 np, nplen);
-			if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
-				p += len;
-				goto isdir;
-			}
-		}
-
-		/* If nothing changed, period, ring the bell. */
-		(void)sp->gp->scr_bell(sp);
-		return (0);
+		break;
 	default:			/* Multiple matches. */
 		*redrawp = 1;
 		if (txt_fc_col(sp, argc, argv))
@@ -2127,14 +2112,14 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 			*p++ = *t++;
 	}
 
-	/* If we're completing an ex command, we've done. */
-	if (fstwd)
+	/* If not a single match of path, we've done. */
+	if (argc != 1 || fstwd)
 		return (0);
 
 	/* If a single match and it's a directory, append a '/'. */
 	INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1, np, nplen);
-	if (argc == 1 && !stat(np, &sb) && S_ISDIR(sb.st_mode)) {
-isdir:		if (tp->owrite == 0) {
+	if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
+		if (tp->owrite == 0) {
 			off = p - tp->lb;
 			BINC_RETW(sp, tp->lb, tp->lb_len, tp->len + 1);
 			p = tp->lb + off;
