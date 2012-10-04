@@ -265,9 +265,7 @@ ex_g_insdel(SCR *sp, lnop_t op, recno_t lno)
 	SLIST_FOREACH(ecp, sp->gp->ecq, q) {
 		if (!FL_ISSET(ecp->agv_flags, AGV_AT | AGV_GLOBAL | AGV_V))
 			continue;
-		for (rp = TAILQ_FIRST(ecp->rq); rp != NULL; rp = nrp) {
-			nrp = TAILQ_NEXT(rp, q);
-
+		TAILQ_FOREACH_SAFE(rp, ecp->rq, q, nrp) {
 			/* If range less than the line, ignore it. */
 			if (rp->stop < lno)
 				continue;
@@ -304,7 +302,6 @@ ex_g_insdel(SCR *sp, lnop_t op, recno_t lno)
 				nrp->stop = rp->stop + 1;
 				rp->stop = lno - 1;
 				TAILQ_INSERT_AFTER(ecp->rq, rp, nrp, q);
-				rp = nrp;
 			}
 		}
 

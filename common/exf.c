@@ -82,14 +82,12 @@ file_add(
 	 */
 	gp = sp->gp;
 	if (name != NULL)
-		TAILQ_FOREACH(frp, gp->frefq, q) {
+		TAILQ_FOREACH_SAFE(frp, gp->frefq, q, tfrp) {
 			if (frp->name == NULL) {
-				tfrp = TAILQ_NEXT(frp, q);
 				TAILQ_REMOVE(gp->frefq, frp, q);
 				if (frp->name != NULL)
 					free(frp->name);
 				free(frp);
-				frp = tfrp;
 				continue;
 			}
 			if (!strcmp(frp->name, name))
