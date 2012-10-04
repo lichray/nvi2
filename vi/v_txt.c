@@ -2197,7 +2197,7 @@ txt_fc_col(SCR *sp, int argc, ARGS **argv)
 		goto intr;
 
 	/* If the largest file name is too large, just print them. */
-	if (colwidth > sp->cols) {
+	if (colwidth >= sp->cols) {
 		for (ac = argc, av = argv; ac > 0; --ac, ++av) {
 			INT2CHAR(sp, av[0]->bp+prefix, av[0]->len+1-prefix,
 				 np, nlen);
