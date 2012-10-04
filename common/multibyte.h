@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: multibyte.h,v 1.29 2011/12/03 01:33:31 zy Exp $
+ *	$Id: multibyte.h,v 1.30 2012/10/03 22:17:13 zy Exp $
  */
 
 #ifndef MULTIBYTE_H
@@ -56,6 +56,7 @@ typedef wchar_t 	RCHAR_T;
 #define TOUPPER		towupper
 #define STRSET		wmemset
 #define STRCHR		wcschr
+#define GETC		getwc
 
 #define L(ch)		L ## ch
 #define WS		"%ls"
@@ -88,6 +89,7 @@ typedef	char		RCHAR_T;
 #define TOUPPER		toupper
 #define STRSET		memset
 #define STRCHR		strchr
+#define GETC		getc
 
 #define L(ch)		ch
 #define WS		"%s"
