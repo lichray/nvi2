@@ -157,7 +157,7 @@ v_suspend(SCR *sp, VICMD *vp)
 	EXCMD cmd;
 
 	ex_cinit(sp, &cmd, C_STOP, 0, OOBLNO, OOBLNO, 0);
-	argv_exp0(sp, &cmd, L("suspend"), sizeof(L("suspend"))/sizeof(CHAR_T));
+	argv_exp0(sp, &cmd, L("suspend"), SIZE(L("suspend")));
 	return (v_exec_ex(sp, vp, &cmd));
 }
 

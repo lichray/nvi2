@@ -336,7 +336,7 @@ display:
 		cno_cnt = (sp->cno - offset_in_line) + 1;
 
 	/* This is the loop that actually displays characters. */
-	ecbp = (cbp = cbuf) + sizeof(cbuf)/sizeof(CHAR_T) - 1;
+	ecbp = (cbp = cbuf) + SIZE(cbuf) - 1;
 	for (is_partial = 0, scno = 0;
 	    offset_in_line < len; ++offset_in_line, offset_in_char = 0) {
 		if ((ch = *p++) == '\t' && !list_tab) {

@@ -110,8 +110,8 @@ struct _scr {
 
 #define	RE_WSTART	L("[[:<:]]")	/* Ex/vi: not-in-word search pattern. */
 #define	RE_WSTOP	L("[[:>:]]")
-#define RE_WSTART_LEN	(sizeof(RE_WSTART)/sizeof(CHAR_T)-1)
-#define RE_WSTOP_LEN	(sizeof(RE_WSTOP)/sizeof(CHAR_T)-1)
+#define RE_WSTART_LEN	(SIZE(RE_WSTART) - 1)
+#define RE_WSTOP_LEN	(SIZE(RE_WSTOP) - 1)
 					/* Ex/vi: flags to search routines. */
 #define	SEARCH_CSCOPE	0x0001		/* Search for a cscope pattern. */
 #define	SEARCH_EOL	0x0002		/* Offset past EOL is okay. */
