@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cscope.c,v 10.24 2012/07/06 16:38:36 zy Exp $";
+static const char sccsid[] = "$Id: ex_cscope.c,v 10.25 2012/10/04 09:23:03 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -684,6 +684,8 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 	size_t dlen, nlen = 0, slen = 0;
 	int ch, i, isolder = 0, nlines;
 	char *dname = NULL, *name = NULL, *search, *p, *t, dummy[2], buf[2048];
+	CHAR_T *wp;
+	size_t wlen;
 
 	for (;;) {
 		if (!fgets(buf, sizeof(buf), csc->from_fp))
@@ -760,7 +762,8 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 		 * length cscope information that follows it.
 		 */
 		CALLOC_RET(sp, tp,
-		    TAG *, 1, sizeof(TAG) + dlen + 2 + nlen + 1 + slen + 1);
+		    TAG *, 1, sizeof(TAG) + dlen + 2 + nlen + 1 +
+		    (slen + 1) * sizeof(CHAR_T));
 		tp->fname = (char *)tp->buf;
 		if (dlen == 1 && *dname == '.')
 			--dlen;
@@ -772,10 +775,9 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 		memcpy(tp->fname + dlen, name, nlen + 1);
 		tp->fnlen = dlen + nlen;
 		tp->slno = slno;
-		if (slen != 0) {
-			tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
-			MEMCPYW(tp->search, search, (tp->slen = slen) + 1);
-		}
+		tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
+		CHAR2INT(sp, search, slen + 1, wp, wlen);
+		MEMCPYW(tp->search, wp, (tp->slen = slen) + 1);
 		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
 
 		/* Try to preset the tag within the current file. */
