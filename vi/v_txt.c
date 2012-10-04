@@ -2203,11 +2203,11 @@ txt_fc_col(SCR *sp, int argc, ARGS **argv)
 				 np, nlen);
 			pp = msg_print(sp, np, &nf);
 			(void)ex_printf(sp, "%s\n", pp);
+			if (nf)
+				FREE_SPACE(sp, pp, 0);
 			if (F_ISSET(gp, G_INTERRUPTED))
 				break;
 		}
-		if (nf)
-			FREE_SPACE(sp, pp, 0);
 		CHK_INTR;
 	} else {
 		/* Figure out the number of columns. */
