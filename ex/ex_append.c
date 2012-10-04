@@ -77,7 +77,7 @@ ex_aci(SCR *sp, EXCMD *cmdp, enum which cmd)
 	GS *gp;
 	TEXT *tp;
 	TEXTH tiq[] = {{ 0 }};
-	recno_t cnt, lno;
+	recno_t cnt = 0, lno;
 	size_t len;
 	u_int32_t flags;
 	int need_newline;
@@ -250,10 +250,11 @@ ex_aci(SCR *sp, EXCMD *cmdp, enum which cmd)
 	if (ex_txt(sp, tiq, 0, flags))
 		return (1);
 
-	for (cnt = 0, tp = TAILQ_FIRST(tiq);
-	    tp != NULL; ++cnt, tp = TAILQ_NEXT(tp, q))
+	TAILQ_FOREACH(tp, tiq, q) {
 		if (db_append(sp, 1, lno++, tp->lb, tp->len))
 			return (1);
+		++cnt;
+	}
 
 	/*
 	 * Set sp->lno to the final line number value (correcting for a
