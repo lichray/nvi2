@@ -1129,14 +1129,14 @@ corrupt:		p = msg_print(sp, tname, &nf1);
 		    TAG *, 1, sizeof(TAG) + dlen + 2 + nlen + 1 + 
 		    (slen + 1) * sizeof(CHAR_T));
 		tp->fname = (char *)tp->buf;
-		if (dlen != 0) {
+		if (dlen == 1 && *dname == '.')
+			--dlen;
+		else if (dlen != 0) {
 			memcpy(tp->fname, dname, dlen);
 			tp->fname[dlen] = '/';
 			++dlen;
 		}
 		memcpy(tp->fname + dlen, name, nlen + 1);
-		if (!strncmp(tp->fname, "./", 2))
-			tp->fname += 2;
 		tp->fnlen = dlen + nlen;
 		tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
 		CHAR2INT(sp, search, slen + 1, wp, wlen);
