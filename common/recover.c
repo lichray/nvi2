@@ -1047,7 +1047,7 @@ rcv_dlnread(
 			goto err;
 		off = strlen(buf);
 		len += off;
-		ADD_SPACE_GOTO(sp, char, bp, blen, len);
+		ADD_SPACE_GOTOC(sp, bp, blen, len);
 		p = bp + len - off;
 		(void)memcpy(p, buf, off);
 	}

@@ -112,6 +112,8 @@
 	} else								\
 		BINC_GOTO(sp, type, bp, blen, nlen);			\
 }
+#define	ADD_SPACE_GOTOC(sp, bp, blen, nlen)				\
+	ADD_SPACE_GOTO(sp, char, bp, blen, nlen)
 #define	ADD_SPACE_GOTOW(sp, bp, blen, nlen)				\
 	ADD_SPACE_GOTO(sp, CHAR_T, bp, blen, (nlen) * sizeof(CHAR_T))
 #define	ADD_SPACE_RET(sp, type, bp, blen, nlen) {			\
@@ -126,6 +128,8 @@
 	} else								\
 		BINC_RET(sp, type, bp, blen, nlen);			\
 }
+#define	ADD_SPACE_RETC(sp, bp, blen, nlen)				\
+	ADD_SPACE_RET(sp, char, bp, blen, nlen)
 #define	ADD_SPACE_RETW(sp, bp, blen, nlen)				\
 	ADD_SPACE_RET(sp, CHAR_T, bp, blen, (nlen) * sizeof(CHAR_T))
 

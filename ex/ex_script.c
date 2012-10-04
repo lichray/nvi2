@@ -353,7 +353,7 @@ err2:		if (nw == 0)
 	}
 
 	if (matchprompt) {
-		ADD_SPACE_RET(sp, char, bp, blen, last_len + len);
+		ADD_SPACE_RETC(sp, bp, blen, last_len + len);
 		memmove(bp + last_len, p, len);
 		CHAR2INT(sp, bp, last_len + len, wp, wlen);
 		if (db_set(sp, last_lno, wp, wlen))
