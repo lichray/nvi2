@@ -307,7 +307,7 @@ text_init(
 		return (NULL);
 	/* ANSI C doesn't define a call to malloc(3) for 0 bytes. */
 	if ((tp->lb_len = total_len * sizeof(CHAR_T)) != 0) {
-		MALLOC(sp, tp->lb, CHAR_T *, tp->lb_len * sizeof(CHAR_T));
+		MALLOC(sp, tp->lb, CHAR_T *, tp->lb_len);
 		if (tp->lb == NULL) {
 			free(tp);
 			return (NULL);
