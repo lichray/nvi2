@@ -187,13 +187,11 @@ cl_term_end(GS *gp)
 	SEQ *qp, *nqp;
 
 	/* Delete screen specific mappings. */
-	for (qp = SLIST_FIRST(gp->seqq); qp != NULL; qp = nqp) {
-		nqp = SLIST_NEXT(qp, q);
+	SLIST_FOREACH_SAFE(qp, gp->seqq, q, nqp)
 		if (F_ISSET(qp, SEQ_SCREEN)) {
 			SLIST_REMOVE_HEAD(gp->seqq, q);
 			(void)seq_free(qp);
 		}
-	}
 	return (0);
 }
 
