@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 11.2 2012/10/03 16:19:45 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 11.3 2012/10/04 01:13:54 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1998,7 +1998,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	EXCMD cmd;
 	size_t indx, len, nlen, off;
 	int argc;
-	CHAR_T *p, *t;
+	CHAR_T *p, *t, *bp;
 	char *np;
 	size_t nplen;
 	int fstwd = 1;
@@ -2083,8 +2083,13 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		break;
 	}
 
+	/* Escape the matched part. */
+	if ((bp = argv_esc(sp, &cmd, cmd.argv[0]->bp, nlen)) == NULL)
+		return (1);
+	nlen = STRLEN(bp);
+
 	/* Overwrite the expanded text first. */
-	for (t = cmd.argv[0]->bp; len > 0 && nlen > 0; --len, --nlen)
+	for (t = bp; len > 0 && nlen > 0; --len, --nlen)
 		*p++ = *t++;
 
 	/* If lost text, make the remaining old text overwrite characters. */
@@ -2111,6 +2116,8 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		while (nlen--)
 			*p++ = *t++;
 	}
+
+	FREE_SPACEW(sp, bp, 0);
 
 	/* If not a single match of path, we've done. */
 	if (argc != 1 || fstwd)
