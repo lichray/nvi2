@@ -1994,7 +1994,6 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 {
 	struct stat sb;
 	ARGS **argv;
-	CHAR_T s_ch;
 	EXCMD cmd;
 	size_t indx, len, nlen, off;
 	int argc;
@@ -2029,17 +2028,6 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	}
 
 	/*
-	 * Get enough space for a wildcard character.
-	 *
-	 * XXX
-	 * This won't work for "foo\", since the \ will escape the expansion
-	 * character.  I'm not sure if that's a bug or not...
-	 */
-	off = p - tp->lb;
-	BINC_RETW(sp, tp->lb, tp->lb_len, tp->len + 1);
-	p = tp->lb + off;
-
-	/*
 	 * If we are at the first word, do ex command completion instead of
 	 * file name completion.
 	 */
@@ -2047,13 +2035,8 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	if (fstwd)
 		(void)argv_flt_ex(sp, &cmd, p, len);
 	else {
-		s_ch = p[len];
-		p[len] = '*';
-		if (argv_exp2(sp, &cmd, p, len + 1)) {
-			p[len] = s_ch;
+		if (argv_flt_path(sp, &cmd, p, len))
 			return (0);
-		}
-		p[len] = s_ch;
 	}
 	argc = cmd.argc;
 	argv = cmd.argv;

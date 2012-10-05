@@ -32,7 +32,6 @@ static int argv_alloc __P((SCR *, size_t));
 static int argv_comp __P((const void *, const void *));
 static int argv_fexp __P((SCR *, EXCMD *,
 	CHAR_T *, size_t, CHAR_T *, size_t *, CHAR_T **, size_t *, int));
-static int argv_lexp __P((SCR *, EXCMD *, char *));
 static int argv_sexp __P((SCR *, CHAR_T **, size_t *, size_t *));
 
 /*
@@ -176,13 +175,11 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 	 * it.  Unfortunately, this is comparatively slow.  Historically, it
 	 * didn't matter much, since users don't enter meta characters as part
 	 * of pathnames that frequently.  The addition of filename completion
-	 * broke that assumption because it's easy to use.  As a result, lots
-	 * folks have complained that the expansion code is too slow.  So, we
-	 * detect filename completion as a special case, and do it internally.
-	 * Note that this code assumes that the <asterisk> character is the
-	 * match-anything meta character.  That feels safe -- if anyone writes
-	 * a shell that doesn't follow that convention, I'd suggest giving them
-	 * a festive hot-lead enema.
+	 * broke that assumption because it's easy to use.  To increase the
+	 * completion performance, nvi used to have an internal routine to
+	 * handle "filename*".  However, the shell special characters does not
+	 * limit to "shellmeta", so such a hack breaks historic practice.
+	 * After it all, we split the completion logic out from here.
 	 */
 	switch (n) {
 	case 0:
@@ -190,20 +187,6 @@ argv_exp2(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 		len -= SHELLOFFSET;
 		rval = argv_exp3(sp, excp, p, len);
 		break;
-	case 1:
-		if (*p == '*') {
-			char *np, *d;
-			size_t nlen;
-
-			*p = '\0';
-			INT2CHAR(sp, bp + SHELLOFFSET, 
-				 STRLEN(bp + SHELLOFFSET) + 1, np, nlen);
-			d = strdup(np);
-			rval = argv_lexp(sp, excp, d);
-			free (d);
-			break;
-		}
-		/* FALLTHROUGH */
 	default:
 		if (argv_sexp(sp, &bp, &blen, &len)) {
 			rval = 1;
@@ -514,48 +497,59 @@ argv_free(SCR *sp)
 }
 
 /*
- * argv_lexp --
+ * argv_flt_path --
  *	Find all file names matching the prefix and append them to the
- *	buffer.
+ *	argument list.
+ *
+ * PUBLIC: int argv_flt_path __P((SCR *, EXCMD *, CHAR_T *, size_t));
  */
-static int
-argv_lexp(SCR *sp, EXCMD *excp, char *path)
+int
+argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 {
 	struct dirent *dp;
 	DIR *dirp;
 	EX_PRIVATE *exp;
 	int off;
 	size_t dlen, len, nlen;
-	char *dname, *name;
-	char *p;
-	size_t wlen;
+	CHAR_T *dname;
+	CHAR_T *p, *np, *n;
+	char *name, *tp;
 	CHAR_T *wp;
-	CHAR_T *n;
+	size_t wlen;
 
 	exp = EXP(sp);
 
 	/* Set up the name and length for comparison. */
-	if ((p = strrchr(path, '/')) == NULL) {
-		dname = ".";
+	if ((path = v_wstrdup(sp, path, plen)) == NULL)
+		return (1);
+	if ((p = STRRCHR(path, '/')) == NULL) {
+		dname = L(".");
 		dlen = 0;
-		name = path;
-	} else { 
+		np = path;
+	} else {
 		if (p == path) {
-			dname = "/";
+			dname = L("/");
 			dlen = 1;
 		} else {
 			*p = '\0';
 			dname = path;
-			dlen = strlen(path);
+			dlen = p - path;
 		}
-		name = p + 1;
+		np = p + 1;
 	}
-	nlen = strlen(name);
 
-	if ((dirp = opendir(dname)) == NULL) {
-		msgq_str(sp, M_SYSERR, dname, "%s");
+	INT2CHAR(sp, dname, dlen + 1, tp, nlen);
+	if ((dirp = opendir(tp)) == NULL) {
+		msgq_str(sp, M_SYSERR, tp, "%s");
 		return (1);
 	}
+
+	INT2CHAR(sp, np, STRLEN(np), tp, nlen);
+	if ((name = v_strdup(sp, tp, nlen)) == NULL) {
+		free(path);
+		return (1);
+	}
+
 	for (off = exp->argsoff; (dp = readdir(dirp)) != NULL;) {
 		if (nlen == 0) {
 			if (dp->d_name[0] == '.')
@@ -571,12 +565,11 @@ argv_lexp(SCR *sp, EXCMD *excp, char *path)
 		argv_alloc(sp, dlen + len + 2);
 		n = exp->args[exp->argsoff]->bp;
 		if (dlen != 0) {
-			CHAR2INT(sp, dname, dlen, wp, wlen);
-			MEMCPY(n, wp, wlen);
-			n += wlen;
-			if (wlen > 1 || dname[0] != '/')
+			MEMCPY(n, dname, dlen);
+			n += dlen;
+			if (dlen > 1 || dname[0] != '/')
 				*n++ = '/';
-			exp->args[exp->argsoff]->len = wlen + 1;
+			exp->args[exp->argsoff]->len = dlen + 1;
 		}
 		CHAR2INT(sp, dp->d_name, len + 1, wp, wlen);
 		MEMCPY(n, wp, wlen);
@@ -586,16 +579,9 @@ argv_lexp(SCR *sp, EXCMD *excp, char *path)
 		excp->argc = exp->argsoff;
 	}
 	closedir(dirp);
+	free(name);
+	free(path);
 
-	if (off == exp->argsoff) {
-		/*
-		 * If we didn't find a match, complain that the expansion
-		 * failed.  We can't know for certain that's the error, but
-		 * it's a good guess, and it matches historic practice. 
-		 */
-		msgq(sp, M_ERR, "304|Shell expansion failed");
-		return (1);
-	}
 	qsort(exp->args + off, exp->argsoff - off, sizeof(ARGS *), argv_comp);
 	return (0);
 }
