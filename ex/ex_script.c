@@ -13,7 +13,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.43 2012/07/13 01:35:39 zy Exp $";
+static const char sccsid[] = "$Id: ex_script.c,v 10.44 2012/10/05 10:17:47 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -41,7 +41,6 @@ static const char sccsid[] = "$Id: ex_script.c,v 10.43 2012/07/13 01:35:39 zy Ex
 #endif
 
 #include "../common/common.h"
-#include "../cl/cl.h"
 #include "../vi/vi.h"
 #include "script.h"
 #include "pathnames.h"
@@ -194,7 +193,7 @@ err:		if (sc->sh_master != -1)
 static int
 sscr_getprompt(SCR *sp)
 {
-	CL_PRIVATE *clp;
+	EX_PRIVATE *exp;
 	struct timeval tv;
 	char *endp, *p, *t, buf[1024];
 	SCRIPT *sc;
@@ -204,9 +203,8 @@ sscr_getprompt(SCR *sp)
 	int nr;
 	CHAR_T *wp;
 	size_t wlen;
-	int rc = 0;
 
-	clp = CLP(sp);
+	exp = EXP(sp);
 
 	FD_ZERO(&fdset);
 	endp = buf;
@@ -245,7 +243,8 @@ more:	len = sizeof(buf) - (endp - buf);
 	/* If any complete lines, push them into the file. */
 	for (p = t = buf; p < endp; ++p) {
 		if (*p == '\r' || *p == '\n') {
-			rc |= INPUT2INT5(sp, clp->cw, t, p - t, wp, wlen);
+			if (CHAR2INT5(sp, exp->ibcw, t, p - t, wp, wlen))
+				goto conv_err;
 			if (db_last(sp, &lline) ||
 			    db_append(sp, 0, lline, wp, wlen))
 				goto prompterr;
@@ -277,13 +276,15 @@ more:	len = sizeof(buf) - (endp - buf);
 	endp = buf;
 
 	/* Append the line into the file. */
-	rc |= INPUT2INT5(sp, clp->cw, buf, llen, wp, wlen);
+	if (CHAR2INT5(sp, exp->ibcw, buf, llen, wp, wlen))
+		goto conv_err;
 	if (db_last(sp, &lline) || db_append(sp, 0, lline, wp, wlen)) {
 prompterr:	sscr_end(sp);
 		return (1);
 	}
-	if (rc)
-		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+
+	if (0)
+conv_err:	msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 
 	return (sscr_setprompt(sp, buf, llen));
 }
@@ -420,7 +421,7 @@ loop:	maxfd = 0;
 static int
 sscr_insert(SCR *sp)
 {
-	CL_PRIVATE *clp;
+	EX_PRIVATE *exp;
 	struct timeval tv;
 	char *endp, *p, *t;
 	SCRIPT *sc;
@@ -431,9 +432,8 @@ sscr_insert(SCR *sp)
 	char *bp;
 	CHAR_T *wp;
 	size_t wlen;
-	int rc = 0;
 
-	clp = CLP(sp);
+	exp = EXP(sp);
 
 
 	/* Find out where the end of the file is. */
@@ -464,7 +464,8 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 	for (p = t = bp; p < endp; ++p) {
 		if (*p == '\r' || *p == '\n') {
 			len = p - t;
-			rc |= INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
+			if (CHAR2INT5(sp, exp->ibcw, t, len, wp, wlen))
+				goto conv_err;
 			if (db_append(sp, 1, lno++, wp, wlen))
 				goto ret;
 			t = p + 1;
@@ -493,7 +494,8 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 		}
 		if (sscr_setprompt(sp, t, len))
 			return (1);
-		rc |= INPUT2INT5(sp, clp->cw, t, len, wp, wlen);
+		if (CHAR2INT5(sp, exp->ibcw, t, len, wp, wlen))
+			goto conv_err;
 		if (db_append(sp, 1, lno++, wp, wlen))
 			goto ret;
 	}
@@ -502,8 +504,9 @@ more:	switch (nr = read(sc->sh_master, endp, MINREAD)) {
 	sp->lno = lno;
 	sp->cno = wlen ? wlen - 1 : 0;
 	rval = vs_refresh(sp, 1);
-	if (rc)
-		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
+
+	if (0)
+conv_err:	msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 
 ret:	FREE_SPACE(sp, bp, blen);
 	return (rval);
