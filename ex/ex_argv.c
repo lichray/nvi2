@@ -287,14 +287,14 @@ argv_exp3(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 }
 
 /*
- * argv_flt0 --
+ * argv_flt_ex --
  *	Filter the ex commands with a prefix, and append the results to
  *	the argument list.
  *
- * PUBLIC: int argv_flt0 __P((SCR *, EXCMD *, CHAR_T *, size_t));
+ * PUBLIC: int argv_flt_ex __P((SCR *, EXCMD *, CHAR_T *, size_t));
  */
 int
-argv_flt0(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
+argv_flt_ex(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 {
 	EX_PRIVATE *exp;
 	EXCMDLIST const *cp;

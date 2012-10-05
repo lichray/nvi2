@@ -2045,7 +2045,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	 */
 	ex_cinit(sp, &cmd, 0, 0, OOBLNO, OOBLNO, 0);
 	if (fstwd)
-		(void)argv_flt0(sp, &cmd, p, len);
+		(void)argv_flt_ex(sp, &cmd, p, len);
 	else {
 		s_ch = p[len];
 		p[len] = '*';
