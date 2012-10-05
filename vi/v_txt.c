@@ -2083,10 +2083,14 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		break;
 	}
 
-	/* Escape the matched part. */
-	if ((bp = argv_esc(sp, &cmd, cmd.argv[0]->bp, nlen)) == NULL)
-		return (1);
-	nlen = STRLEN(bp);
+	/* Escape the matched part of the path. */
+	if (fstwd)
+		bp = cmd.argv[0]->bp;
+	else {
+		if ((bp = argv_esc(sp, &cmd, cmd.argv[0]->bp, nlen)) == NULL)
+			return (1);
+		nlen = STRLEN(bp);
+	}
 
 	/* Overwrite the expanded text first. */
 	for (t = bp; len > 0 && nlen > 0; --len, --nlen)
@@ -2117,7 +2121,8 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 			*p++ = *t++;
 	}
 
-	FREE_SPACEW(sp, bp, 0);
+	if (!fstwd)
+		FREE_SPACEW(sp, bp, 0);
 
 	/* If not a single match of path, we've done. */
 	if (argc != 1 || fstwd)
