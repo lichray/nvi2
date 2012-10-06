@@ -513,7 +513,7 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 	size_t dlen, len, nlen;
 	CHAR_T *dname;
 	CHAR_T *p, *np, *n;
-	char *name, *tp;
+	char *name, *tp, *epd = NULL;
 	CHAR_T *wp;
 	size_t wlen;
 
@@ -531,7 +531,6 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 			dname = L("/");
 			dlen = 1;
 		} else {
-			*p = '\0';
 			dname = path;
 			dlen = p - path;
 		}
@@ -539,10 +538,20 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 	}
 
 	INT2CHAR(sp, dname, dlen + 1, tp, nlen);
+	if (*tp == '~') {
+		if ((epd = expanduser(tp)) == NULL) {
+			free(path);
+			return (0);
+		}
+		tp = epd;
+	}
 	if ((dirp = opendir(tp)) == NULL) {
 		msgq_str(sp, M_SYSERR, tp, "%s");
+		free(epd);
+		free(path);
 		return (1);
 	}
+	free(epd);
 
 	INT2CHAR(sp, np, STRLEN(np), tp, nlen);
 	if ((name = v_strdup(sp, tp, nlen)) == NULL) {
@@ -778,10 +787,19 @@ argv_esc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
 		    IS_ESCAPE(sp, excp, ch))			/* Ex. */
 			*p++ = CH_LITERAL;
 		else switch (ch) {
-		case '!': case '%': case '#':			/* Ex exp. */
-		case '+':					/* Ex +cmd. */
-			if (p != bp || ch != '+')
+		case '~':					/* ~user. */
+			if (p != bp)
 				*p++ = '\\';
+			break;
+		case '+':					/* Ex +cmd. */
+			if (p == bp)
+				*p++ = '\\';
+			break;
+		case '%':					/* Ex exp. */
+			*p++ = '\\';
+			break;
+		case '!': case '#':
+			*p++ = '\\';
 			if (IS_SHELLMETA(sp, ch))
 				*p++ = '\\';
 			break;

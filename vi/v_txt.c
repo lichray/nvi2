@@ -1998,7 +1998,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	size_t indx, len, nlen, off;
 	int argc;
 	CHAR_T *p, *t, *bp;
-	char *np;
+	char *np, *epd = NULL;
 	size_t nplen;
 	int fstwd = 1;
 
@@ -2113,6 +2113,11 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 
 	/* If a single match and it's a directory, append a '/'. */
 	INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1, np, nplen);
+	if (*np == '~') {
+		if ((epd = expanduser(np)) == NULL)
+			return (1);
+		np = epd;
+	}
 	if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
 		if (tp->owrite == 0) {
 			off = p - tp->lb;
@@ -2127,6 +2132,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		++tp->cno;
 		*p++ = '/';
 	}
+	free(epd);
 	return (0);
 }
 
