@@ -2123,11 +2123,8 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 
 	/* If a single match and it's a directory, append a '/'. */
 	INT2CHAR(sp, cmd.argv[0]->bp, cmd.argv[0]->len + 1, np, nplen);
-	if (*np == '~') {
-		if ((epd = expanduser(np)) == NULL)
-			return (1);
+	if ((epd = expanduser(np)) != NULL)
 		np = epd;
-	}
 	if (!stat(np, &sb) && S_ISDIR(sb.st_mode)) {
 		if (tp->owrite == 0) {
 			off = p - tp->lb;

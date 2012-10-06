@@ -539,15 +539,9 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 	}
 
 	INT2CHAR(sp, dname, dlen + 1, tp, nlen);
-	if (*tp == '~') {
-		if ((epd = expanduser(tp)) == NULL) {
-			free(path);
-			return (0);
-		}
+	if ((epd = expanduser(tp)) != NULL)
 		tp = epd;
-	}
 	if ((dirp = opendir(tp)) == NULL) {
-		msgq_str(sp, M_SYSERR, tp, "%s");
 		free(epd);
 		free(path);
 		return (1);
