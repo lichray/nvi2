@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.27 2012/04/13 00:36:53 zy Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.28 2012/10/06 01:27:32 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -20,6 +20,7 @@ static const char sccsid[] = "$Id: util.c,v 10.27 2012/04/13 00:36:53 zy Exp $";
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -134,6 +135,56 @@ join(
 	(void)asprintf(&p, path1[strlen(path1)-1] == '/' ?
 	    "%s%s" : "%s/%s", path1, path2);
 	return p;
+}
+
+/*
+ * expanduser --
+ *	Return a "~/" or "~user/" expanded path; need free.
+ *
+ * PUBLIC: char *expanduser __P((char *));
+ */
+char *
+expanduser(char *str)
+{
+	struct passwd *pwd;
+	char *p, *t, *u, *h;
+
+	/*
+	 * This function always expands the content between the
+	 * leading '~' and the first '/' from the input. Return
+	 * NULL whenever we fail to do so.
+	 */
+	if (*str != '~')
+		return (NULL);
+	p = str + 1;
+	if ((t = strchr(p, '/')) == NULL)
+		return (NULL);
+	if (t == p) {
+		/* ~/ */
+		if (issetugid() != 0 ||
+		    (h = getenv("HOME")) == NULL) {
+			if (((h = getlogin()) != NULL &&
+			     (pwd = getpwnam(h)) != NULL) ||
+			    (pwd = getpwuid(getuid())) != NULL)
+				h = pwd->pw_dir;
+			else
+				return (NULL);
+		}
+	} else {
+		/* ~user/ */
+		if ((u = strndup(p, t - p)) == NULL)
+			return (NULL);
+		if ((pwd = getpwnam(u)) == NULL) {
+			free(u);
+			return (NULL);
+		} else
+			h = pwd->pw_dir;
+		free(u);
+	}
+
+	while (*++t == '/')
+		continue;
+	return (join(h, t));
 }
 
 /*
