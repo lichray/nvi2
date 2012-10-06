@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 10.42 2012/10/06 05:57:51 zy Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 11.0 2012/10/06 14:40:52 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -21,6 +21,7 @@ static const char sccsid[] = "$Id: ex_argv.c,v 10.42 2012/10/06 05:57:51 zy Exp 
 #include <dirent.h>
 #include <errno.h>
 #include <limits.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,6 +34,7 @@ static int argv_comp __P((const void *, const void *));
 static int argv_fexp __P((SCR *, EXCMD *,
 	CHAR_T *, size_t, CHAR_T *, size_t *, CHAR_T **, size_t *, int));
 static int argv_sexp __P((SCR *, CHAR_T **, size_t *, size_t *));
+static int argv_flt_user __P((SCR *, EXCMD *, CHAR_T *, size_t));
 
 /*
  * argv_init --
@@ -305,6 +307,51 @@ argv_flt_ex(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen)
 }
 
 /*
+ * argv_flt_user --
+ *	Filter the ~user list on the system with a prefix, and append
+ *	the results to the argument list.
+ */
+static int
+argv_flt_user(SCR *sp, EXCMD *excp, CHAR_T *uname, size_t ulen)
+{
+	EX_PRIVATE *exp;
+	struct passwd *pw;
+	int off;
+	char *np;
+	size_t len, nlen;
+
+	exp = EXP(sp);
+	off = exp->argsoff;
+
+	/* The input must come with a leading '~'. */
+	INT2CHAR(sp, uname + 1, ulen - 1, np, nlen);
+	if ((np = v_strdup(sp, np, nlen)) == NULL)
+		return (1);
+
+	setpwent();
+	while ((pw = getpwent()) != NULL) {
+		len = strlen(pw->pw_name);
+		if (nlen > 0 &&
+		    (nlen > len || memcmp(np, pw->pw_name, nlen)))
+			continue;
+
+		/* Copy '~' + the matched user name. */
+		CHAR2INT(sp, pw->pw_name, len + 1, uname, ulen);
+		argv_alloc(sp, ulen + 1);
+		exp->args[exp->argsoff]->bp[0] = '~';
+		MEMCPY(exp->args[exp->argsoff]->bp + 1, uname, ulen);
+		exp->args[exp->argsoff]->len = ulen;
+		++exp->argsoff;
+		excp->argv = exp->args;
+		excp->argc = exp->argsoff;
+	}
+	endpwent();
+	free(np);
+
+	return (0);
+}
+
+/*
  * argv_fexp --
  *	Do file name and bang command expansion.
  */
@@ -523,6 +570,14 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 	if ((path = v_wstrdup(sp, path, plen)) == NULL)
 		return (1);
 	if ((p = STRRCHR(path, '/')) == NULL) {
+		if (*path == '~') {
+			int rc;
+			
+			/* Filter ~user list instead. */
+			rc = argv_flt_user(sp, excp, path, plen);
+			free(path);
+			return (rc);
+		}
 		dname = L(".");
 		dlen = 0;
 		np = path;
