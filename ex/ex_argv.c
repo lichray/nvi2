@@ -531,6 +531,7 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 			dname = L("/");
 			dlen = 1;
 		} else {
+			*p = '\0';
 			dname = path;
 			dlen = p - path;
 		}
@@ -571,7 +572,8 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 		}
 
 		/* Directory + name + slash + null. */
-		argv_alloc(sp, dlen + len + 2);
+		CHAR2INT(sp, dp->d_name, len + 1, wp, wlen);
+		argv_alloc(sp, dlen + wlen + 1);
 		n = exp->args[exp->argsoff]->bp;
 		if (dlen != 0) {
 			MEMCPY(n, dname, dlen);
@@ -580,7 +582,6 @@ argv_flt_path(SCR *sp, EXCMD *excp, CHAR_T *path, size_t plen)
 				*n++ = '/';
 			exp->args[exp->argsoff]->len = dlen + 1;
 		}
-		CHAR2INT(sp, dp->d_name, len + 1, wp, wlen);
 		MEMCPY(n, wp, wlen);
 		exp->args[exp->argsoff]->len += wlen - 1;
 		++exp->argsoff;
