@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.28 2012/10/06 01:27:32 zy Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -139,7 +139,7 @@ join(
 
 /*
  * expanduser --
- *	Return a "~/" or "~user/" expanded path; need free.
+ *	Return a "~" or "~user" expanded path; need free.
  *
  * PUBLIC: char *expanduser __P((char *));
  */
@@ -151,16 +151,16 @@ expanduser(char *str)
 
 	/*
 	 * This function always expands the content between the
-	 * leading '~' and the first '/' from the input. Return
-	 * NULL whenever we fail to do so.
+	 * leading '~' and the first '/' or '\0' from the input.
+	 * Return NULL whenever we fail to do so.
 	 */
 	if (*str != '~')
 		return (NULL);
 	p = str + 1;
-	if ((t = strchr(p, '/')) == NULL)
-		return (NULL);
+	for (t = p; *t != '/' && *t != '\0'; ++t)
+		continue;
 	if (t == p) {
-		/* ~/ */
+		/* ~ */
 		if (issetugid() != 0 ||
 		    (h = getenv("HOME")) == NULL) {
 			if (((h = getlogin()) != NULL &&
@@ -171,7 +171,7 @@ expanduser(char *str)
 				return (NULL);
 		}
 	} else {
-		/* ~user/ */
+		/* ~user */
 		if ((u = strndup(p, t - p)) == NULL)
 			return (NULL);
 		if ((pwd = getpwnam(u)) == NULL) {
@@ -182,7 +182,7 @@ expanduser(char *str)
 		free(u);
 	}
 
-	while (*++t == '/')
+	for (; *t == '/' && *t != '\0'; ++t)
 		continue;
 	return (join(h, t));
 }
