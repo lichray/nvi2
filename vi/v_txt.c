@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 11.3 2012/10/04 01:13:54 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 11.4 2012/10/06 06:25:57 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -2003,6 +2003,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	int fstwd = 1;
 
 	*redrawp = 0;
+	ex_cinit(sp, &cmd, 0, 0, OOBLNO, OOBLNO, 0);
 
 	/*
 	 * Find the beginning of this "word" -- if we're at the beginning
@@ -2017,7 +2018,12 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		for (len = 0,
 		    off = MAX(tp->ai, tp->offset), ap = tp->lb + off, p = ap;
 		    off < tp->cno; ++off, ++ap) {
-			if (cmdskip(*ap)) {
+			if (IS_ESCAPE(sp, &cmd, *ap)) {
+				if (++off == tp->cno)
+					break;
+				++ap;
+				len += 2;
+			} else if (cmdskip(*ap)) {
 				p = ap + 1;
 				if (len > 0)
 					fstwd = 0;
@@ -2031,12 +2037,16 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 	 * If we are at the first word, do ex command completion instead of
 	 * file name completion.
 	 */
-	ex_cinit(sp, &cmd, 0, 0, OOBLNO, OOBLNO, 0);
 	if (fstwd)
 		(void)argv_flt_ex(sp, &cmd, p, len);
 	else {
-		if (argv_flt_path(sp, &cmd, p, len))
+		if ((bp = argv_uesc(sp, &cmd, p, len)) == NULL)
+			return (1);
+		if (argv_flt_path(sp, &cmd, bp, STRLEN(bp))) {
+			FREE_SPACEW(sp, bp, 0);
 			return (0);
+		}
+		FREE_SPACEW(sp, bp, 0);
 	}
 	argc = cmd.argc;
 	argv = cmd.argv;
