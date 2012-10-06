@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 10.41 2012/09/30 04:37:12 zy Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 10.42 2012/10/06 05:57:51 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -811,6 +811,48 @@ argv_esc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
 				*p++ = '\\';
 		}
 		*p++ = ch;
+	}
+	*p = '\0';
+
+	return bp;
+
+alloc_err:
+	return NULL;
+}
+
+/*
+ * argv_uesc --
+ *	Unescape an escaped ex and shell argument.
+ *
+ * PUBLIC: CHAR_T *argv_uesc __P((SCR *, EXCMD *, CHAR_T *, size_t));
+ */
+CHAR_T *
+argv_uesc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
+{
+	size_t blen;
+	CHAR_T *bp, *p;
+
+	GET_SPACE_GOTOW(sp, bp, blen, len + 1);
+
+	for (p = bp; len > 0; ++str, --len) {
+		if (IS_ESCAPE(sp, excp, *str)) {
+			if (--len < 1)
+				break;
+			++str;
+		} else if (*str == '\\') {
+			if (--len < 1)
+				break;
+			++str;
+
+			/* Check for double escaping. */
+			if (*str == '\\' && len > 1 &&
+			    (str[1] == '!' || str[1] == '#') &&
+			    IS_SHELLMETA(sp, str[1])) {
+				++str;
+				--len;
+			}
+		}
+		*p++ = *str;
 	}
 	*p = '\0';
 
