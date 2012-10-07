@@ -186,7 +186,7 @@ err3:		if (lenp != NULL)
 	/* Reset the cache. */
 	if (wp != data.data) {
 		BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-		MEMCPYW(ep->c_lp, wp, wlen);
+		MEMCPY(ep->c_lp, wp, wlen);
 	} else
 		ep->c_lp = data.data;
 	ep->c_lno = lno;
@@ -563,7 +563,7 @@ alloc_err:
 		/* Fill the cache. */
 		if (wp != data.data) {
 			BINC_GOTOW(sp, ep->c_lp, ep->c_blen, wlen);
-			MEMCPYW(ep->c_lp, wp, wlen);
+			MEMCPY(ep->c_lp, wp, wlen);
 		} else
 			ep->c_lp = data.data;
 		ep->c_lno = lno;

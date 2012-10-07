@@ -98,11 +98,11 @@ cl_term_init(SCR *sp)
 		if ((t = tigetstr(tkp->ts)) == NULL || t == (char *)-1)
 			continue;
 		CHAR2INT(sp, tkp->name, strlen(tkp->name), wp, wlen);
-		MEMCPYW(name, wp, wlen);
+		MEMCPY(name, wp, wlen);
 		CHAR2INT(sp, t, strlen(t), wp, wlen);
-		MEMCPYW(ts, wp, wlen);
+		MEMCPY(ts, wp, wlen);
 		CHAR2INT(sp, tkp->output, strlen(tkp->output), wp, wlen);
-		MEMCPYW(output, wp, wlen);
+		MEMCPY(output, wp, wlen);
 		if (seq_set(sp, name, strlen(tkp->name), ts, strlen(t),
 		    output, strlen(tkp->output), SEQ_COMMAND,
 		    SEQ_NOOVERWRITE | SEQ_SCREEN))
@@ -119,9 +119,9 @@ cl_term_init(SCR *sp)
 		if (kp == NULL)
 			continue;
 		CHAR2INT(sp, tkp->name, strlen(tkp->name), wp, wlen);
-		MEMCPYW(name, wp, wlen);
+		MEMCPY(name, wp, wlen);
 		CHAR2INT(sp, t, strlen(t), wp, wlen);
-		MEMCPYW(ts, wp, wlen);
+		MEMCPY(ts, wp, wlen);
 		output[0] = (UCHAR_T)kp->ch;
 		if (seq_set(sp, name, strlen(tkp->name), ts, strlen(t),
 		    output, 1, SEQ_INPUT, SEQ_NOOVERWRITE | SEQ_SCREEN))
@@ -143,20 +143,20 @@ cl_term_init(SCR *sp)
 			continue;
 		if (tkp->output == NULL) {
 			CHAR2INT(sp, tkp->name, strlen(tkp->name), wp, wlen);
-			MEMCPYW(name, wp, wlen);
+			MEMCPY(name, wp, wlen);
 			CHAR2INT(sp, t, strlen(t), wp, wlen);
-			MEMCPYW(ts, wp, wlen);
+			MEMCPY(ts, wp, wlen);
 			if (seq_set(sp, name, strlen(tkp->name),
 			    ts, strlen(t), NULL, 0,
 			    SEQ_INPUT, SEQ_NOOVERWRITE | SEQ_SCREEN))
 				return (1);
 		} else {
 			CHAR2INT(sp, tkp->name, strlen(tkp->name), wp, wlen);
-			MEMCPYW(name, wp, wlen);
+			MEMCPY(name, wp, wlen);
 			CHAR2INT(sp, t, strlen(t), wp, wlen);
-			MEMCPYW(ts, wp, wlen);
+			MEMCPY(ts, wp, wlen);
 			CHAR2INT(sp, tkp->output, strlen(tkp->output), wp, wlen);
-			MEMCPYW(output, wp, wlen);
+			MEMCPY(output, wp, wlen);
 			if (seq_set(sp, name, strlen(tkp->name),
 			    ts, strlen(t), output, strlen(tkp->output),
 			    SEQ_INPUT, SEQ_NOOVERWRITE | SEQ_SCREEN))
@@ -242,7 +242,7 @@ cl_pfmap(SCR *sp, seq_t stype, CHAR_T *from, size_t flen, CHAR_T *to, size_t tle
 	    SIZE(keyname), L("function key %d"), 
 			(int)STRTOL(from+1,NULL,10));
 	CHAR2INT(sp, p, strlen(p), wp, wlen);
-	MEMCPYW(ts, wp, wlen);
+	MEMCPY(ts, wp, wlen);
 	return (seq_set(sp, keyname, nlen,
 	    ts, strlen(p), to, tlen, stype, SEQ_NOOVERWRITE | SEQ_SCREEN));
 }

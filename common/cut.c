@@ -251,7 +251,7 @@ cut_line(
 	if (len != 0) {
 		if (clen == ENTIRE_LINE)
 			clen = len - fcno;
-		MEMCPYW(tp->lb, p + fcno, clen);
+		MEMCPY(tp->lb, p + fcno, clen);
 		tp->len = clen;
 	}
 
@@ -313,7 +313,7 @@ text_init(
 			return (NULL);
 		}
 		if (p != NULL && len != 0)
-			MEMCPYW(tp->lb, p, len);
+			MEMCPY(tp->lb, p, len);
 	}
 	tp->len = len;
 	return (tp);

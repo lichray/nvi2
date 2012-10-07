@@ -174,7 +174,7 @@ usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 	MALLOC_RET(sp, ecp->cp, CHAR_T *, (len * 2) * sizeof(CHAR_T));
 	ecp->o_cp = ecp->cp;
 	ecp->o_clen = len;
-	MEMCPYW(ecp->cp + len, p, len);
+	MEMCPY(ecp->cp + len, p, len);
 	ecp->range_lno = OOBLNO;
 	FL_SET(ecp->agv_flags, cmd == GLOBAL ? AGV_GLOBAL : AGV_V);
 	SLIST_INSERT_HEAD(sp->gp->ecq, ecp, q);

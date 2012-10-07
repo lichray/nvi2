@@ -113,7 +113,7 @@ ex_at(SCR *sp, EXCMD *cmdp)
 	/* Copy the buffer into the command space. */
 	p = ecp->cp + len;
 	TAILQ_FOREACH_REVERSE(tp, cbp->textq, _texth, q) {
-		MEMCPYW(p, tp->lb, tp->len);
+		MEMCPY(p, tp->lb, tp->len);
 		p += tp->len;
 		*p++ = '\n';
 	}

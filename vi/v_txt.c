@@ -2905,7 +2905,7 @@ txt_Rresolve(SCR *sp, TEXTH *tiqh, TEXT *tp, const size_t orig_len)
 		if (db_get(sp,
 		    TAILQ_FIRST(tiqh)->lno, DBG_FATAL | DBG_NOCACHE, &p, NULL))
 			return;
-		MEMCPYW(tp->lb + tp->cno, p + input_len, retain);
+		MEMCPY(tp->lb + tp->cno, p + input_len, retain);
 		tp->len -= tp->owrite - retain;
 		tp->owrite = 0;
 		tp->insert += retain;

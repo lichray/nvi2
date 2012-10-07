@@ -140,7 +140,7 @@ shift(SCR *sp, EXCMD *cmdp, enum which rl)
 			*tbp++ = ' ';
 
 		/* Add the original line. */
-		MEMCPYW(tbp, p + oldidx, len - oldidx);
+		MEMCPY(tbp, p + oldidx, len - oldidx);
 
 		/* Set the replacement line. */
 		if (db_set(sp, from, bp, (tbp + (len - oldidx)) - bp)) {

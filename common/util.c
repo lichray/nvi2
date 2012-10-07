@@ -272,7 +272,7 @@ v_wstrdup(SCR *sp,
 	MALLOC(sp, copy, CHAR_T *, (len + 1) * sizeof(CHAR_T));
 	if (copy == NULL)
 		return (NULL);
-	MEMCPYW(copy, str, len);
+	MEMCPY(copy, str, len);
 	copy[len] = '\0';
 	return (copy);
 }

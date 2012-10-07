@@ -118,7 +118,7 @@ ex_join(SCR *sp, EXCMD *cmdp)
 		}
 
 		if (len != 0) {
-			MEMCPYW(tbp, p, len);
+			MEMCPY(tbp, p, len);
 			tbp += len;
 			clen += len;
 			echar = p[len - 1];

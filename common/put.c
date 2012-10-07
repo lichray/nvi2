@@ -127,14 +127,14 @@ put(
 
 	/* Original line, left of the split. */
 	if (len > 0 && (clen = cp->cno + (append ? 1 : 0)) > 0) {
-		MEMCPYW(bp, p, clen);
+		MEMCPY(bp, p, clen);
 		p += clen;
 		t += clen;
 	}
 
 	/* First line from the CB. */
 	if (tp->len != 0) {
-		MEMCPYW(t, tp->lb, tp->len);
+		MEMCPY(t, tp->lb, tp->len);
 		t += tp->len;
 	}
 
@@ -165,7 +165,7 @@ put(
 	 */
 	if (TAILQ_NEXT(tp, q) == NULL) {
 		if (clen > 0) {
-			MEMCPYW(t, p, clen);
+			MEMCPY(t, p, clen);
 			t += clen;
 		}
 		if (db_set(sp, lno, bp, t - bp))
@@ -191,9 +191,9 @@ put(
 		t = bp + len;
 
 		/* Add in last part of the CB. */
-		MEMCPYW(t, ltp->lb, ltp->len);
+		MEMCPY(t, ltp->lb, ltp->len);
 		if (clen)
-			MEMCPYW(t + ltp->len, p, clen);
+			MEMCPY(t + ltp->len, p, clen);
 		clen += ltp->len;
 
 		/*

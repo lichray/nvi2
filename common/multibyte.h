@@ -100,10 +100,14 @@ typedef	char		RCHAR_T;
 
 #endif
 
+#if defined(USE_WIDECHAR) && defined(DEBUG)
+#define MEMCPY			wmemcpy
+#else
+#define MEMCPY(p, t, len)	memcpy(p, t, (len) * sizeof(CHAR_T))
+#endif
+
 #define MEMCMP(to, from, n) 						    \
 	memcmp(to, from, (n) * sizeof(*(to)))
-#define	MEMMOVE(p, t, len)	memmove(p, t, (len) * sizeof(*(p)))
-#define	MEMCPY(p, t, len)	memcpy(p, t, (len) * sizeof(*(p)))
 #define SIZE(w)		(sizeof(w)/sizeof(*w))
 
 #endif

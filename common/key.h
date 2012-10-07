@@ -45,8 +45,6 @@
 #define CHAR2INT(sp,n,nlen,w,wlen)					    \
     CHAR2INT5(sp,sp->cw,n,nlen,w,wlen)
 
-#define MEMCPYW(to, from, n) \
-    memcpy(to, from, (n) * sizeof(CHAR_T))
 #define MEMMOVEW(to, from, n) \
     memmove(to, from, (n) * sizeof(CHAR_T))
 

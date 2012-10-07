@@ -82,7 +82,7 @@ del(
 			if (db_get(sp, fm->lno, DBG_FATAL, &p, &len))
 				return (1);
 			GET_SPACE_RETW(sp, bp, blen, fm->cno);
-			MEMCPYW(bp, p, fm->cno);
+			MEMCPY(bp, p, fm->cno);
 			if (db_set(sp, fm->lno, bp, fm->cno))
 				return (1);
 			goto done;
@@ -95,8 +95,8 @@ del(
 			return (1);
 		GET_SPACE_RETW(sp, bp, blen, len);
 		if (fm->cno != 0)
-			MEMCPYW(bp, p, fm->cno);
-		MEMCPYW(bp + fm->cno, p + (tm->cno + 1), 
+			MEMCPY(bp, p, fm->cno);
+		MEMCPY(bp + fm->cno, p + (tm->cno + 1), 
 			len - (tm->cno + 1));
 		if (db_set(sp, fm->lno,
 		    bp, len - ((tm->cno - fm->cno) + 1)))
@@ -113,7 +113,7 @@ del(
 		if (db_get(sp, fm->lno, DBG_FATAL, &p, NULL))
 			return (1);
 		GET_SPACE_RETW(sp, bp, blen, tlen + 256);
-		MEMCPYW(bp, p, tlen);
+		MEMCPY(bp, p, tlen);
 	}
 
 	/* Copy the end partial line into place. */
@@ -136,7 +136,7 @@ del(
 		} else
 			ADD_SPACE_RETW(sp, bp, blen, nlen);
 
-		MEMCPYW(bp + tlen, p + (tm->cno + 1), len - (tm->cno + 1));
+		MEMCPY(bp + tlen, p + (tm->cno + 1), len - (tm->cno + 1));
 		tlen += len - (tm->cno + 1);
 	}
 

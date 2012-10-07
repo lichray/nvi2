@@ -142,7 +142,7 @@ ex_move(SCR *sp, EXCMD *cmdp)
 			if (db_get(sp, fl, DBG_FATAL, &p, &len))
 				return (1);
 			BINC_RETW(sp, bp, blen, len);
-			MEMCPYW(bp, p, len);
+			MEMCPY(bp, p, len);
 			if (db_append(sp, 1, tl, bp, len))
 				return (1);
 			if (mark_reset)
@@ -160,7 +160,7 @@ ex_move(SCR *sp, EXCMD *cmdp)
 			if (db_get(sp, fl, DBG_FATAL, &p, &len))
 				return (1);
 			BINC_RETW(sp, bp, blen, len);
-			MEMCPYW(bp, p, len);
+			MEMCPY(bp, p, len);
 			if (db_append(sp, 1, tl++, bp, len))
 				return (1);
 			if (mark_reset)

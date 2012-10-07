@@ -291,7 +291,7 @@ notlast:			TAILQ_REMOVE(tiqh, tp, q);
 				ait.lb = NULL;
 				ait.lb_len = 0;
 				BINC_GOTOW(sp, ait.lb, ait.lb_len, tp->ai);
-				MEMCPYW(ait.lb, tp->lb, tp->ai);
+				MEMCPY(ait.lb, tp->lb, tp->ai);
 				ait.ai = ait.len = tp->ai;
 
 				carat_st = C_NOTSET;

@@ -319,7 +319,7 @@ conv_init(SCR *orig, SCR *sp)
     if (orig == NULL)
 	setlocale(LC_ALL, "");
     if (orig != NULL)
-	MEMCPY(&sp->conv, &orig->conv, 1);
+	MEMMOVE(&sp->conv, &orig->conv, 1);
 #ifdef USE_WIDECHAR
     else {
 	char *ctype, *cp;

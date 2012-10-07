@@ -170,7 +170,7 @@ v_buildmcs(SCR *sp, char *str)
 	if (mbstowcs(*mp, str, len) == (size_t)-1)
 		return (1);
 #else
-	MEMCPY(*mp, str, len);
+	memcpy(*mp, str, len);
 #endif
 	return (0);
 }

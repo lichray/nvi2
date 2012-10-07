@@ -220,7 +220,7 @@ subagain:	return (ex_subagain(sp, cmdp));
 				}
 			} else if (p[0] == '~' && O_ISSET(sp, O_MAGIC)) {
 tilde:				++p;
-				MEMCPYW(t, sp->repl, sp->repl_len);
+				MEMCPY(t, sp->repl, sp->repl_len);
 				t += sp->repl_len;
 				len += sp->repl_len;
 				continue;
@@ -236,7 +236,7 @@ tilde:				++p;
 				FREE_SPACEW(sp, bp, blen);
 				return (1);
 			}
-			MEMCPYW(sp->repl, bp, len);
+			MEMCPY(sp->repl, bp, len);
 		}
 		FREE_SPACEW(sp, bp, blen);
 	}
@@ -322,7 +322,7 @@ ex_subtilde(SCR *sp, EXCMD *cmdp)
 			return (1);					\
 		}							\
 	}								\
-	MEMCPYW(lb + lbclen, l, len);					\
+	MEMCPY(lb + lbclen, l, len);					\
 	lbclen += len;							\
 }
 
@@ -508,7 +508,7 @@ noargs:	if (F_ISSET(sp, SC_VI) && sp->c_suffix && (lflag || nflag || pflag)) {
 				GET_SPACE_RETW(sp, bp, blen, llen);
 			} else
 				ADD_SPACE_RETW(sp, bp, blen, llen);
-			MEMCPYW(bp, s, llen);
+			MEMCPY(bp, s, llen);
 			s = bp;
 		}
 
@@ -742,7 +742,7 @@ skip:		offset += match[0].rm_eo;
 			if (db_get(sp, lno, DBG_FATAL, &s, &llen))
 				goto err;
 			ADD_SPACE_RETW(sp, bp, blen, llen)
-			MEMCPYW(bp, s, llen);
+			MEMCPY(bp, s, llen);
 			s = bp;
 			len = llen - offset;
 
@@ -955,7 +955,7 @@ re_compile(SCR *sp, CHAR_T *ptrn, size_t plen, CHAR_T **ptrnp, size_t *lenp, reg
 		 */
 		MALLOC(sp, *ptrnp, CHAR_T *, (plen + 1) * sizeof(CHAR_T));
 		if (*ptrnp != NULL) {
-			MEMCPYW(*ptrnp, ptrn, plen);
+			MEMCPY(*ptrnp, ptrn, plen);
 			(*ptrnp)[plen] = '\0';
 		}
 
@@ -1106,7 +1106,7 @@ re_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 					if (O_ISSET(sp, O_MAGIC))
 						*t++ = '~';
 					else {
-						MEMCPYW(t,
+						MEMCPY(t,
 						    sp->repl, sp->repl_len);
 						t += sp->repl_len;
 					}
@@ -1127,7 +1127,7 @@ re_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 			break;
 		case '~':
 			if (O_ISSET(sp, O_MAGIC)) {
-				MEMCPYW(t, sp->repl, sp->repl_len);
+				MEMCPY(t, sp->repl, sp->repl_len);
 				t += sp->repl_len;
 			} else
 				*t++ = '~';
@@ -1253,12 +1253,12 @@ re_cscope_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 	t = bp;
 
 	*t++ = '^';
-	MEMCPYW(t, wp, wlen);
+	MEMCPY(t, wp, wlen);
 	t += wlen;
 
 	for (len = *plenp; len > 0; ++p, --len)
 		if (*p == ' ') {
-			MEMCPYW(t, wp, wlen);
+			MEMCPY(t, wp, wlen);
 			t += wlen;
 		} else {
 			if (STRCHR(L("\\^.[]$*+?()|{}"), *p))
@@ -1266,7 +1266,7 @@ re_cscope_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 			*t++ = *p;
 		}
 
-	MEMCPYW(t, wp, wlen);
+	MEMCPY(t, wp, wlen);
 	t += wlen;
 	*t++ = '$';
 

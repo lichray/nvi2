@@ -1140,7 +1140,7 @@ corrupt:		p = msg_print(sp, tname, &nf1);
 		tp->fnlen = dlen + nlen;
 		tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
 		CHAR2INT(sp, search, slen + 1, wp, wlen);
-		MEMCPYW(tp->search, wp, (tp->slen = slen) + 1);
+		MEMCPY(tp->search, wp, (tp->slen = slen) + 1);
 		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
 
 		/* Try to preset the tag within the current file. */

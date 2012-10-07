@@ -1504,7 +1504,7 @@ addr_verify:
 
 		ecp->save_cmd -= arg1_len;
 		ecp->save_cmdlen += arg1_len;
-		MEMCPYW(ecp->save_cmd, arg1, arg1_len);
+		MEMCPY(ecp->save_cmd, arg1, arg1_len);
 
 		/*
 		 * Any commands executed from a +cmd are executed starting at
@@ -2146,7 +2146,7 @@ ex_load(SCR *sp)
 	 * so we have play games.
 	 */
 	ecp->cp = ecp->o_cp;
-	MEMCPYW(ecp->cp, ecp->cp + ecp->o_clen, ecp->o_clen);
+	MEMCPY(ecp->cp, ecp->cp + ecp->o_clen, ecp->o_clen);
 	ecp->clen = ecp->o_clen;
 	ecp->range_lno = sp->lno = rp->start++;
 
@@ -2205,7 +2205,7 @@ ex_unknown(SCR *sp, CHAR_T *cmd, size_t len)
 
 	GET_SPACE_GOTOW(sp, bp, blen, len + 1);
 	bp[len] = '\0';
-	MEMCPYW(bp, cmd, len);
+	MEMCPY(bp, cmd, len);
 	msgq_wstr(sp, M_ERR, bp, "098|The %s command is unknown");
 	FREE_SPACEW(sp, bp, blen);
 

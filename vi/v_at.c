@@ -104,7 +104,7 @@ v_at(SCR *sp, VICMD *vp)
 	if (F_ISSET(vp, VC_C1SET)) {
 		len = snprintf(nbuf, sizeof(nbuf), "%lu", vp->count);
 		CHAR2INT(sp, nbuf, len, wp, wlen);
-		MEMCPYW(wbuf, wp, wlen);
+		MEMCPY(wbuf, wp, wlen);
 		if (v_event_push(sp, NULL, wp, wlen, 0))
 			return (1);
 	}
