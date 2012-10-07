@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: multibyte.h,v 1.31 2012/10/05 10:43:52 zy Exp $
+ *	$Id: multibyte.h,v 1.32 2012/10/07 01:35:58 zy Exp $
  */
 
 #ifndef MULTIBYTE_H
@@ -103,13 +103,13 @@ typedef	char		RCHAR_T;
 #if defined(USE_WIDECHAR) && defined(DEBUG)
 #define MEMCPY			wmemcpy
 #define MEMMOVE			wmemmove
+#define MEMCMP			wmemcmp
 #else
 #define MEMCPY(p, t, len)	memcpy(p, t, (len) * sizeof(CHAR_T))
 #define MEMMOVE(p, t, len)	memmove(p, t, (len) * sizeof(CHAR_T))
+#define MEMCMP(p, t, len)	memcmp(p, t, (len) * sizeof(CHAR_T))
 #endif
 
-#define MEMCMP(to, from, n) 						    \
-	memcmp(to, from, (n) * sizeof(*(to)))
-#define SIZE(w)		(sizeof(w)/sizeof(*w))
+#define SIZE(w)			(sizeof(w) / sizeof(*w))
 
 #endif
