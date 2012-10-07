@@ -279,12 +279,11 @@ more:	len = sizeof(buf) - (endp - buf);
 	if (CHAR2INT5(sp, exp->ibcw, buf, llen, wp, wlen))
 		goto conv_err;
 	if (db_last(sp, &lline) || db_append(sp, 0, lline, wp, wlen)) {
+		if (0)
+conv_err:		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 prompterr:	sscr_end(sp);
 		return (1);
 	}
-
-	if (0)
-conv_err:	msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 
 	return (sscr_setprompt(sp, buf, llen));
 }
@@ -427,11 +426,11 @@ sscr_insert(SCR *sp)
 	SCRIPT *sc;
 	fd_set rdfd;
 	recno_t lno;
-	size_t blen, len = 0, tlen;
+	size_t blen, len, tlen;
 	int nr, rval;
 	char *bp;
 	CHAR_T *wp;
-	size_t wlen;
+	size_t wlen = 0;
 
 	exp = EXP(sp);
 
