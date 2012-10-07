@@ -23,6 +23,7 @@ static const char sccsid[] = "$Id: key.c,v 10.53 2012/02/13 19:22:25 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -382,8 +383,8 @@ v_event_push(
 	if (total >= gp->i_nelem && v_event_grow(sp, MAX(total, 64)))
 		return (1);
 	if (gp->i_cnt)
-		MEMMOVE(gp->i_event + TERM_PUSH_SHIFT + nitems,
-		    gp->i_event + gp->i_next, gp->i_cnt);
+		BCOPY(gp->i_event + gp->i_next,
+		    gp->i_event + TERM_PUSH_SHIFT + nitems, gp->i_cnt);
 	gp->i_next = TERM_PUSH_SHIFT;
 
 	/* Put the new items into the queue. */

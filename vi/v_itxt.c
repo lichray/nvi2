@@ -340,7 +340,7 @@ v_change(SCR *sp, VICMD *vp)
 		if (db_get(sp, vp->m_start.lno, DBG_FATAL, &p, &len))
 			return (1);
 		GET_SPACE_RETW(sp, bp, blen, vp->m_start.cno);
-		MEMMOVEW(bp, p, vp->m_start.cno);
+		MEMMOVE(bp, p, vp->m_start.cno);
 	} else
 		bp = NULL;
 

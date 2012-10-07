@@ -115,7 +115,7 @@ default_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
     size_t	left = len;
     int		error = 1;
 
-    MEMSET(&mbs, 0, 1);
+    BZERO(&mbs, 1);
     BINC_RETW(NULL, *tostr, *blen, nlen);
 
 #ifdef USE_ICONV
@@ -243,7 +243,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 #endif
 
 
-    MEMSET(&mbs, 0, 1);
+    BZERO(&mbs, 1);
     BINC_RETC(NULL, *tostr, *blen, nlen);
     dst = *tostr; buflen = *blen;
 
@@ -319,7 +319,7 @@ conv_init(SCR *orig, SCR *sp)
     if (orig == NULL)
 	setlocale(LC_ALL, "");
     if (orig != NULL)
-	MEMMOVE(&sp->conv, &orig->conv, 1);
+	BCOPY(&orig->conv, &sp->conv, 1);
 #ifdef USE_WIDECHAR
     else {
 	char *ctype, *cp;

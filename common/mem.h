@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.16 2012/04/14 03:51:52 zy Exp $
+ *	$Id: mem.h,v 10.17 2012/10/07 00:40:29 zy Exp $
  */
 
 #ifdef DEBUG
@@ -207,11 +207,11 @@
 }
 
 /*
- * Versions of memmove(3) and memset(3) that use the size of the
+ * Versions of bcopy(3) and bzero(3) that use the size of the
  * initial pointer to figure out how much memory to manipulate.
  */
-#define	MEMMOVE(p, t, len)	memmove(p, t, (len) * sizeof(*(p)))
-#define	MEMSET(p, value, len)	memset(p, value, (len) * sizeof(*(p)))
+#define	BCOPY(p, t, len)	bcopy(p, t, (len) * sizeof(*(p)))
+#define	BZERO(p, len)		bzero(p, (len) * sizeof(*(p)))
 
 /* 
  * p2roundup --

@@ -303,7 +303,7 @@ v_txt(
 		if (lp != NULL) {
 			tp->len = len;
 			BINC_RETW(sp, tp->lb, tp->lb_len, len);
-			MEMMOVEW(tp->lb, lp, len);
+			MEMMOVE(tp->lb, lp, len);
 		} else
 			tp->len = 0;
 	} else {
@@ -810,7 +810,7 @@ k_cr:		if (LF_ISSET(TXT_CR)) {
 #define	WMTSPACE	wmt.offset + wmt.owrite + wmt.insert
 				BINC_GOTOW(sp, ntp->lb,
 				    ntp->lb_len, ntp->len + WMTSPACE + 32);
-				MEMMOVEW(ntp->lb + ntp->cno, wmt.lb, WMTSPACE);
+				MEMMOVE(ntp->lb + ntp->cno, wmt.lb, WMTSPACE);
 				ntp->len += WMTSPACE;
 				ntp->cno += wmt.offset;
 				ntp->owrite = wmt.owrite;
@@ -893,7 +893,7 @@ k_escape:	LINE_RESOLVE;
 		 */
 		if (tp->owrite) {
 			if (tp->insert)
-				MEMMOVEW(tp->lb + tp->cno,
+				MEMMOVE(tp->lb + tp->cno,
 				    tp->lb + tp->cno + tp->owrite, tp->insert);
 			tp->len -= tp->owrite;
 		}
@@ -956,7 +956,7 @@ k_escape:	LINE_RESOLVE;
 			ait.lb = NULL;
 			ait.lb_len = 0;
 			BINC_GOTOW(sp, ait.lb, ait.lb_len, tp->ai);
-			MEMMOVEW(ait.lb, tp->lb, tp->ai);
+			MEMMOVE(ait.lb, tp->lb, tp->ai);
 			ait.ai = ait.len = tp->ai;
 
 			carat = C_NOTSET;
@@ -1615,7 +1615,7 @@ search:	if (isinfoline)
 		tp->owrite += len;
 	else {
 		if (tp->insert)
-			MEMMOVEW(tp->lb + tp->cno + qp->olen,
+			MEMMOVE(tp->lb + tp->cno + qp->olen,
 			    tp->lb + tp->cno + tp->owrite + len, tp->insert);
 		tp->owrite += qp->olen;
 		tp->len -= len - qp->olen;
@@ -1744,7 +1744,7 @@ txt_ai_resolve(SCR *sp, TEXT *tp, int *changedp)
 
 	/* Shift the rest of the characters down, adjust the counts. */
 	del = old - new;
-	MEMMOVEW(p - del, p, tp->len - old);
+	MEMMOVE(p - del, p, tp->len - old);
 	tp->len -= del;
 	tp->cno -= del;
 
@@ -1798,11 +1798,11 @@ v_txt_auto(SCR *sp, recno_t lno, TEXT *aitp, size_t len, TEXT *tp)
 
 	/* Copy the buffer's current contents up. */
 	if (tp->len != 0)
-		MEMMOVEW(tp->lb + nlen, tp->lb, tp->len);
+		MEMMOVE(tp->lb + nlen, tp->lb, tp->len);
 	tp->len += nlen;
 
 	/* Copy the indentation into the new buffer. */
-	MEMMOVEW(tp->lb, t, nlen);
+	MEMMOVE(tp->lb, t, nlen);
 
 	/* Set the autoindent count. */
 	tp->ai = nlen;
@@ -2109,7 +2109,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 		tp->len += nlen;
 
 		if (tp->insert != 0)
-			(void)MEMMOVEW(p + nlen, p, tp->insert);
+			(void)MEMMOVE(p + nlen, p, tp->insert);
 		while (nlen--)
 			*p++ = *t++;
 	}
@@ -2131,7 +2131,7 @@ txt_fc(SCR *sp, TEXT *tp, int *redrawp)
 			BINC_RETW(sp, tp->lb, tp->lb_len, tp->len + 1);
 			p = tp->lb + off;
 			if (tp->insert != 0)
-				(void)MEMMOVEW(p + 1, p, tp->insert);
+				(void)MEMMOVE(p + 1, p, tp->insert);
 			++tp->len;
 		} else
 			--tp->owrite;
@@ -2293,7 +2293,7 @@ txt_emark(SCR *sp, TEXT *tp, size_t cno)
 		BINC_RETW(sp, tp->lb, tp->lb_len, tp->len + olen);
 		chlen = olen - nlen;
 		if (tp->insert != 0)
-			MEMMOVEW(tp->lb + cno + 1 + chlen,
+			MEMMOVE(tp->lb + cno + 1 + chlen,
 			    tp->lb + cno + 1, tp->insert);
 
 		tp->len += chlen;
@@ -2399,12 +2399,12 @@ nothex:		tp->lb[tp->cno] = savec;
 
 	/* Copy down any overwrite characters. */
 	if (tp->owrite)
-		MEMMOVEW(tp->lb + tp->cno, tp->lb + tp->cno + len, 
+		MEMMOVE(tp->lb + tp->cno, tp->lb + tp->cno + len, 
 		    tp->owrite);
 
 	/* Copy down any insert characters. */
 	if (tp->insert)
-		MEMMOVEW(tp->lb + tp->cno + tp->owrite,
+		MEMMOVE(tp->lb + tp->cno + tp->owrite,
 		    tp->lb + tp->cno + tp->owrite + len, 
 		    tp->insert);
 
@@ -2490,7 +2490,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 				BINC_RETW(sp,
 				    tp->lb, tp->lb_len, tp->len + olen);
 				chlen = olen - nlen;
-				MEMMOVEW(tp->lb + cno + 1 + chlen,
+				MEMMOVE(tp->lb + cno + 1 + chlen,
 				    tp->lb + cno + 1, 
 				    tp->owrite + tp->insert);
 
@@ -2516,7 +2516,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 		 * into position.
 		 */
 		if (copydown != 0 && (tp->len -= copydown) != 0)
-			MEMMOVEW(tp->lb + cno, tp->lb + cno + copydown,
+			MEMMOVE(tp->lb + cno, tp->lb + cno + copydown,
 			    tp->owrite + tp->insert + copydown);
 
 		/* If we had enough overwrite characters, we're done. */
@@ -2534,7 +2534,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 		if (tp->insert == 1)
 			tp->lb[tp->cno + 1] = tp->lb[tp->cno];
 		else
-			MEMMOVEW(tp->lb + tp->cno + 1,
+			MEMMOVE(tp->lb + tp->cno + 1,
 			    tp->lb + tp->cno, tp->owrite + tp->insert);
 	}
 	tp->lb[tp->cno++] = *chp;

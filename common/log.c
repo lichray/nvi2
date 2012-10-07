@@ -277,7 +277,7 @@ log_line(
 	    len * sizeof(CHAR_T) + CHAR_T_OFFSET);
 	ep->l_lp[0] = action;
 	memmove(ep->l_lp + sizeof(u_char), &lno, sizeof(recno_t));
-	MEMMOVEW(ep->l_lp + CHAR_T_OFFSET, lp, len);
+	memmove(ep->l_lp + CHAR_T_OFFSET, lp, len);
 
 	lcur = ep->l_cur;
 	key.data = &lcur;

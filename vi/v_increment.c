@@ -175,7 +175,7 @@ nonum:			msgq(sp, M_ERR, "181|Cursor not in a number");
 	 */
 	GET_SPACE_RETW(sp, bp, blen, len + 50);
 	if (end == len) {
-		MEMMOVEW(bp, &p[beg], wlen);
+		MEMMOVE(bp, &p[beg], wlen);
 		bp[wlen] = '\0';
 		t = bp;
 	} else
@@ -227,9 +227,9 @@ nonum:			msgq(sp, M_ERR, "181|Cursor not in a number");
 	}
 
 	/* Build the new line. */
-	MEMMOVEW(bp, p, beg);
-	MEMMOVEW(bp + beg, nbuf, nlen);
-	MEMMOVEW(bp + beg + nlen, p + end, len - beg - (end - beg));
+	MEMMOVE(bp, p, beg);
+	MEMMOVE(bp + beg, nbuf, nlen);
+	MEMMOVE(bp + beg + nlen, p + end, len - beg - (end - beg));
 	len = beg + nlen + (len - beg - (end - beg));
 
 	nret = NUM_OK;

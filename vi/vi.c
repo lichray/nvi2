@@ -1081,7 +1081,7 @@ v_curword(SCR *sp)
 	vip = VIP(sp);
 	vip->klen = len = (end - beg);
 	BINC_RETW(sp, vip->keyw, vip->keywlen, len+1);
-	MEMMOVEW(vip->keyw, p + beg, len);
+	MEMMOVE(vip->keyw, p + beg, len);
 	vip->keyw[len] = '\0';				/* XXX */
 	return (0);
 }

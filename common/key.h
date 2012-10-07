@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: key.h,v 10.54 2012/02/13 19:43:08 zy Exp $
+ *	$Id: key.h,v 10.55 2012/10/07 01:31:17 zy Exp $
  */
 
 #include "multibyte.h"
@@ -44,9 +44,6 @@
     FILE2INT5(sp,sp->cw,n,nlen,w,wlen)
 #define CHAR2INT(sp,n,nlen,w,wlen)					    \
     CHAR2INT5(sp,sp->cw,n,nlen,w,wlen)
-
-#define MEMMOVEW(to, from, n) \
-    memmove(to, from, (n) * sizeof(CHAR_T))
 
 /* The maximum number of columns any character can take up on a screen. */
 #define	MAX_CHARACTER_COLUMNS	7

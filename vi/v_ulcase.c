@@ -148,7 +148,7 @@ ulcase(SCR *sp, recno_t lno, CHAR_T *lp, size_t len, size_t scno, size_t ecno)
 	CHAR_T *p, *t, *bp;
 
 	GET_SPACE_RETW(sp, bp, blen, len);
-	MEMMOVEW(bp, lp, len);
+	MEMMOVE(bp, lp, len);
 
 	change = rval = 0;
 	for (p = bp + scno, t = bp + ecno + 1; p < t; ++p) {

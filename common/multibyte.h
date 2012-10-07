@@ -102,8 +102,10 @@ typedef	char		RCHAR_T;
 
 #if defined(USE_WIDECHAR) && defined(DEBUG)
 #define MEMCPY			wmemcpy
+#define MEMMOVE			wmemmove
 #else
 #define MEMCPY(p, t, len)	memcpy(p, t, (len) * sizeof(CHAR_T))
+#define MEMMOVE(p, t, len)	memmove(p, t, (len) * sizeof(CHAR_T))
 #endif
 
 #define MEMCMP(to, from, n) 						    \
