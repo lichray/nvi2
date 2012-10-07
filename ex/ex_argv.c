@@ -413,7 +413,7 @@ argv_fexp(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen, CHAR_T *p, size_t *l
 			p = bp + off;
 			CHAR2INT(sp, t, tlen, wp, wlen);
 			MEMCPY(p, wp, wlen);
-			p += tlen;
+			p += wlen;
 			F_SET(excp, E_MODIFY);
 			break;
 		case '\\':
