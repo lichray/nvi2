@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.59 2012/07/06 17:14:19 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.60 2012/10/07 06:02:54 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1072,9 +1072,14 @@ file_backup(
 		++bname;
 	} else
 		version = 0;
-	CHAR2INT(sp, bname, strlen(bname) + 1, wp, wlen);
-	if (argv_exp2(sp, &cmd, wp, wlen - 1))
+	CHAR2INT(sp, bname, strlen(bname), wp, wlen);
+	if ((wp = v_wstrdup(sp, wp, wlen)) == NULL)
 		return (1);
+	if (argv_exp2(sp, &cmd, wp, wlen)) {
+		free(wp);
+		return (1);
+	}
+	free(wp);
 
 	/*
 	 *  0 args: impossible.
