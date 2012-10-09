@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: options.c,v 10.72 2012/02/11 00:33:46 zy Exp $";
+static const char sccsid[] = "$Id: options.c,v 10.73 2012/10/09 06:14:07 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -346,6 +346,7 @@ opts_init(
 	(void)SPRINTF(b2, SIZE(b2),
 	    L("cdpath=%s"), (s = getenv("CDPATH")) == NULL ? ":" : s);
 	OI(O_CDPATH, b2);
+	OI(O_CEDIT, L("cedit=\033"));
 
 	/*
 	 * !!!
