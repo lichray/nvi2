@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 11.1 2012/07/06 16:19:20 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 11.2 2012/10/09 08:06:58 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -21,16 +21,6 @@ static const char sccsid[] = "$Id: recover.c,v 11.1 2012/07/06 16:19:20 zy Exp $
 #undef _KERNEL
 
 #include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-/*
- * SF_SYNC is known to identify the existence of the FreeBSD sendfile(2);
- * if you don't have it, we simulate it with mmap(2).
- */
-#ifndef SF_SYNC
-#include <sys/mman.h>
-#endif
 
 /*
  * We include <sys/file.h>, because the open #defines were found there
@@ -45,7 +35,7 @@ static const char sccsid[] = "$Id: recover.c,v 11.1 2012/07/06 16:19:20 zy Exp $
 #include <fcntl.h>
 #include <limits.h>
 #include <pwd.h>
-#include <netdb.h>
+#include <netinet/in.h>		/* Required by resolv.h. */
 #include <resolv.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,7 +111,6 @@ static int	 rcv_copy __P((SCR *, int, char *));
 static void	 rcv_email __P((SCR *, char *));
 static int	 rcv_mailfile __P((SCR *, int, char *));
 static int	 rcv_mktemp __P((SCR *, char *, char *));
-static int	 rcv_sendfile __P((int, char *));
 static int	 rcv_dlnwrite __P((SCR *, const char *, const char *, FILE *));
 static int	 rcv_dlnread __P((SCR *, char **, char **, FILE *));
 
@@ -856,111 +845,16 @@ rcv_email(
 	SCR *sp,
 	char *fname)
 {
-	struct stat sb;
-	struct passwd *pw;
-	FILE *fp = NULL;
-	int fd = -1;
-	char *host = NULL;
-	long hostmax;
-	int eno;
-	struct addrinfo *res0 = NULL, *res;
-	struct addrinfo hints = { 0, PF_UNSPEC,
-				  SOCK_STREAM, IPPROTO_TCP };
+	char *buf;
 
-	/* Prepare the the recipient. */
-	if (stat(fname, &sb))
-		goto err;
-	if ((pw = getpwuid(sb.st_uid)) == NULL)
-		goto err;
-
-	/* Prepare the required socket(2) info. */
-	hostmax = sysconf(_SC_HOST_NAME_MAX);
-	if (hostmax < 0)
-		hostmax = _POSIX_HOST_NAME_MAX;
-	if ((host = malloc(hostmax + 1)) == NULL)
-		goto err;
-	(void)gethostname(host, hostmax + 1);
-	if ((eno = getaddrinfo(host, "smtp", &hints, &res0)))
-		goto aierr;
-
-	/* Prepare a stream over socket(2). */
-	for (res = res0; res != NULL; res = res->ai_next) {
-		if ((fd = socket(res->ai_family, res->ai_socktype,
-		    res->ai_protocol)) < 0)
-			continue;
-		if (connect(fd, res->ai_addr, res->ai_addrlen) == -1) {
-			(void)close(fd);
-			fd = -1;
-			continue;
-		}
-		break;
-	}
-	if (fd < 0)
-		goto err;
-	if ((fp = fdopen(fd, "w")) == NULL)
-		goto err;
-
-	/* Send the email. */
-	if (fprintf(fp, "%s%s\r\n%s%s\r\n%s%s%s%s\r\n%s\r\n",
-	    "HELO ", host,
-	    "MAIL FROM: root@", host,
-	    "RCPT TO: ", pw->pw_name, "@", host,
-	    "DATA") < 0)
-		goto err;
-	if (fputs(
-	    "User-Agent: nvi/" VI_VERSION "\n", fp) == EOF)
-		goto err;
-	(void)fflush(fp);
-	if (rcv_sendfile(fd, fname))
-		goto err;
-	(void)fprintf(fp, ".\r\nQUIT\r\n");
-
-	if (0)
-err:		msgq_str(sp, M_ERR, strerror(errno),
+	(void)asprintf(&buf, _PATH_SENDMAIL " -odb -t < %s", fname);
+	if (buf == NULL) {
+		msgq_str(sp, M_ERR, strerror(errno),
 		    "071|not sending email: %s");
-	if (fp != NULL)
-		(void)fclose(fp);
-	if (res0 != NULL)
-		freeaddrinfo(res0);
-	if (0)
-aierr:		msgq_str(sp, M_ERR, gai_strerror(eno),
-		    "071|not sending email: %s");
-	if (host != NULL)
-		free(host);
-}
-
-/*
- * rcv_sendfile --
- *	Send a file out a stream socket.
- */
-static int
-rcv_sendfile(
-	int fd,
-	char *fname)
-{
-	int rval;
-	int mfd;
-#ifndef SF_SYNC
-	char *s;
-	struct stat sb;
-#endif
-
-	if ((mfd = open(fname, O_RDONLY)) == -1)
-		return (-1);
-#ifdef SF_SYNC
-	rval = sendfile(mfd, fd, 0, 0, NULL, NULL, SF_SYNC);
-#else
-	if (stat(fname, &sb) ||
-	    (s = mmap(NULL, sb.st_size,
-	    PROT_READ, MAP_PRIVATE, mfd, 0)) == MAP_FAILED) {
-		(void)close(mfd);
-		return (-1);
+		return;
 	}
-	rval = send(fd, s, sb.st_size, 0) == -1 ? -1 : 0;
-	(void)munmap(s, sb.st_size);
-#endif
-	(void)close(mfd);
-	return (rval);
+	(void)system(buf);
+	free(buf);
 }
 
 /*
