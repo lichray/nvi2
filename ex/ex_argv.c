@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 11.0 2012/10/06 14:40:52 zy Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 11.1 2012/10/09 16:45:09 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -348,6 +348,7 @@ argv_flt_user(SCR *sp, EXCMD *excp, CHAR_T *uname, size_t ulen)
 	endpwent();
 	free(np);
 
+	qsort(exp->args + off, exp->argsoff - off, sizeof(ARGS *), argv_comp);
 	return (0);
 }
 
