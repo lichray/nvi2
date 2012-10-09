@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$Id: recover.in,v 9.2 2012/04/23 09:24:56 zy Exp $
+#	$Id: recover.in,v 9.3 2012/10/09 08:17:50 zy Exp $
 #
 # Script to recover nvi edit sessions.
 
@@ -45,7 +45,7 @@ if [ "${virecovery}" != "${RECDIR}/recover.*" ]; then
 		    do { if (substr($0,1,1) == " ") print; else exit } \
 		    while(getline) }' < "${i}" | uudecode -mr`
 		if [ -n "${recfile}" -a -s "${recfile}" ]; then
-			sendmail -t < "${i}"
+			sendmail -odb -t < "${i}"
 			echo -n '.'
 		else
 			rm -f "${i}"
