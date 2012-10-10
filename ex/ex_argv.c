@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_argv.c,v 11.1 2012/10/09 16:45:09 zy Exp $";
+static const char sccsid[] = "$Id: ex_argv.c,v 11.2 2012/10/09 23:00:29 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -823,9 +823,12 @@ argv_esc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
 	GET_SPACE_GOTOW(sp, bp, blen, len + 1);
 
 	/*
-	 * To properly double escape the meta characters used by both ex
-	 * and shell, like '!' in csh, the "shellmeta" option must contain
-	 * no whitespace or <escape> character.
+	 * Leaving the first '~' unescaped causes the user to need a
+	 * "./" prefix to edit a file which really starts with a '~'.
+	 * However, the file completion happens to not work for these
+	 * files without the prefix.
+	 * 
+	 * All ex expansion characters, "!%#", are double escaped.
 	 */
 	for (p = bp; len > 0; ++str, --len) {
 		ch = *str;
@@ -846,13 +849,9 @@ argv_esc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
 			if (p == bp)
 				*p++ = '\\';
 			break;
-		case '%':					/* Ex exp. */
+		case '!': case '%': case '#':			/* Ex exp. */
 			*p++ = '\\';
-			break;
-		case '!': case '#':
 			*p++ = '\\';
-			if (IS_SHELLMETA(sp, ch))
-				*p++ = '\\';
 			break;
 		case ',': case '-': case '.': case '/':		/* Safe. */
 		case ':': case '=': case '@': case '_':
@@ -896,12 +895,12 @@ argv_uesc(SCR *sp, EXCMD *excp, CHAR_T *str, size_t len)
 			++str;
 
 			/* Check for double escaping. */
-			if (*str == '\\' && len > 1 &&
-			    (str[1] == '!' || str[1] == '#') &&
-			    IS_SHELLMETA(sp, str[1])) {
-				++str;
-				--len;
-			}
+			if (*str == '\\' && len > 1)
+				switch (str[1]) {
+				case '!': case '%': case '#':
+					++str;
+					--len;
+				}
 		}
 		*p++ = *str;
 	}
