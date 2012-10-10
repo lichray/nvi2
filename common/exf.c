@@ -1263,7 +1263,7 @@ file_encinit(SCR *sp)
 			key.data = &lno;
 			key.size = sizeof(lno);
 			if (!ep->db->seq(ep->db, &key, &data, R_LAST) &&
-			   	*(char*)data.data == '\0')
+			   	*(char *)data.data == '\0')
 				ep->db->del(ep->db, &key, 0);
 			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
 			break;

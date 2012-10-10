@@ -436,7 +436,7 @@ display:
 			if (KEY_NEEDSWIDE(sp, ch))
 				*cbp++ = ch;
 			else
-				for (kp = (u_char*)
+				for (kp = (u_char *)
 				    KEY_NAME(sp, ch) + offset_in_char;
 				    chlen--;)
 					*cbp++ = *kp++;
@@ -459,7 +459,7 @@ display:
 			chlen = KEY_LEN(sp, '$');
 			if (cbp + chlen >= ecbp)
 				FLUSH;
-			for (kp = (u_char*)
+			for (kp = (u_char *)
 			    KEY_NAME(sp, '$'); chlen--;)
 				*cbp++ = *kp++;
 		}

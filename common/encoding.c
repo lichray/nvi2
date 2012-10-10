@@ -59,7 +59,7 @@ static char text_chars[256] = {
 int
 looks_utf8(const char *ibuf, size_t nbytes)
 {
-	const u_char *buf = (u_char*)ibuf;
+	const u_char *buf = (u_char *)ibuf;
 	size_t i;
 	int n;
 	int gotone = 0, ctrl = 0;

@@ -2304,7 +2304,7 @@ txt_emark(SCR *sp, TEXT *tp, size_t cno)
 			for (cno += chlen; chlen--;)
 				*p++ = ' ';
 		else
-			for (kp = (u_char*)
+			for (kp = (u_char *)
 			    KEY_NAME(sp, tp->lb[cno]),
 			    cno += chlen; chlen--;)
 				*p++ = *kp++;
@@ -2501,7 +2501,7 @@ txt_insch(SCR *sp, TEXT *tp, CHAR_T *chp, u_int flags)
 					for (p = tp->lb + cno + 1; chlen--;)
 						*p++ = ' ';
 				else
-					for (kp = (u_char*)
+					for (kp = (u_char *)
 					    KEY_NAME(sp, tp->lb[cno]) + nlen,
 					    p = tp->lb + cno + 1; chlen--;)
 						*p++ = *kp++;
