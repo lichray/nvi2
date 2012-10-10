@@ -10,7 +10,7 @@
  */
 
 /* Definition of a vi "word". */
-#define	inword(ch)	((ch) == '_' || (ISGRAPH((UCHAR_T)ch) && !ISPUNCT((UCHAR_T)ch)))
+#define	inword(ch)	((ch) == '_' || (ISGRAPH(ch) && !ISPUNCT(ch)))
 
 typedef struct _vikeys VIKEYS;
 
