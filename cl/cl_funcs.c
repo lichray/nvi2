@@ -315,10 +315,6 @@ cl_deleteln(SCR *sp)
 	CL_PRIVATE *clp;
 	WINDOW *win;
 	size_t y, x;
-#ifndef mvchgat
-	CHAR_T ch;
-	size_t col, lno, spcnt, y, x;
-#endif
 
 	clp = CLP(sp);
 	win = CLSP(sp) ? CLSP(sp) : stdscr;
@@ -330,37 +326,10 @@ cl_deleteln(SCR *sp)
 	 *
 	 * If the bottom line was in reverse video, rewrite it in normal
 	 * video before it's scrolled.
-	 *
-	 * Check for the existence of a chgat function; XSI requires it, but
-	 * historic implementations of System V curses don't.   If it's not
-	 * a #define, we'll fall back to doing it by hand, which is slow but
-	 * acceptable.
-	 *
-	 * By hand means walking through the line, retrieving and rewriting
-	 * each character.  Curses has no EOL marker, so track strings of
-	 * spaces, and copy the trailing spaces only if there's a non-space
-	 * character following.
 	 */
 	if (!F_ISSET(sp, SC_SCR_EXWROTE) && IS_SPLIT(sp)) {
 		getyx(win, y, x);
-#ifdef mvchgat
 		mvwchgat(win, RLNO(sp, LASTLINE(sp)), 0, -1, A_NORMAL, 0, NULL);
-#else
-		for (lno = RLNO(sp, LASTLINE(sp)), col = spcnt = 0;;) {
-			(void)wmove(win, lno, col);
-			ch = winch(win);
-			if (isblank(ch))
-				++spcnt;
-			else {
-				(void)wmove(win, lno, col - spcnt);
-				for (; spcnt > 0; --spcnt)
-					(void)waddch(win, ' ');
-				(void)waddch(win, ch);
-			}
-			if (++col >= sp->cols)
-				break;
-		}
-#endif
 		(void)wmove(win, y, x);
 	}
 
