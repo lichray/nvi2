@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_funcs.c,v 10.73 2011/08/15 19:55:33 zy Exp $";
+static const char sccsid[] = "$Id: cl_funcs.c,v 10.74 2012/10/11 10:30:16 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -588,12 +588,7 @@ cl_refresh(SCR *sp, int repaint)
 static void
 cl_rdiv(SCR *sp)
 {
-	size_t cnt;
-
-	for (cnt = 0; cnt < sp->rows - 1; ++cnt) {
-		wmove(stdscr, sp->roff + cnt, sp->cols + sp->coff);
-		waddch(stdscr, '|');
-	}
+	mvvline(sp->roff, sp->cols + sp->coff, ACS_VLINE, sp->rows);
 }
 
 /*
