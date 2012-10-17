@@ -6,10 +6,12 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: gs.h,v 10.36 2011/12/02 18:45:06 zy Exp $
+ *	$Id: gs.h,v 11.0 2012/10/17 06:34:37 zy Exp $
  */
 
 #define	TEMPORARY_FILE_STRING	"/tmp"	/* Default temporary file name. */
+
+#include <nl_types.h>
 
 /*
  * File reference structure (FREF).  The structure contains the name of the
@@ -72,7 +74,7 @@ struct _gs {
 #define	GO_TERM		3		/* Global options: terminal type. */
 	OPTION	 opts[GO_TERM + 1];
 
-	DB	*msg;			/* Message catalog DB. */
+	nl_catd	 catd;			/* Message catalog descriptor. */
 	MSGH	 msgq[1];		/* User message list. */
 #define	DEFAULT_NOPRINT	'\1'		/* Emergency non-printable character. */
 	int	 noprint;		/* Cached, unprintable character. */

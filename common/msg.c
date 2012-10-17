@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: msg.c,v 10.53 2012/04/12 07:00:49 zy Exp $";
+static const char sccsid[] = "$Id: msg.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -22,6 +22,7 @@ static const char sccsid[] = "$Id: msg.c,v 10.53 2012/04/12 07:00:49 zy Exp $";
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -721,64 +722,49 @@ msg_open(
 	 * message will be repeated every time nvi is started up.
 	 */
 	static int first = 1;
-	DB *db;
-	DBT data, key;
-	recno_t msgno;
-	char *p, *t;
-	int nf = 0;
+	nl_catd catd;
+	char *p;
 	int rval = 0;
 
-	if ((p = strrchr(file, '/')) != NULL && p[1] == '\0' &&
-	    (((t = getenv("LC_MESSAGES")) != NULL && t[0] != '\0') ||
-	    ((t = getenv("LANG")) != NULL && t[0] != '\0'))) {
-		if ((p = join(file, t)) == NULL) {
+	if ((p = strrchr(file, '/')) != NULL && p[1] == '\0') {
+		/* Confirms to XPG4. */
+		if ((p = join(file, setlocale(LC_MESSAGES, NULL))) == NULL) {
 			msgq(sp, M_SYSERR, NULL);
 			return (1);
 		}
-		nf = 1;
-	} else
-		p = file;
-	if ((db = dbopen(p,
-	    O_NONBLOCK | O_RDONLY, 0, DB_RECNO, NULL)) == NULL) {
-		if (first) {
-			first = 0;
-			rval = 1;
-			goto ret;
+	} else {
+		/* Make sure it's recognized as a path by catopen(3). */
+		if ((p = join(".", file)) == NULL) {
+			msgq(sp, M_SYSERR, NULL);
+			return (1);
 		}
-		msgq_str(sp, M_SYSERR, p, "%s");
-		rval = 1;
-		goto ret;
 	}
-
-	/*
-	 * Test record 1 for the magic string.  The msgq call is here so
-	 * the message catalog build finds it.
-	 */
-#define	VMC	"VI_MESSAGE_CATALOG"
-	key.data = &msgno;
-	key.size = sizeof(recno_t);
-	msgno = 1;
-	if (db->get(db, &key, &data, 0) != 0 ||
-	    data.size != sizeof(VMC) - 1 ||
-	    memcmp(data.data, VMC, sizeof(VMC) - 1)) {
-		(void)db->close(db);
+	errno = 0;
+	if ((catd = catopen(p, NL_CAT_LOCALE)) == (nl_catd)-1) {
 		if (first) {
 			first = 0;
 			rval = 1;
 			goto ret;
 		}
-		msgq_str(sp, M_ERR, p,
-		    "030|The file %s is not a message catalog");
+
+		/*
+		 * POSIX.1-2008 gives no instruction on how to report a
+		 * corrupt catalog file.  Errno == 0 is not rare; add
+		 * EFTYPE, which is seen on FreeBSD, for a good measure.
+		 */
+		if (errno == 0 || errno == EFTYPE)
+			msgq_str(sp, M_ERR, p,
+			    "030|The file %s is not a message catalog");
+		else
+			msgq_str(sp, M_SYSERR, p, "%s");
 		rval = 1;
 		goto ret;
 	}
 	first = 0;
 
-	if (sp->gp->msg != NULL)
-		(void)sp->gp->msg->close(sp->gp->msg);
-	sp->gp->msg = db;
-ret:	if (nf)
-		free(p);
+	msg_close(sp->gp);
+	sp->gp->catd = catd;
+ret:	free(p);
 	return (rval);
 }
 
@@ -791,8 +777,8 @@ ret:	if (nf)
 void
 msg_close(GS *gp)
 {
-	if (gp->msg != NULL)
-		(void)gp->msg->close(gp->msg);
+	if (gp->catd != (nl_catd)-1)
+		(void)catclose(gp->catd);
 }
 
 /*
@@ -846,8 +832,8 @@ msg_cat(
 	size_t *lenp)
 {
 	GS *gp;
-	DBT data, key;
-	recno_t msgno;
+	char *p;
+	int msgno;
 
 	/*
 	 * If it's not a catalog message, i.e. has doesn't have a leading
@@ -855,28 +841,16 @@ msg_cat(
 	 */
 	if (isdigit(str[0]) &&
 	    isdigit(str[1]) && isdigit(str[2]) && str[3] == '|') {
-		key.data = &msgno;
-		key.size = sizeof(recno_t);
 		msgno = atoi(str);
-
-		/*
-		 * XXX
-		 * Really sleazy hack -- we put an extra character on the
-		 * end of the format string, and then we change it to be
-		 * the nul termination of the string.  There ought to be
-		 * a better way.  Once we can allocate multiple temporary
-		 * memory buffers, maybe we can use one of them instead.
-		 */
-		gp = sp == NULL ? NULL : sp->gp;
-		if (gp != NULL && gp->msg != NULL &&
-		    gp->msg->get(gp->msg, &key, &data, 0) == 0 &&
-		    data.size != 0) {
-			if (lenp != NULL)
-				*lenp = data.size - 1;
-			((char *)data.data)[data.size - 1] = '\0';
-			return (data.data);
-		}
 		str = &str[4];
+
+		gp = sp == NULL ? NULL : sp->gp;
+		if (gp != NULL && gp->catd != (nl_catd)-1 &&
+		    (p = catgets(gp->catd, 1, msgno, str)) != NULL) {
+			if (lenp != NULL)
+				*lenp = strlen(p);
+			return (p);
+		}
 	}
 	if (lenp != NULL)
 		*lenp = strlen(str);

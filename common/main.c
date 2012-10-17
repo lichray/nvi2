@@ -18,7 +18,7 @@ static const char copyright[] =
 #endif /* not lint */
 
 #ifndef lint
-static const char sccsid[] = "$Id: main.c,v 10.64 2011/07/04 14:33:38 zy Exp $";
+static const char sccsid[] = "$Id: main.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -73,6 +73,7 @@ editor(
 	/* Initialize the message routine, if not defined by the screen. */
 	if (gp->scr_msg == NULL)
 		gp->scr_msg = vs_msg;
+	gp->catd = (nl_catd)-1;
 
 	/* Common global structure initialization. */
 	TAILQ_INIT(gp->dq);
