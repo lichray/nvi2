@@ -24,9 +24,8 @@ static const char sccsid[] = "$Id: cl_funcs.c,v 10.74 2012/10/11 10:30:16 zy Exp
 #include <string.h>
 #ifdef HAVE_TERM_H
 #include <term.h>
-#else
-#include <termios.h>
 #endif
+#include <termios.h>
 #include <unistd.h>
 
 #include "../common/common.h"
