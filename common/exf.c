@@ -15,11 +15,6 @@ static const char sccsid[] = "$Id: exf.c,v 10.60 2012/10/07 06:02:54 zy Exp $";
 
 #include <sys/types.h>
 #include <sys/queue.h>
-
-#define _KERNEL		/* XXX: timespec macros may be protected. */
-#include <sys/time.h>
-#undef _KERNEL
-
 #include <sys/stat.h>
 
 /*

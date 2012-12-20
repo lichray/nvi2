@@ -15,11 +15,6 @@ static const char sccsid[] = "$Id: recover.c,v 11.2 2012/10/09 08:06:58 zy Exp $
 
 #include <sys/types.h>
 #include <sys/queue.h>
-
-#define _KERNEL		/* XXX: timespec macros may be protected. */
-#include <sys/time.h>
-#undef _KERNEL
-
 #include <sys/stat.h>
 
 /*

@@ -15,6 +15,7 @@ static const char sccsid[] = "$Id: v_delete.c,v 10.11 2001/06/25 15:19:31 skimo 
 
 #include <sys/types.h>
 #include <sys/queue.h>
+#include <sys/time.h>
 
 #include <bitstring.h>
 #include <limits.h>

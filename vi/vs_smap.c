@@ -15,6 +15,7 @@ static const char sccsid[] = "$Id: vs_smap.c,v 10.31 2011/02/26 13:56:21 skimo E
 
 #include <sys/types.h>
 #include <sys/queue.h>
+#include <sys/time.h>
 
 #include <bitstring.h>
 #include <limits.h>

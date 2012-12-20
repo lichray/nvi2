@@ -15,6 +15,7 @@ static const char sccsid[] = "$Id: vs_refresh.c,v 10.52 2011/12/16 11:06:25 zy E
 
 #include <sys/types.h>
 #include <sys/queue.h>
+#include <sys/time.h>
 
 #include <bitstring.h>
 #include <ctype.h>
