@@ -388,7 +388,7 @@ run_cscope(SCR *sp, CSC *csc, char *dbname)
 	 * Cscope reads from to_cs[0] and writes to from_cs[1]; vi reads from
 	 * from_cs[0] and writes to to_cs[1].
 	 */
-	to_cs[0] = to_cs[1] = from_cs[0] = from_cs[0] = -1;
+	to_cs[0] = to_cs[1] = from_cs[0] = from_cs[1] = -1;
 	if (pipe(to_cs) < 0 || pipe(from_cs) < 0) {
 		msgq(sp, M_SYSERR, "pipe");
 		goto err;
