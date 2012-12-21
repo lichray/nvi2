@@ -588,7 +588,11 @@ cl_refresh(SCR *sp, int repaint)
 static void
 cl_rdiv(SCR *sp)
 {
+#ifdef __NetBSD__
+	mvvline(sp->roff, sp->cols + sp->coff, '|', sp->rows);
+#else
 	mvvline(sp->roff, sp->cols + sp->coff, ACS_VLINE, sp->rows);
+#endif
 }
 
 /*
