@@ -122,7 +122,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 		/* Update no more than every 1/8 of a second. */
 		(void)clock_gettime(CLOCK_PROF, &ts);
 		ts_diff = ts;
-		timespecsub(&ts_diff, &vip->busy_ts, &vip->busy_ts);
+		timespecsub(&ts_diff, &vip->busy_ts);
 		if (timespeccmp(&ts_diff, &ts_min, <))
 			return;
 		vip->busy_ts = ts;
