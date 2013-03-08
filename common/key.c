@@ -293,7 +293,7 @@ nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 			char *in = sp->cname;
 			char *out = buf;
 			iconv(sp->conv.id[IC_IE_TO_UTF16],
-			    &in, &len, &out, &left);
+			    (iconv_src_t)&in, &len, &out, &left);
 			iconv(sp->conv.id[IC_IE_TO_UTF16],
 			    NULL, NULL, NULL, NULL);
 			uc = decode_utf16(buf, 1);

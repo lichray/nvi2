@@ -13,6 +13,31 @@
 
 #ifdef USE_ICONV
 #include <iconv.h>
+
+/*
+ * from NetBSD's iconv(3):
+ *
+ * Historically, the definition of iconv has not been consistent across
+ * operating systems.  This is due to an unfortunate historical mistake,
+ * documented in this e-mail:
+ *       https://www5.opengroup.org/sophocles2/show_mail.tpl?&source=L&listname=austin-group-l&id=7404.
+ * The standards page for the header file <iconv.h> defined the second argu-
+ * ment of iconv() as char **, but the standards page for the iconv() imple-
+ * mentation defined it as const char **.  The standards committee later
+ * chose to change the function definition to follow the header file defini-
+ * tion (without const), even though the version with const is arguably more
+ * correct.  NetBSD has always used the const form.  It was decided to
+ * reject the committee's regression and become (technically) incompatible.
+ * GNU libiconv has taken the same route:
+ *       http://www.gnu.org/savannah-checkouts/gnu/libiconv/documentation/libiconv-1.14/.
+ * Most third party software affected by this issue already handles it dur-
+ * ing configuration.
+ */
+#if defined(__NetBSD__)
+#define	iconv_src_t	const char **
+#else
+#define	iconv_src_t	char **
+#endif
 #else
 typedef int	iconv_t;
 #endif
