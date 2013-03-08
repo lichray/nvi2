@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.36 2013/03/07 22:45:02 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.37 2013/03/11 01:20:53 yamt Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -79,7 +79,7 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 	char *bp = buffer;						\
 	outleft = CONV_BUFFER_SIZE;					\
 	errno = 0;							\
-	if (iconv(id, (char **)&str, &left, &bp, &outleft) == -1 &&	\
+	if (iconv(id, (iconv_src_t)&str, &left, &bp, &outleft) == -1 &&	\
 		errno != E2BIG)						\
 	    goto err;							\
 	if ((len = CONV_BUFFER_SIZE - outleft) == 0) {			\
@@ -233,7 +233,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 		BINC_RETC(NULL, cw->bp1.c, cw->blen1, nlen);		\
 	    }						    		\
 	    errno = 0;						    	\
-	    if (iconv(id, &bp, &len, &obp, &outleft) == -1 && 	        \
+	    if (iconv(id, (iconv_src_t)&bp, &len, &obp, &outleft) == -1 && \
 		    errno != E2BIG)					\
 		goto err;						\
 	    offset = cw->blen1 - outleft;			        \

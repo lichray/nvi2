@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: key.c,v 10.53 2012/02/13 19:22:25 zy Exp $";
+static const char sccsid[] = "$Id: key.c,v 10.53 2013/03/11 01:20:53 yamt Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -293,7 +293,7 @@ nopr:	if (iscntrl(ch) && (ch < 0x20 || ch == 0x7f)) {
 			char *in = sp->cname;
 			char *out = buf;
 			iconv(sp->conv.id[IC_IE_TO_UTF16],
-			    &in, &len, &out, &left);
+			    (iconv_src_t)&in, &len, &out, &left);
 			iconv(sp->conv.id[IC_IE_TO_UTF16],
 			    NULL, NULL, NULL, NULL);
 			uc = decode_utf16(buf, 1);

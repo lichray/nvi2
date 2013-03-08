@@ -1,9 +1,10 @@
-# $Id: CMakeLists.txt,v 1.7 2012/04/23 09:13:52 zy Exp $
+# $Id: CMakeLists.txt,v 1.8 2013/03/11 01:20:53 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
+include(CheckCSourceCompiles)
 
 # unused, just hide them
 mark_as_advanced(FORCE CMAKE_BUILD_TYPE CMAKE_INSTALL_PREFIX)
@@ -95,7 +96,31 @@ if(USE_ICONV)
 	check_function_exists(__iconv ICONV_IN_LIBC)
 	if(NOT ICONV_IN_LIBC)
 		find_library(ICONV_LIBRARY iconv)
+	else(NOT ICONV_IN_LIBC)
+		set(ICONV_LIBRARY)
 	endif(NOT ICONV_IN_LIBC)
+
+	# detect the prototype of iconv(3)
+	set(CMAKE_C_FLAGS_BACKUP "${CMAKE_C_FLAGS}")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+	set(CMAKE_REQUIRED_INCLUDES "${ICONV_INCLUDE_DIR}")
+	set(CMAKE_REQUIRED_LIBRARIES "${ICONV_LIBRARY}")
+	check_c_source_compiles("
+	#include <iconv.h>
+	int main() {
+		iconv_t conv = 0;
+		char* in = 0;
+		size_t ilen = 0;
+		char* out = 0;
+		size_t olen = 0;
+		iconv(conv, &in, &ilen, &out, &olen);
+		return 0;
+	}
+	" ICONV_TRADITIONAL)
+	set(CMAKE_REQUIRED_INCLUDES)
+	set(CMAKE_REQUIRED_LIBRARIES)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_BACKUP}")
+
 	include_directories(${ICONV_INCLUDE_DIR})
 endif(USE_ICONV)
 
@@ -116,7 +141,7 @@ add_executable(nvi ${MAIN_SRCS})
 target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY})
 if(USE_WIDECHAR)
 	target_link_libraries(nvi regex)
-	if(USE_ICONV AND NOT ICONV_IN_LIBC)
+	if(USE_ICONV)
 		target_link_libraries(nvi ${ICONV_LIBRARY})
-	endif(USE_ICONV AND NOT ICONV_IN_LIBC)
+	endif(USE_ICONV)
 endif(USE_WIDECHAR)

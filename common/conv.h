@@ -8,11 +8,16 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: conv.h,v 2.31 2011/12/14 14:58:15 zy Exp $
+ *	$Id: conv.h,v 2.32 2013/03/11 01:20:53 zy Exp $
  */
 
 #ifdef USE_ICONV
 #include <iconv.h>
+#ifdef ICONV_TRADITIONAL
+typedef char **		iconv_src_t;
+#else
+typedef char const **	iconv_src_t;
+#endif
 #else
 typedef int	iconv_t;
 #endif
