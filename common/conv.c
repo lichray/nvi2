@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.35 2011/12/15 21:24:49 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.36 2013/03/07 22:45:02 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -323,23 +323,18 @@ conv_init(SCR *orig, SCR *sp)
 	BCOPY(&orig->conv, &sp->conv, 1);
 #ifdef USE_WIDECHAR
     else {
-	char *ctype, *cp;
+	char *ctype = setlocale(LC_CTYPE, NULL);
 
-	ctype = setlocale(LC_CTYPE, NULL);
 	/*
-	 * The CJK hacks try to use GB18030 to handle
-	 * eucCN, eucJP, eucKR, GB2312, GBK, CP949, CP936.
-	 *
 	 * XXX
-	 * This fixes the libncursesw limitaions (GB2312, GBK, and
-	 * CP949 do not work) on FreeBSD at the same time.
+	 * This hack fixes the libncursesw issue on FreeBSD.
 	 */
-	if ((cp = strchr(ctype, '.'))) {
-	    ++cp;
-	    if (!strncmp(cp, "euc", 3) || !strncmp(cp, "GB", 2) ||
-		!strcmp(cp, "CP949") || !strcmp(cp, "CP936"))
-		setlocale(LC_CTYPE, "zh_CN.GB18030");
-	}
+	if (!strcmp(ctype, "ko_KR.CP949"))
+	    setlocale(LC_CTYPE, "ko_KR.eucKR");
+	else if (!strcmp(ctype, "zh_CN.GB2312"))
+	    setlocale(LC_CTYPE, "zh_CN.eucCN");
+	else if (!strcmp(ctype, "zh_CN.GBK"))
+	    setlocale(LC_CTYPE, "zh_CN.GB18030");
 
 	/*
 	 * Switch to 8bit mode if locale is C;
