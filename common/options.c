@@ -79,6 +79,8 @@ OPTLIST const optlist[] = {
 	{L("errorbells"),	NULL,		OPT_0BOOL,	0},
 /* O_ESCAPETIME	  4.4BSD */
 	{L("escapetime"),	NULL,		OPT_NUM,	0},
+/* O_EXPANDTAB	  NetBSD 5.0 */
+	{L("expandtab"),	NULL,		OPT_0BOOL,	0},
 /* O_EXRC	System V (undocumented) */
 	{L("exrc"),	NULL,		OPT_0BOOL,	0},
 /* O_EXTENDED	  4.4BSD */
@@ -256,6 +258,7 @@ static OABBREV const abbrev[] = {
 	{L("dir"),	O_TMPDIR},		/*     4BSD */
 	{L("eb"),	O_ERRORBELLS},		/*     4BSD */
 	{L("ed"),	O_EDCOMPATIBLE},	/*     4BSD */
+	{L("et"),	O_EXPANDTAB},		/* NetBSD 5.0 */
 	{L("ex"),	O_EXRC},		/* System V (undocumented) */
 	{L("fe"),	O_FILEENCODING},
 	{L("ht"),	O_HARDTABS},		/*     4BSD */

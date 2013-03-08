@@ -1724,13 +1724,19 @@ txt_ai_resolve(SCR *sp, TEXT *tp, int *changedp)
 	/*
 	 * If there are no spaces, or no tabs after spaces and less than
 	 * ts spaces, it's already minimal.
+	 * Keep analysing if expandtab is set.
 	 */
-	if (!spaces || (!tab_after_sp && spaces < ts))
+	if ((!spaces || (!tab_after_sp && spaces < ts)) &&
+	    !O_ISSET(sp, O_EXPANDTAB))
 		return;
 
 	/* Count up spaces/tabs needed to get to the target. */
-	for (cno = 0, tabs = 0; cno + COL_OFF(cno, ts) <= scno; ++tabs)
-		cno += COL_OFF(cno, ts);
+	cno = 0;
+	tabs = 0;
+	if (!O_ISSET(sp, O_EXPANDTAB)) {
+		for (; cno + COL_OFF(cno, ts) <= scno; ++tabs)
+			cno += COL_OFF(cno, ts);
+	}
 	spaces = scno - cno;
 
 	/*
@@ -1936,6 +1942,7 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 	 * "0^D" and "^D" are different.)
 	 */
 	ai_reset = !isindent || tp->cno == tp->ai + tp->offset;
+/* XXXX: consider O_EXPANDTABS when calculating ai_reset ? */
 
 	/*
 	 * Back up over any previous <blank> characters, changing them into
@@ -1964,9 +1971,12 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 	if (current >= target)
 		spaces = tabs = 0;
 	else {
-		for (cno = current,
-		    tabs = 0; cno + COL_OFF(cno, ts) <= target; ++tabs)
-			cno += COL_OFF(cno, ts);
+		cno = current;
+		tabs = 0;
+		if (!O_ISSET(sp, O_EXPANDTAB)) {
+			for (; cno + COL_OFF(cno, ts) <= target; ++tabs)
+				cno += COL_OFF(cno, ts);
+		}
 		spaces = target - cno;
 	}
 

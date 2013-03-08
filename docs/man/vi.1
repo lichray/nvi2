@@ -776,6 +776,11 @@ and
 characters to move forward to the next
 .B shiftwidth
 column boundary.
+If
+.B expandtab
+is set, only insert
+.I <space>
+characters.
 .TP
 .B "<erase>
 .TP
@@ -1096,6 +1101,15 @@ command.
 .I \&Ex
 only.
 Announce error messages with a bell.
+.TP
+.B "expandtab, et [off]"
+Prevent the use of
+.I <tab>
+characters in leading whitespace when shifting text, autoindenting,
+indenting with
+.BR "<control-T>" ,
+or outdenting with
+.BR "<control-D>" .
 .TP
 .B "exrc, ex [off]"
 Read the startup files in the local directory.
