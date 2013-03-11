@@ -222,10 +222,11 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
  * cw->bp is grown as required
  */
 #ifdef USE_ICONV
-#define CONVERT2(len, cw, offset)					\
+#define CONVERT2(_buffer, lenp, cw, offset)				\
     do {								\
-	char *bp = buffer;						\
-	while (len != 0) {						\
+	char *bp = _buffer;						\
+	int ret;							\
+	do {								\
 	    size_t outleft = cw->blen1 - offset;			\
 	    char *obp = cw->bp1.c + offset;				\
 	    if (cw->blen1 < offset + MB_CUR_MAX) {		    	\
@@ -233,14 +234,14 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 		BINC_RETC(NULL, cw->bp1.c, cw->blen1, nlen);		\
 	    }						    		\
 	    errno = 0;						    	\
-	    if (iconv(id, (iconv_src_t)&bp, &len, &obp, &outleft) == -1 && \
-		    errno != E2BIG)					\
+	    ret = iconv(id, (iconv_src_t)&bp, lenp, &obp, &outleft);	\
+	    if (ret == -1 && errno != E2BIG)				\
 		goto err;						\
 	    offset = cw->blen1 - outleft;			        \
-	}							        \
+	} while (ret != 0); 					        \
     } while (0)
 #else
-#define CONVERT2(len, cw, offset)
+#define CONVERT2(_buffer, lenp, cw, offset)
 #endif
 
 
@@ -260,7 +261,7 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	j += n;
 	if (buflen < j + MB_CUR_MAX) {
 	    if (id != (iconv_t)-1) {
-		CONVERT2(j, cw, offset);
+		CONVERT2(buffer, &j, cw, offset);
 	    } else {
 		nlen += 256;
 		BINC_RETC(NULL, *tostr, *blen, nlen);
@@ -274,7 +275,8 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
     *tolen = j;
 
     if (id != (iconv_t)-1) {
-	CONVERT2(j, cw, offset);
+	CONVERT2(buffer, &j, cw, offset);
+	CONVERT2(NULL, NULL, cw, offset); /* back to the initial state */
 	*tolen = offset;
     }
 
