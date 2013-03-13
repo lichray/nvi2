@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.8 2013/03/11 01:20:53 zy Exp $
+# $Id: CMakeLists.txt,v 1.9 2013/03/13 00:57:45 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -26,12 +26,14 @@ if(DEBUG)
 		"-Wno-uninitialized"	# meaningless without -O
 		"-Wmissing-prototypes"
 		"-Wsystem-headers"
-		"-fstack-protector -Wstack-protector"
-		"-fstrict-aliasing -Wstrict-aliasing")
+		"-Wstack-protector -fstack-protector"
+		"-Wstrict-aliasing -fstrict-aliasing")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
-		"-Wuninitialized")
+		"-Wuninitialized"
+		"-Wno-dangling-else"
+		"-Wstack-protector -fstack-protector")
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
@@ -40,29 +42,29 @@ add_custom_target(headers ALL DEPENDS
 	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
 	../common/options_def.h ../ex/ex_def.h ../ex/version.h)
 
-set(extract_protos sed -n \"s/^ \\* PUBLIC: \\\(.*\\\)/\\1/p\")
+set(extract_protos sed -n 's/^ \\* PUBLIC: \\\(.*\\\)/\\1/p')
 set(extract_version sed -n
-	\"s/^.*version \\\([^\)]*\)\\\).*/\#define VI_VERSION \\\"\\1\\\"/p\")
+	's/^.*version \\\([^\)]*\)\\\).*/\#define VI_VERSION \\\"\\1\\\"/p')
 add_custom_command(OUTPUT ../cl/extern.h
-	COMMAND sh -c '${extract_protos} ../cl/*.c > $@'
+	COMMAND ${extract_protos} ../cl/*.c > $@
 	DEPENDS ../cl/*.c)
 add_custom_command(OUTPUT ../common/extern.h
-	COMMAND sh -c '${extract_protos} ../common/*.c > $@'
+	COMMAND ${extract_protos} ../common/*.c > $@
 	DEPENDS ../common/*.c)
 add_custom_command(OUTPUT ../ex/extern.h
-	COMMAND sh -c '${extract_protos} ../ex/*.c > $@'
+	COMMAND ${extract_protos} ../ex/*.c > $@
 	DEPENDS ../ex/*.c)
 add_custom_command(OUTPUT ../vi/extern.h
-	COMMAND sh -c '${extract_protos} ../vi/*.c > $@'
+	COMMAND ${extract_protos} ../vi/*.c > $@
 	DEPENDS ../vi/*.c)
 add_custom_command(OUTPUT ../common/options_def.h
-	COMMAND sh -c 'awk -f ../common/options.awk ../common/options.c > $@'
+	COMMAND awk -f ../common/options.awk ../common/options.c > $@
 	DEPENDS ../common/options.c)
 add_custom_command(OUTPUT ../ex/ex_def.h
-	COMMAND sh -c 'awk -f ../ex/ex.awk ../ex/ex_cmd.c > $@'
+	COMMAND awk -f ../ex/ex.awk ../ex/ex_cmd.c > $@
 	DEPENDS ../ex/ex_cmd.c)
 add_custom_command(OUTPUT ../ex/version.h
-	COMMAND sh -c '${extract_version}  ../README > $@'
+	COMMAND ${extract_version} ../README > $@
 	DEPENDS ../README)
 
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
@@ -71,6 +73,8 @@ FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 check_function_exists(openpty UTIL_IN_LIBC)
 if(NOT UTIL_IN_LIBC)
 	find_library(UTIL_LIBRARY util)
+else(NOT UTIL_IN_LIBC)
+	set(UTIL_LIBRARY)
 endif(NOT UTIL_IN_LIBC)
 
 include_directories(. ..)
