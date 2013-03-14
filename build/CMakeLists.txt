@@ -37,6 +37,12 @@ else(DEBUG)
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
+# avoid "clang: error: argument unused during compilation: '-ansi'"
+# when using -Werror
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
+endif()
+
 # generate the public headers
 add_custom_target(headers ALL DEPENDS
 	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
