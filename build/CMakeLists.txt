@@ -32,8 +32,13 @@ if(DEBUG)
 else(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
 		"-Wuninitialized"
-		"-Wno-dangling-else"
 		"-Wstack-protector -fstack-protector")
+	if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+		set(_arg_str "${_arg_str}"
+			"-Wno-dangling-else"
+			# avoid the "argument unused" error in clang
+			"-Qunused-arguments")
+	endif()
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
