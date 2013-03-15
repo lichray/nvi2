@@ -20,3 +20,6 @@
 
 /* Define if you have <term.h> */
 #cmakedefine HAVE_TERM_H
+
+/* Define if you have clock_gettime */
+#cmakedefine HAVE_CLOCK_GETTIME

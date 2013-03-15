@@ -37,6 +37,12 @@ else(DEBUG)
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
+# avoid "clang: error: argument unused during compilation: '-ansi'"
+# when using -Werror
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
+endif()
+
 # generate the public headers
 add_custom_target(headers ALL DEPENDS
 	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
@@ -70,12 +76,22 @@ add_custom_command(OUTPUT ../ex/version.h
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
+set(CMAKE_EXTRA_INCLUDE_FILES time.h)
+check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+
 check_function_exists(openpty UTIL_IN_LIBC)
 if(NOT UTIL_IN_LIBC)
 	find_library(UTIL_LIBRARY util)
 else(NOT UTIL_IN_LIBC)
 	set(UTIL_LIBRARY)
 endif(NOT UTIL_IN_LIBC)
+
+check_function_exists(b64_ntop RESOLV_IN_LIBC)
+if(NOT RESOLV_IN_LIBC)
+	find_library(RESOLV_LIBRARY resolv)
+else(NOT RESOLV_IN_LIBC)
+	set(RESOLV_LIBRARY)
+endif(NOT RESOLV_IN_LIBC)
 
 include_directories(. ..)
 
@@ -142,7 +158,7 @@ configure_file(${CMAKE_SOURCE_DIR}/recover.in
 	${CMAKE_SOURCE_DIR}/recover @ONLY)
 
 add_executable(nvi ${MAIN_SRCS})
-target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY})
+target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY} ${RESOLV_LIBRARY})
 if(USE_WIDECHAR)
 	target_link_libraries(nvi regex)
 	if(USE_ICONV)

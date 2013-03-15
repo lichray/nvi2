@@ -21,7 +21,9 @@ static const char sccsid[] = "$Id: vs_msg.c,v 10.87 2012/07/12 00:54:12 zy Exp $
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(HAVE_CLOCKTIME)
 #include <time.h>
+#endif /* defined(HAVE_CLOCKTIME) */
 #include <unistd.h>
 
 #include "../common/common.h"
@@ -87,7 +89,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 
 		/* Initialize state for updates. */
 		vip->busy_ch = 0;
-		(void)clock_gettime(CLOCK_PROF, &vip->busy_ts);
+		(void)clock_gettime(CLOCK_REALTIME, &vip->busy_ts);
 
 		/* Save the current cursor. */
 		(void)gp->scr_cursor(sp, &vip->busy_oldy, &vip->busy_oldx);
@@ -120,7 +122,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 			break;
 
 		/* Update no more than every 1/8 of a second. */
-		(void)clock_gettime(CLOCK_PROF, &ts);
+		(void)clock_gettime(CLOCK_REALTIME, &ts);
 		ts_diff = ts;
 		timespecsub(&ts_diff, &vip->busy_ts);
 		if (timespeccmp(&ts_diff, &ts_min, <))
