@@ -91,3 +91,11 @@ enum nresult { NUM_ERR, NUM_OK, NUM_OVER, NUM_UNDER };
 			(vvp)->tv_nsec += 1000000000;			\
 		}							\
 	} while (0)
+
+#if !defined(HAVE_CLOCK_GETTIME)
+#define	CLOCK_REALTIME	0
+
+struct timespec;
+
+int clock_gettime(unsigned int, struct timespec *);
+#endif /* !defined(HAVE_CLOCK_GETTIME) */

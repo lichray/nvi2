@@ -76,6 +76,9 @@ add_custom_command(OUTPUT ../ex/version.h
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
+set(CMAKE_EXTRA_INCLUDE_FILES time.h)
+check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+
 check_function_exists(openpty UTIL_IN_LIBC)
 if(NOT UTIL_IN_LIBC)
 	find_library(UTIL_LIBRARY util)

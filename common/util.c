@@ -17,6 +17,7 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #include <sys/queue.h>
 #include <sys/time.h>
 
+#include <assert.h>
 #include <bitstring.h>
 #include <ctype.h>
 #include <errno.h>
@@ -353,3 +354,25 @@ TRACE(
 	(void)fflush(tfp);
 }
 #endif
+
+#if !defined(HAVE_CLOCKTIME)
+/*
+ * a fallback definition of clock_gettime
+ */
+
+int
+clock_gettime(unsigned int id, struct timespec *ts)
+{
+	struct timeval tv;
+	int ret;
+
+	assert(id == CLOCK_REALTIME);
+	ret = gettimeofday(&tv, NULL);
+	if (ret != 0) {
+		return ret;
+	}
+	ts->tv_sec = tv.tv_sec;
+	ts->tv_nsec = tv.tv_usec;
+	return 0;
+}
+#endif /* !defined(HAVE_CLOCKTIME) */

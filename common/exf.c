@@ -32,7 +32,9 @@ static const char sccsid[] = "$Id: exf.c,v 10.60 2012/10/07 06:02:54 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(HAVE_CLOCK_GETTIME)
 #include <time.h>
+#endif /* defined(HAVE_CLOCK_GETTIME) */
 #include <unistd.h>
 
 #include "common.h"
