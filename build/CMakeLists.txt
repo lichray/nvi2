@@ -86,6 +86,13 @@ else(NOT UTIL_IN_LIBC)
 	set(UTIL_LIBRARY)
 endif(NOT UTIL_IN_LIBC)
 
+check_function_exists(b64_ntop RESOLV_IN_LIBC)
+if(NOT RESOLV_IN_LIBC)
+	find_library(RESOLV_LIBRARY resolv)
+else(NOT RESOLV_IN_LIBC)
+	set(RESOLV_LIBRARY)
+endif(NOT RESOLV_IN_LIBC)
+
 include_directories(. ..)
 
 find_library(_curses_lib NAMES ncurses curses)
@@ -151,7 +158,7 @@ configure_file(${CMAKE_SOURCE_DIR}/recover.in
 	${CMAKE_SOURCE_DIR}/recover @ONLY)
 
 add_executable(nvi ${MAIN_SRCS})
-target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY})
+target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY} ${RESOLV_LIBRARY})
 if(USE_WIDECHAR)
 	target_link_libraries(nvi regex)
 	if(USE_ICONV)
