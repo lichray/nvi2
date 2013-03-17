@@ -16,6 +16,10 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #include <sys/types.h>
 #include <sys/queue.h>
 
+#ifdef __APPLE__
+#include <kern/clock.h>
+#endif
+
 #include <bitstring.h>
 #include <ctype.h>
 #include <errno.h>
@@ -336,10 +340,15 @@ void
 timepoint_steady(
 	struct timespec *ts)
 {
+#ifdef __APPLE__
+	clock_get_system_nanotime((clock_sec_t *)&ts->tv_sec,
+	    (clock_nsec_t *)&ts->tv_nsec);
+#else
 #ifdef CLOCK_MONOTONIC_FAST
 	(void)clock_gettime(CLOCK_MONOTONIC_FAST, ts);
 #else
 	(void)clock_gettime(CLOCK_MONOTONIC, ts);
+#endif
 #endif
 }
 
@@ -353,10 +362,15 @@ void
 timepoint_system(
 	struct timespec *ts)
 {
+#ifdef __APPLE__
+	clock_get_calendar_nanotime((clock_sec_t *)&ts->tv_sec,
+	    (clock_nsec_t *)&ts->tv_nsec);
+#else
 #ifdef CLOCK_REALTIME_FAST
 	(void)clock_gettime(CLOCK_REALTIME_FAST, ts);
 #else
 	(void)clock_gettime(CLOCK_REALTIME, ts);
+#endif
 #endif
 }
 
