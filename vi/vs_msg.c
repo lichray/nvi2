@@ -10,18 +10,18 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_msg.c,v 10.87 2012/07/12 00:54:12 zy Exp $";
+static const char sccsid[] = "$Id: vs_msg.c,v 10.88 2013/03/19 09:59:03 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
 #include <sys/queue.h>
+#include <sys/time.h>
 
 #include <bitstring.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "../common/common.h"
@@ -87,7 +87,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 
 		/* Initialize state for updates. */
 		vip->busy_ch = 0;
-		(void)clock_gettime(CLOCK_PROF, &vip->busy_ts);
+		timepoint_steady(&vip->busy_ts);
 
 		/* Save the current cursor. */
 		(void)gp->scr_cursor(sp, &vip->busy_oldy, &vip->busy_oldx);
@@ -120,7 +120,7 @@ vs_busy(SCR *sp, const char *msg, busy_t btype)
 			break;
 
 		/* Update no more than every 1/8 of a second. */
-		(void)clock_gettime(CLOCK_PROF, &ts);
+		timepoint_steady(&ts);
 		ts_diff = ts;
 		timespecsub(&ts_diff, &vip->busy_ts);
 		if (timespeccmp(&ts_diff, &ts_min, <))
