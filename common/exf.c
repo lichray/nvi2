@@ -16,6 +16,7 @@ static const char sccsid[] = "$Id: exf.c,v 10.60 2012/10/07 06:02:54 zy Exp $";
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 /*
  * We include <sys/file.h>, because the flock(2) and open(2) #defines
@@ -32,7 +33,6 @@ static const char sccsid[] = "$Id: exf.c,v 10.60 2012/10/07 06:02:54 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -917,7 +917,7 @@ success_open:
 	 */
 	if (noname)
 		if (stat(name, &sb))
-			(void)clock_gettime(CLOCK_REALTIME, &ep->mtim);
+			timepoint_system(&ep->mtim);
 		else {
 			F_SET(ep, F_DEVSET);
 			ep->mdev = sb.st_dev;

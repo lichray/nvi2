@@ -15,7 +15,6 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 
 #include <sys/types.h>
 #include <sys/queue.h>
-#include <sys/time.h>
 
 #include <bitstring.h>
 #include <ctype.h>
@@ -25,6 +24,7 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -324,6 +324,40 @@ nget_slong(
 			return (NUM_UNDER);
 	}
 	return (NUM_ERR);
+}
+
+/*
+ * timepoint_steady --
+ *      Get a timestamp from a monotonic clock.
+ *
+ * PUBLIC: void timepoint_steady __P((struct timespec *));
+ */
+void
+timepoint_steady(
+	struct timespec *ts)
+{
+#ifdef CLOCK_MONOTONIC_FAST
+	(void)clock_gettime(CLOCK_MONOTONIC_FAST, ts);
+#else
+	(void)clock_gettime(CLOCK_MONOTONIC, ts);
+#endif
+}
+
+/*
+ * timepoint_system --
+ *      Get the current calendar time.
+ *
+ * PUBLIC: void timepoint_system __P((struct timespec *));
+ */
+void
+timepoint_system(
+	struct timespec *ts)
+{
+#ifdef CLOCK_REALTIME_FAST
+	(void)clock_gettime(CLOCK_REALTIME_FAST, ts);
+#else
+	(void)clock_gettime(CLOCK_REALTIME, ts);
+#endif
 }
 
 #ifdef DEBUG
