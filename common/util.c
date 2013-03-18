@@ -17,7 +17,8 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #include <sys/queue.h>
 
 #ifdef __APPLE__
-#include <kern/clock.h>
+#include <mach/clock.h>
+#include <mach/mach.h>
 #endif
 
 #include <bitstring.h>
@@ -341,8 +342,18 @@ timepoint_steady(
 	struct timespec *ts)
 {
 #ifdef __APPLE__
-	clock_get_system_nanotime((clock_sec_t *)&ts->tv_sec,
-	    (clock_nsec_t *)&ts->tv_nsec);
+	clock_serv_t clk;
+	mach_timespec_t mts;
+	kern_return_t kr;
+
+	kr = host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &clk);
+	if (kr != KERN_SUCCESS) {
+		return;
+	}
+	clock_get_time(clk, &mts);
+	mach_port_deallocate(mach_task_self(), clk);
+	ts->tv_sec = mts.tv_sec;
+	ts->tv_nsec = mts.tv_nsec;
 #else
 #ifdef CLOCK_MONOTONIC_FAST
 	(void)clock_gettime(CLOCK_MONOTONIC_FAST, ts);
@@ -363,8 +374,18 @@ timepoint_system(
 	struct timespec *ts)
 {
 #ifdef __APPLE__
-	clock_get_calendar_nanotime((clock_sec_t *)&ts->tv_sec,
-	    (clock_nsec_t *)&ts->tv_nsec);
+	clock_serv_t clk;
+	mach_timespec_t mts;
+	kern_return_t kr;
+
+	kr = host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &clk);
+	if (kr != KERN_SUCCESS) {
+		return;
+	}
+	clock_get_time(clk, &mts);
+	mach_port_deallocate(mach_task_self(), clk);
+	ts->tv_sec = mts.tv_sec;
+	ts->tv_nsec = mts.tv_nsec;
 #else
 #ifdef CLOCK_REALTIME_FAST
 	(void)clock_gettime(CLOCK_REALTIME_FAST, ts);
