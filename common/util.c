@@ -15,7 +15,12 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 
 #include <sys/types.h>
 #include <sys/queue.h>
-#include <sys/time.h>
+
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#endif
 
 #include <bitstring.h>
 #include <ctype.h>
@@ -25,6 +30,7 @@ static const char sccsid[] = "$Id: util.c,v 10.29 2012/10/06 13:19:27 zy Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -324,6 +330,71 @@ nget_slong(
 			return (NUM_UNDER);
 	}
 	return (NUM_ERR);
+}
+
+/*
+ * timepoint_steady --
+ *      Get a timestamp from a monotonic clock.
+ *
+ * PUBLIC: void timepoint_steady __P((struct timespec *));
+ */
+void
+timepoint_steady(
+	struct timespec *ts)
+{
+#ifdef __APPLE__
+	static int base_initialized;
+	static mach_timebase_info_data_t base;
+	uint64_t val;
+	uint64_t ns;
+
+	if (!base_initialized) {
+		mach_timebase_info(&base);
+		base_initialized = 1;
+	}
+	val = mach_absolute_time();
+	ns = val * base.numer / base.denom;
+	ts->tv_sec = ns / 1000000000;
+	ts->tv_nsec = ns % 1000000000;
+#else
+#ifdef CLOCK_MONOTONIC_FAST
+	(void)clock_gettime(CLOCK_MONOTONIC_FAST, ts);
+#else
+	(void)clock_gettime(CLOCK_MONOTONIC, ts);
+#endif
+#endif
+}
+
+/*
+ * timepoint_system --
+ *      Get the current calendar time.
+ *
+ * PUBLIC: void timepoint_system __P((struct timespec *));
+ */
+void
+timepoint_system(
+	struct timespec *ts)
+{
+#ifdef __APPLE__
+	clock_serv_t clk;
+	mach_timespec_t mts;
+	kern_return_t kr;
+
+	kr = host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &clk);
+	if (kr != KERN_SUCCESS) {
+		return;
+	}
+	clock_get_time(clk, &mts);
+	mach_port_deallocate(mach_task_self(), clk);
+	ts->tv_sec = mts.tv_sec;
+	ts->tv_nsec = mts.tv_nsec;
+#else
+#ifdef CLOCK_REALTIME_FAST
+	(void)clock_gettime(CLOCK_REALTIME_FAST, ts);
+#else
+	(void)clock_gettime(CLOCK_REALTIME, ts);
+#endif
+#endif
 }
 
 #ifdef DEBUG
