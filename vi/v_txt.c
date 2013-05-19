@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: v_txt.c,v 11.4 2012/10/06 06:25:57 zy Exp $";
+static const char sccsid[] = "$Id: v_txt.c,v 11.5 2013/05/19 20:37:45 bentley Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1106,12 +1106,12 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		 */
 		if (LF_ISSET(TXT_TTYWERASE))
 			while (tp->cno > max) {
+				if (ISBLANK(tp->lb[tp->cno - 1]))
+					break;
 				--tp->cno;
 				++tp->owrite;
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
-				if (ISBLANK(tp->lb[tp->cno - 1]))
-					break;
 			}
 		else {
 			if (LF_ISSET(TXT_ALTWERASE)) {
@@ -1119,19 +1119,17 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 				++tp->owrite;
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
-				if (ISBLANK(tp->lb[tp->cno - 1]))
-					break;
 			}
 			if (tp->cno > max)
 				tmp = inword(tp->lb[tp->cno - 1]);
 			while (tp->cno > max) {
+				if (tmp != inword(tp->lb[tp->cno - 1])
+				    || ISBLANK(tp->lb[tp->cno - 1]))
+					break;
 				--tp->cno;
 				++tp->owrite;
 				if (FL_ISSET(is_flags, IS_RUNNING))
 					tp->lb[tp->cno] = ' ';
-				if (tmp != inword(tp->lb[tp->cno - 1])
-				    || ISBLANK(tp->lb[tp->cno - 1]))
-					break;
 			}
 		}
 
