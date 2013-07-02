@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.38 2013/03/11 22:54:35 yamt Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.39 2013/07/01 23:28:13 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -154,12 +154,6 @@ static int
 fe_char2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw, 
 	    size_t *tolen, CHAR_T **dst)
 {
-    /* XXX UTF-16 linesep hack */
-    char *enc = O_STR(sp, O_FILEENCODING);
-    if (enc && !strncasecmp(enc, "utf-16", 6) && len % 2)
-	if (--len, !strncasecmp(enc, "utf-16le", 8))
-	    str++;			/* shift if LE */
-
     return default_char2int(sp, str, len, cw, tolen, dst,
 	sp->conv.id[IC_FE_CHAR2INT]);
 }

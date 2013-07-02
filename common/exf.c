@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.61 2013/03/19 09:59:03 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.62 2013/07/01 23:28:13 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1235,52 +1235,19 @@ file_encinit(SCR *sp)
 			buf[blen++] = '\n';
 	}
 
+	/*
+	 * Detect UTF-8 and fallback to the locale/preset encoding.
+	 *
+	 * XXX
+	 * A manually set O_FILEENCODING indicates the "fallback
+	 * encoding", but UTF-8, which can be safely detected, is not
+	 * inherited from the old screen.
+	 */
 	if (looks_utf8(buf, blen) > 1)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
-	else {
-		int st = looks_utf16(buf, blen);
-		if (st > 0) {
-			char *np;
-
-			/* Exclude the BOM during the editing. */
-			db_rget(sp, 1, &p, &len);
-			MALLOC(sp, np, char *, len - 2);
-			if (np != NULL) {
-				memcpy(np, p + 2, len - 2);
-				db_rset(sp, 1, np, len - 2);
-				free(np);
-			}
-		}
-		switch (st) {
-			DBT key, data;
-			recno_t lno;
-		case 1:
-			key.data = &lno;
-			key.size = sizeof(lno);
-			if (!ep->db->seq(ep->db, &key, &data, R_LAST) &&
-			   	*(char *)data.data == '\0')
-				ep->db->del(ep->db, &key, 0);
-			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16le", 0);
-			break;
-		case 2:
-			o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-16be", 0);
-			break;
-		default:
-			/*
-			 * Fallback to the locale/preset encoding.
-			 *
-			 * XXX
-			 * A manually set O_FILEENCODING indicates the
-			 * "fallback encoding", so the encodings, utf-8 and
-			 * utf-16, which can be safely detected, are not
-			 * inheritable from the old screen.
-			 */
-			if (O_ISSET(sp, O_FILEENCODING) &&
-			    strncasecmp(O_STR(sp, O_FILEENCODING), "utf-", 4))
-				break;
-			o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
-		}
-	}
+	else if (!O_ISSET(sp, O_FILEENCODING) ||
+	    !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-8", 5))
+		o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 
 	conv_enc(sp, O_FILEENCODING, 0);
 #endif
