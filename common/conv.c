@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.39 2013/07/01 23:28:13 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.40 2014/01/02 12:06:27 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -372,40 +372,51 @@ conv_enc(SCR *sp, int option, char *enc)
 {
 #if defined(USE_WIDECHAR) && defined(USE_ICONV)
     iconv_t *c2w, *w2c;
+    iconv_t id_c2w, id_w2c;
 
     switch (option) {
     case O_FILEENCODING:
 	c2w = sp->conv.id + IC_FE_CHAR2INT;
 	w2c = sp->conv.id + IC_FE_INT2CHAR;
 	if (!enc) enc = O_STR(sp, O_FILEENCODING);
-	if (*c2w != (iconv_t)-1)
-	    iconv_close(*c2w);
-	if (*w2c != (iconv_t)-1)
-	    iconv_close(*w2c);
+
 	if (strcasecmp(codeset(), enc)) {
-	    if ((*c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
+	    if ((id_c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
 		goto err;
-	    if ((*w2c = iconv_open(enc, codeset())) == (iconv_t)-1)
+	    if ((id_w2c = iconv_open(enc, codeset())) == (iconv_t)-1)
 		goto err;
-	} else *c2w = *w2c = (iconv_t)-1;
+	} else {
+	    id_c2w = (iconv_t)-1;
+	    id_w2c = (iconv_t)-1;
+	}
+
 	break;
+
     case O_INPUTENCODING:
 	c2w = sp->conv.id + IC_IE_CHAR2INT;
 	w2c = sp->conv.id + IC_IE_TO_UTF16;
 	if (!enc) enc = O_STR(sp, O_INPUTENCODING);
-	if (*c2w != (iconv_t)-1)
-	    iconv_close(*c2w);
-	if (*w2c != (iconv_t)-1)
-	    iconv_close(*w2c);
+
 	if (strcasecmp(codeset(), enc)) {
-	    if ((*c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
+	    if ((id_c2w = iconv_open(codeset(), enc)) == (iconv_t)-1)
 		goto err;
-	} else *c2w = (iconv_t)-1;
+	} else
+	    id_c2w = (iconv_t)-1;
+
 	/* UTF-16 can not be locale and can not be inputed. */
-	if ((*w2c = iconv_open("utf-16be", enc)) == (iconv_t)-1)
+	if ((id_w2c = iconv_open("utf-16be", enc)) == (iconv_t)-1)
 	    goto err;
+
 	break;
     }
+
+    if (*c2w != (iconv_t)-1)
+	iconv_close(*c2w);
+    if (*w2c != (iconv_t)-1)
+	iconv_close(*w2c);
+
+    *c2w = id_c2w;
+    *w2c = id_w2c;
 
     F_CLR(sp, SC_CONV_ERROR);
     F_SET(sp, SC_SCR_REFORMAT);
