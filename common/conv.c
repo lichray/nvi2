@@ -12,7 +12,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.40 2014/01/02 12:06:27 zy Exp $";
+static const char sccsid[] = "$Id: conv.c,v 2.40 2014/02/27 16:25:29 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -408,6 +408,9 @@ conv_enc(SCR *sp, int option, char *enc)
 	    goto err;
 
 	break;
+
+    default:
+	abort();
     }
 
     if (*c2w != (iconv_t)-1)
