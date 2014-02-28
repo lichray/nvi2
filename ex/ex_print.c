@@ -26,8 +26,8 @@ static const char sccsid[] = "$Id: ex_print.c,v 10.26 2013/11/02 02:11:07 zy Exp
 
 #include "../common/common.h"
 
-static int ex_prchars __P((SCR *, const CHAR_T *, size_t *, size_t, 
-                           u_int, int));
+static int ex_prchars __P((SCR *,
+    const CHAR_T *, size_t *, size_t, u_int, int));
 
 /*
  * ex_list -- :[line [,line]] l[ist] [count] [flags]

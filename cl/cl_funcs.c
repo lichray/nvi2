@@ -81,7 +81,7 @@ addstr4(SCR *sp, void *str, size_t len, int wide)
 int
 cl_waddstr(SCR *sp, const CHAR_T *str, size_t len)
 {
-    return addstr4(sp, (void *)str, len, 1);
+	return addstr4(sp, (void *)str, len, 1);
 }
 
 /*
@@ -93,7 +93,7 @@ cl_waddstr(SCR *sp, const CHAR_T *str, size_t len)
 int
 cl_addstr(SCR *sp, const char *str, size_t len)
 {
-    return addstr4(sp, (void *)str, len, 0);
+	return addstr4(sp, (void *)str, len, 0);
 }
 
 /*

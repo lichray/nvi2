@@ -132,8 +132,8 @@ tail(char *path)
  */
 char *
 join(
-    char *path1,
-    char *path2)
+	char *path1,
+	char *path2)
 {
 	char *p;
 

@@ -177,7 +177,9 @@ looks_utf16(const char *ibuf, size_t nbytes)
  *
  * PUBLIC: int decode_utf8 __P((const char *));
  */
-int decode_utf8(const char *ibuf) {
+int
+decode_utf8(const char *ibuf)
+{
 	const u_char *buf = (u_char *)ibuf;
 	int u = -1;
 
@@ -194,6 +196,7 @@ int decode_utf8(const char *ibuf) {
 			u = (buf[0] ^ 0xF0) << 18 ^ (buf[1] ^ 0x80) << 12
 			  ^ (buf[2] ^ 0x80) <<  6 ^ (buf[3] ^ 0x80);
 	}
+
 	return u;
 }
 
@@ -206,7 +209,9 @@ int decode_utf8(const char *ibuf) {
  *
  * PUBLIC: int decode_utf16 __P((const char *, int));
  */
-int decode_utf16(const char* ibuf, int bigend) {
+int
+decode_utf16(const char* ibuf, int bigend)
+{
 	const u_char *buf = (u_char *)ibuf;
 	int u = -1;
 	unsigned int w1, w2;
@@ -226,5 +231,6 @@ int decode_utf16(const char* ibuf, int bigend) {
 			w2 = buf[2] ^ buf[3] << 8;
 		u = ((w1 ^ 0xD800) << 10 ^ (w2 ^ 0xDC00)) + 0x10000;
 	}
+
 	return u;
 }

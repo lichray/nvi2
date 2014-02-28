@@ -243,8 +243,8 @@ OPTLIST const optlist[] = {
 };
 
 typedef struct abbrev {
-        CHAR_T *name;
-        int offset;
+	CHAR_T *name;
+	int offset;
 } OABBREV;
 
 static OABBREV const abbrev[] = {
@@ -1103,18 +1103,18 @@ opts_nomatch(
 
 static int
 opts_abbcmp(
-        const void *a,
-		const void *b)
+	const void *a,
+	const void *b)
 {
-        return(STRCMP(((OABBREV *)a)->name, ((OABBREV *)b)->name));
+	return(STRCMP(((OABBREV *)a)->name, ((OABBREV *)b)->name));
 }
 
 static int
 opts_cmp(
-        const void *a,
-		const void *b)
+	const void *a,
+	const void *b)
 {
-        return(STRCMP(((OPTLIST *)a)->name, ((OPTLIST *)b)->name));
+	return(STRCMP(((OPTLIST *)a)->name, ((OPTLIST *)b)->name));
 }
 
 /*

@@ -1396,7 +1396,7 @@ re_sub(
 			case '5': case '6': case '7': case '8': case '9':
 				no = *rp++ - '0';
 subzero:			if (match[no].rm_so == -1 ||
-			    	    match[no].rm_eo == -1)
+				    match[no].rm_eo == -1)
 					break;
 				mlen = match[no].rm_eo - match[no].rm_so;
 				for (t = ip + match[no].rm_so; mlen--; ++t)

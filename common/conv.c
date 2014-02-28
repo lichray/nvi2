@@ -39,11 +39,13 @@ static const char sccsid[] = "$Id: conv.c,v 2.40 2014/02/27 16:25:29 zy Exp $";
  * PUBLIC: char * codeset __P((void));
  */
 char *
-codeset(void) {
+codeset(void)
+{
     static char *cs;
 
     if (cs == NULL)
 	cs = nl_langinfo(CODESET);
+
     return cs;
 }
 
@@ -73,7 +75,7 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
  * len contains the number of bytes put in the buffer
  */
 #ifdef USE_ICONV
-#define CONVERT(str, left, src, len)				    	\
+#define CONVERT(str, left, src, len)					\
     do {								\
 	size_t outleft;							\
 	char *bp = buffer;						\
@@ -85,7 +87,7 @@ raw2int(SCR *sp, const char * str, ssize_t len, CONVWIN *cw,
 	if ((len = CONV_BUFFER_SIZE - outleft) == 0) {			\
 	    error = -left;						\
 	    goto err;							\
-	}				    				\
+	}								\
 	src = buffer;							\
     } while (0)
 
@@ -223,16 +225,16 @@ default_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
 	do {								\
 	    size_t outleft = cw->blen1 - offset;			\
 	    char *obp = cw->bp1.c + offset;				\
-	    if (cw->blen1 < offset + MB_CUR_MAX) {		    	\
+	    if (cw->blen1 < offset + MB_CUR_MAX) {			\
 		nlen += 256;						\
 		BINC_RETC(NULL, cw->bp1.c, cw->blen1, nlen);		\
-	    }						    		\
-	    errno = 0;						    	\
+	    }								\
+	    errno = 0;							\
 	    ret = iconv(id, (iconv_src_t)&bp, lenp, &obp, &outleft);	\
 	    if (ret == -1 && errno != E2BIG)				\
 		goto err;						\
-	    offset = cw->blen1 - outleft;			        \
-	} while (ret != 0); 					        \
+	    offset = cw->blen1 - outleft;				\
+	} while (ret != 0); 						\
     } while (0)
 #else
 #define CONVERT2(_buffer, lenp, cw, offset)

@@ -81,8 +81,8 @@ static int	apply_with __P((int (*)(SCR *, recno_t, CHAR_T *, size_t),
  * because it is passed to db_set as a string
  */
 typedef struct {
-    char    data[sizeof(u_char) /* type */ + sizeof(recno_t)];
-    CHAR_T  str[1];
+	char    data[sizeof(u_char) /* type */ + sizeof(recno_t)];
+	CHAR_T  str[1];
 } log_t;
 #define CHAR_T_OFFSET ((char *)(((log_t*)0)->str) - (char *)0)
 

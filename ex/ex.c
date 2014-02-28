@@ -1689,12 +1689,12 @@ ex_range(SCR *sp, EXCMD *ecp, int *errp)
 			++ecp->cp;
 			--ecp->clen;
 			break;
-		case ',':               /* Comma delimiter. */
+		case ',':	       /* Comma delimiter. */
 			/* Vi ex address searches didn't permit commas. */
 			if (F_ISSET(ecp, E_VISEARCH))
 				goto ret;
 			/* FALLTHROUGH */
-		case ';':               /* Semi-colon delimiter. */
+		case ';':	       /* Semi-colon delimiter. */
 			if (sp->ep == NULL) {
 				ex_badaddr(sp, NULL, A_EMPTY, NUM_OK);
 				*errp = 1;

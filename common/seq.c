@@ -398,11 +398,11 @@ e_memcmp(
 	size_t n)
 {
 	if (n != 0) {
-                do {
-                        if (*p1++ != ep->e_c)
-                                return (*--p1 - ep->e_c);
+		do {
+			if (*p1++ != ep->e_c)
+				return (*--p1 - ep->e_c);
 			++ep;
-                } while (--n != 0);
-        }
-        return (0);
+		} while (--n != 0);
+	}
+	return (0);
 }

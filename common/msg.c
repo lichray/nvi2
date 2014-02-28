@@ -60,7 +60,7 @@ msgq(
 	size_t blen, len, mlen, nlen;
 	const char *p;
 	char *bp, *mp;
-        va_list ap;
+	va_list ap;
 #ifndef NL_ARGMAX
 	int ch;
 	char *rbp, *s_rbp;
@@ -274,7 +274,7 @@ retry:		FREE_SPACE(sp, bp, blen);
 #ifndef NL_ARGMAX
 format:	/* Format the arguments into the string. */
 #endif
-        va_start(ap, fmt);
+	va_start(ap, fmt);
 	len = vsnprintf(mp, REM, fmt, ap);
 	va_end(ap);
 	if (len >= nlen)

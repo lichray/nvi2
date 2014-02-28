@@ -62,7 +62,7 @@ ex_join(SCR *sp, EXCMD *cmdp)
 		++cmdp->addr2.lno;
 
 	clen = tlen = 0;
-        for (first = 1,
+	for (first = 1,
 	    from = cmdp->addr1.lno, to = cmdp->addr2.lno; from <= to; ++from) {
 		/*
 		 * Get next line.  Historic versions of vi allowed "10J" while
@@ -154,7 +154,7 @@ ex_join(SCR *sp, EXCMD *cmdp)
 	sp->lno = cmdp->addr1.lno;
 
 	/* Delete the joined lines. */
-        for (from = cmdp->addr1.lno, to = cmdp->addr2.lno; to > from; --to)
+	for (from = cmdp->addr1.lno, to = cmdp->addr2.lno; to > from; --to)
 		if (db_delete(sp, to))
 			goto err;
 

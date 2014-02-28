@@ -125,12 +125,12 @@ mark_get(
 	lmp = mark_find(sp, key);
 	if (lmp == NULL || lmp->name != key) {
 		msgq(sp, mtype, "017|Mark %s: not set", KEY_NAME(sp, key));
-                return (1);
+		return (1);
 	}
 	if (F_ISSET(lmp, MARK_DELETED)) {
 		msgq(sp, mtype,
 		    "018|Mark %s: the line was deleted", KEY_NAME(sp, key));
-                return (1);
+		return (1);
 	}
 
 	/*

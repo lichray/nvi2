@@ -861,7 +861,7 @@ csc_help(SCR *sp, char *cmd)
 			return (1);
 		} else {
 			ex_printf(sp,
-		          "Command: %s (%s)\n", ccp->name, ccp->help_msg);
+			  "Command: %s (%s)\n", ccp->name, ccp->help_msg);
 			ex_printf(sp, "  Usage: %s\n", ccp->usage_msg);
 			return (0);
 		}
