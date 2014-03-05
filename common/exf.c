@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.62 2013/07/01 23:28:13 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.62 2014/03/05 15:40:43 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1246,7 +1246,7 @@ file_encinit(SCR *sp)
 	if (looks_utf8(buf, blen) > 1)
 		o_set(sp, O_FILEENCODING, OS_STRDUP, "utf-8", 0);
 	else if (!O_ISSET(sp, O_FILEENCODING) ||
-	    !strncasecmp(O_STR(sp, O_FILEENCODING), "utf-8", 5))
+	    !strcasecmp(O_STR(sp, O_FILEENCODING), "utf-8"))
 		o_set(sp, O_FILEENCODING, OS_STRDUP, codeset(), 0);
 
 	conv_enc(sp, O_FILEENCODING, 0);
