@@ -144,7 +144,7 @@ nomatch:		msgq(sp, M_BERR, "184|No match character on this line");
 	if (db_get(sp, mp->lno, DBG_FATAL, &p, &len))
 		return (1);
 	for (p += mp->cno + 1, len -= mp->cno; --len; ++p)
-		if (!isblank(*p))
+		if (!ISBLANK(*p))
 			return (0);
 	F_SET(vp, VM_LMODE);
 	return (0);

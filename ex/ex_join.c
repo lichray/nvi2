@@ -37,7 +37,8 @@ ex_join(SCR *sp, EXCMD *cmdp)
 {
 	recno_t from, to;
 	size_t blen, clen, len, tlen;
-	int echar = 0, extra, first;
+	CHAR_T echar = 0;
+	int extra, first;
 	CHAR_T *bp, *tbp = NULL;
 	CHAR_T *p;
 
@@ -104,8 +105,8 @@ ex_join(SCR *sp, EXCMD *cmdp)
 		 */
 		extra = 0;
 		if (!first && !FL_ISSET(cmdp->iflags, E_C_FORCE)) {
-			if (isblank(echar))
-				for (; len && isblank(*p); --len, ++p);
+			if (ISBLANK(echar))
+				for (; len && ISBLANK(*p); --len, ++p);
 			else if (p[0] != ')') {
 				if (STRCHR(L(".?!"), echar)) {
 					*tbp++ = ' ';
@@ -114,7 +115,7 @@ ex_join(SCR *sp, EXCMD *cmdp)
 				}
 				*tbp++ = ' ';
 				++clen;
-				for (; len && isblank(*p); --len, ++p);
+				for (; len && ISBLANK(*p); --len, ++p);
 			}
 		}
 

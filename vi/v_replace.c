@@ -172,7 +172,7 @@ next:		if (v_event_get(sp, &ev, 0, 0))
 		p += vp->m_start.cno + cnt;
 		len -= vp->m_start.cno + cnt;
 		if (len != 0 && O_ISSET(sp, O_AUTOINDENT))
-			for (; len && isblank(*p); --len, ++p);
+			for (; len && ISBLANK(*p); --len, ++p);
 
 		if ((tp = text_init(sp, p, len, len)) == NULL)
 			goto err_ret;

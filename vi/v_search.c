@@ -224,10 +224,11 @@ v_exaddr(SCR *sp, VICMD *vp, dir_t dir)
 
 		/* No blanks, just like the z command. */
 		for (t = cmd + 1, tlen = len - 1; tlen > 0; ++t, --tlen)
-			if (!isdigit(*t))
+			if (!ISDIGIT(*t))
 				break;
 		if (tlen &&
-		    (*t == '-' || *t == '.' || *t == '+' || *t == '^')) {
+		    (*t == L('-') || *t == L('.') || *t == L('+') ||
+		     *t == L('^'))) {
 			++t;
 			--tlen;
 			type = 1;

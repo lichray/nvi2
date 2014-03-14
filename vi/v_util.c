@@ -123,7 +123,7 @@ int
 v_isempty(CHAR_T *p, size_t len)
 {
 	for (; len--; ++p)
-		if (!isblank(*p))
+		if (!ISBLANK(*p))
 			return (0);
 	return (1);
 }

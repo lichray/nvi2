@@ -70,8 +70,8 @@ ex_map(SCR *sp, EXCMD *cmdp)
 	 * call it as well.  Note, the SEQ_FUNCMAP type is persistent across
 	 * screen types, maybe the next screen type will get it right.
 	 */
-	if (input[0] == '#' && isdigit(input[1])) {
-		for (p = input + 2; isdigit(*p); ++p);
+	if (input[0] == L('#') && ISDIGIT(input[1])) {
+		for (p = input + 2; ISDIGIT(*p); ++p);
 		if (p[0] != '\0')
 			goto nofunc;
 

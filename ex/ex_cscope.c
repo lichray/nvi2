@@ -125,18 +125,18 @@ ex_cscope(SCR *sp, EXCMD *cmdp)
 
 	/* Skip leading whitespace. */
 	for (p = cmdp->argv[0]->bp, i = cmdp->argv[0]->len; i > 0; --i, ++p)
-		if (!isspace(*p))
+		if (!ISSPACE(*p))
 			break;
 	if (i == 0)
 		goto usage;
 
 	/* Skip the command to any arguments. */
 	for (cmd = p; i > 0; --i, ++p)
-		if (isspace(*p))
+		if (ISSPACE(*p))
 			break;
-	if (*p != '\0') {
-		*p++ = '\0';
-		for (; *p && isspace(*p); ++p);
+	if (*p != L('\0')) {
+		*p++ = L('\0');
+		for (; *p && ISSPACE(*p); ++p);
 	}
 
 	INT2CHAR(sp, cmd, STRLEN(cmd) + 1, np, nlen);
