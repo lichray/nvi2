@@ -136,7 +136,7 @@ regerror(int errcode, const regex_t *preg, char *errbuf, size_t errbuf_size)
 
 	len = strlen(s) + 1;
 	if (errbuf_size > 0) {
-		(void) strlcpy(errbuf, s, errbuf_size);
+		strlcpy(errbuf, s, errbuf_size);
 	}
 
 	return(len);

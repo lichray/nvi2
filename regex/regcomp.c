@@ -240,7 +240,7 @@ regcomp(regex_t *preg, const RCHAR_T *pattern, int cflags)
 #if 0
 	g->ncategories = 1;	/* category 0 is "everything else" */
 	g->categories = &g->catspace[-(CHAR_MIN)];
-	(void) memset((char *)g->catspace, 0, NC*sizeof(cat_t));
+	memset((char *)g->catspace, 0, NC*sizeof(cat_t));
 #endif
 	g->backrefs = 0;
 
@@ -300,7 +300,7 @@ p_ere(struct parse *p, int stop, size_t reclimit)
 		conc = HERE();
 		while (MORE() && (c = PEEK()) != '|' && c != stop)
 			p_ere_exp(p, reclimit);
-		(void)REQUIRE(HERE() != conc, REG_EMPTY);	/* require nonempty */
+		REQUIRE(HERE() != conc, REG_EMPTY);	/* require nonempty */
 
 		if (!EAT('|'))
 			break;		/* NOTE BREAK OUT */
@@ -345,7 +345,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 	pos = HERE();
 	switch (c) {
 	case '(':
-		(void)REQUIRE(MORE(), REG_EPAREN);
+		REQUIRE(MORE(), REG_EPAREN);
 		p->g->nsub++;
 		subno = p->g->nsub;
 		if (subno < NPAREN)
@@ -358,7 +358,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 			assert(p->pend[subno] != 0);
 		}
 		EMIT(ORPAREN, subno);
-		(void)MUSTEAT(')', REG_EPAREN);
+		MUSTEAT(')', REG_EPAREN);
 		break;
 #ifndef POSIX_MISTAKE
 	case ')':		/* happens only if no current unmatched ( */
@@ -401,12 +401,12 @@ p_ere_exp(struct parse *p, size_t reclimit)
 		p_bracket(p);
 		break;
 	case '\\':
-		(void)REQUIRE(MORE(), REG_EESCAPE);
+		REQUIRE(MORE(), REG_EESCAPE);
 		c = GETNEXT();
 		ordinary(p, c);
 		break;
 	case '{':		/* okay as ordinary except if digit follows */
-		(void)REQUIRE(!MORE() || !ISDIGIT((UCHAR_T)PEEK()), REG_BADRPT);
+		REQUIRE(!MORE() || !ISDIGIT((UCHAR_T)PEEK()), REG_BADRPT);
 		/* FALLTHROUGH */
 	default:
 		ordinary(p, c);
@@ -422,7 +422,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 		return;		/* no repetition, we're done */
 	NEXT();
 
-	(void)REQUIRE(!wascaret, REG_BADRPT);
+	REQUIRE(!wascaret, REG_BADRPT);
 	switch (c) {
 	case '*':	/* implemented as +? */
 		/* this case does not require the (y|) trick, noKLUDGE */
@@ -449,7 +449,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 		if (EAT(',')) {
 			if (ISDIGIT((UCHAR_T)PEEK())) {
 				count2 = p_count(p);
-				(void)REQUIRE(count <= count2, REG_BADBR);
+				REQUIRE(count <= count2, REG_BADBR);
 			} else		/* single number with comma */
 				count2 = INFINITY;
 		} else		/* just a single number */
@@ -458,7 +458,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 		if (!EAT('}')) {	/* error heuristics */
 			while (MORE() && PEEK() != '}')
 				NEXT();
-			(void)REQUIRE(MORE(), REG_EBRACE);
+			REQUIRE(MORE(), REG_EBRACE);
 			SETERROR(REG_BADBR);
 		}
 		break;
@@ -479,7 +479,7 @@ p_ere_exp(struct parse *p, size_t reclimit)
 static void
 p_str(struct parse *p)
 {
-	(void)REQUIRE(MORE(), REG_EMPTY);
+	REQUIRE(MORE(), REG_EMPTY);
 	while (MORE())
 		ordinary(p, GETNEXT());
 }
@@ -527,7 +527,7 @@ p_bre(struct parse *p,
 		p->g->neol++;
 	}
 
-	(void)REQUIRE(HERE() != start, REG_EMPTY);	/* require nonempty */
+	REQUIRE(HERE() != start, REG_EMPTY);	/* require nonempty */
 }
 
 /*
@@ -552,7 +552,7 @@ p_simp_re(struct parse *p,
 	c = GETNEXT();
 	backsl = c == '\\';
 	if (backsl) {
-		(void)REQUIRE(MORE(), REG_EESCAPE);
+		REQUIRE(MORE(), REG_EESCAPE);
 		c = (unsigned char)GETNEXT();
 		switch (c) {
 		case '{':
@@ -572,7 +572,7 @@ p_simp_re(struct parse *p,
 				assert(p->pend[subno] != 0);
 			}
 			EMIT(ORPAREN, subno);
-			(void)REQUIRE(EATTWO('\\', ')'), REG_EPAREN);
+			REQUIRE(EATTWO('\\', ')'), REG_EPAREN);
 			break;
 		case ')':	/* should not get here -- must be user */
 		case '}':
@@ -617,7 +617,7 @@ p_simp_re(struct parse *p,
 			p_bracket(p);
 			break;
 		case '*':
-			(void)REQUIRE(starordinary, REG_BADRPT);
+			REQUIRE(starordinary, REG_BADRPT);
 			/* FALLTHROUGH */
 		default:
 			ordinary(p, c);
@@ -636,7 +636,7 @@ p_simp_re(struct parse *p,
 		if (EAT(',')) {
 			if (MORE() && ISDIGIT((UCHAR_T)PEEK())) {
 				count2 = p_count(p);
-				(void)REQUIRE(count <= count2, REG_BADBR);
+				REQUIRE(count <= count2, REG_BADBR);
 			} else		/* single number with comma */
 				count2 = INFINITY;
 		} else		/* just a single number */
@@ -645,7 +645,7 @@ p_simp_re(struct parse *p,
 		if (!EATTWO('\\', '}')) {	/* error heuristics */
 			while (MORE() && !SEETWO('\\', '}'))
 				NEXT();
-			(void)REQUIRE(MORE(), REG_EBRACE);
+			REQUIRE(MORE(), REG_EBRACE);
 			SETERROR(REG_BADBR);
 		}
 	} else if (!backsl && c == (unsigned char)'$')	/* $ (but not \$) ends it */
@@ -668,7 +668,7 @@ p_count(struct parse *p)
 		ndigits++;
 	}
 
-	(void)REQUIRE(ndigits > 0 && count <= DUPMAX, REG_BADBR);
+	REQUIRE(ndigits > 0 && count <= DUPMAX, REG_BADBR);
 	return(count);
 }
 
@@ -712,7 +712,7 @@ p_bracket(struct parse *p)
 		p_b_term(p, cs);
 	if (EAT('-'))
 		CHadd(cs, '-');
-	(void)MUSTEAT(']', REG_EBRACK);
+	MUSTEAT(']', REG_EBRACK);
 
 	if (p->error != 0)	/* don't mess things up further */
 		return;
@@ -780,21 +780,21 @@ p_b_term(struct parse *p, cset *cs)
 	switch (c) {
 	case ':':		/* character class */
 		NEXT2();
-		(void)REQUIRE(MORE(), REG_EBRACK);
+		REQUIRE(MORE(), REG_EBRACK);
 		c = PEEK();
-		(void)REQUIRE(c != '-' && c != ']', REG_ECTYPE);
+		REQUIRE(c != '-' && c != ']', REG_ECTYPE);
 		p_b_cclass(p, cs);
-		(void)REQUIRE(MORE(), REG_EBRACK);
-		(void)REQUIRE(EATTWO(':', ']'), REG_ECTYPE);
+		REQUIRE(MORE(), REG_EBRACK);
+		REQUIRE(EATTWO(':', ']'), REG_ECTYPE);
 		break;
 	case '=':		/* equivalence class */
 		NEXT2();
-		(void)REQUIRE(MORE(), REG_EBRACK);
+		REQUIRE(MORE(), REG_EBRACK);
 		c = PEEK();
-		(void)REQUIRE(c != '-' && c != ']', REG_ECOLLATE);
+		REQUIRE(c != '-' && c != ']', REG_ECOLLATE);
 		p_b_eclass(p, cs);
-		(void)REQUIRE(MORE(), REG_EBRACK);
-		(void)REQUIRE(EATTWO('=', ']'), REG_ECOLLATE);
+		REQUIRE(MORE(), REG_EBRACK);
+		REQUIRE(EATTWO('=', ']'), REG_ECOLLATE);
 		break;
 	default:		/* symbol, ordinary character, or range */
 /* xxx revision needed for multichar stuff */
@@ -809,7 +809,7 @@ p_b_term(struct parse *p, cset *cs)
 		} else
 			finish = start;
 /* xxx what about signed chars here... */
-		(void)REQUIRE(start <= finish, REG_ERANGE);
+		REQUIRE(start <= finish, REG_ERANGE);
 		for (i = start; i <= finish; i++)
 			CHadd(cs, i);
 		break;
@@ -869,13 +869,13 @@ p_b_symbol(struct parse *p)
 {
 	char value;
 
-	(void)REQUIRE(MORE(), REG_EBRACK);
+	REQUIRE(MORE(), REG_EBRACK);
 	if (!EATTWO('[', '.'))
 		return(GETNEXT());
 
 	/* collating symbol */
 	value = p_b_coll_elem(p, '.');
-	(void)REQUIRE(EATTWO('.', ']'), REG_ECOLLATE);
+	REQUIRE(EATTWO('.', ']'), REG_ECOLLATE);
 	return(value);
 }
 
@@ -1114,7 +1114,7 @@ allocset(struct parse *p)
 				p->g->sets[i].ptr = p->g->setbits + css*(i/CHAR_BIT);
 		}
 		if (p->g->sets != NULL && p->g->setbits != NULL)
-			(void) memset((char *)p->g->setbits + (nbytes - css),
+			memset((char *)p->g->setbits + (nbytes - css),
 								0, css);
 		else {
 oomem:
@@ -1241,7 +1241,7 @@ mcadd(struct parse *p, cset *cs, const char *cp)
 	}
 	cs->multis = np;
 
-	(void) strlcpy(cs->multis + oldend - 1, cp, cs->smultis - oldend + 1);
+	strlcpy(cs->multis + oldend - 1, cp, cs->smultis - oldend + 1);
 }
 
 #ifdef notdef
