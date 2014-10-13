@@ -1178,7 +1178,6 @@ freezeset(struct parse *p, cset *cs)
 
 /*
  - firstch - return first character in a set (which must have at least one)
- == static int firstch(struct parse *p, cset *cs);
  */
 static int			/* character; there is no "none" value */
 firstch(struct parse *p, cset *cs)

@@ -127,16 +127,10 @@ static char *pchar __P((int ch));
 
 /*
  - matcher - the actual matching engine
- == static int matcher(struct re_guts *g, const RCHAR_T *string, \
- ==	size_t nmatch, regmatch_t pmatch[], int eflags);
  */
 static int			/* 0 success, REG_NOMATCH failure */
-matcher(g, string, nmatch, pmatch, eflags)
-struct re_guts *g;
-const RCHAR_T *string;
-size_t nmatch;
-regmatch_t pmatch[];
-int eflags;
+matcher(struct re_guts *g, const RCHAR_T *string, size_t nmatch,
+    regmatch_t pmatch[], int eflags)
 {
 	const RCHAR_T *endp;
 	size_t i;
