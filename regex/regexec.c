@@ -53,10 +53,6 @@
 #include "utils.h"
 #include "regex2.h"
 
-#ifdef notdef
-static int nope = 0;		/* for use in asserts; shuts lint up */
-#endif
-
 /* macros for manipulating states, small version */
 #define	states	int
 #define	states1	int		/* for later use in regexec() decision */
