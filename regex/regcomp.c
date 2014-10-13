@@ -360,18 +360,6 @@ p_ere_exp(struct parse *p, size_t reclimit)
 		EMIT(ORPAREN, subno);
 		MUSTEAT(')', REG_EPAREN);
 		break;
-#ifndef POSIX_MISTAKE
-	case ')':		/* happens only if no current unmatched ( */
-		/*
-		 * You may ask, why the ifndef?  Because I didn't notice
-		 * this until slightly too late for 1003.2, and none of the
-		 * other 1003.2 regular-expression reviewers noticed it at
-		 * all.  So an unmatched ) is legal POSIX, at least until
-		 * we can get it fixed.
-		 */
-		SETERROR(REG_EPAREN);
-		break;
-#endif
 	case '^':
 		EMIT(OBOL, 0);
 		p->g->iflags |= USEBOL;
