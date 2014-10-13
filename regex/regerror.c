@@ -109,10 +109,10 @@ static struct rerr {
 size_t
 regerror(int errcode, const regex_t *preg, char *errbuf, size_t errbuf_size)
 {
-	register struct rerr *r;
-	register size_t len;
-	register int target = errcode &~ REG_ITOA;
-	register const char *s;
+	struct rerr *r;
+	size_t len;
+	int target = errcode &~ REG_ITOA;
+	const char *s;
 	char convbuf[50];
 
 	if (errcode == REG_ATOI)
@@ -150,9 +150,9 @@ static char *
 regatoi(const regex_t *preg, char *localbuf)
 {
 #if 0 /* we don't seem to use this and it gives a warning. */
-	register struct rerr *r;
-	register size_t siz;
-	register char *p;
+	struct rerr *r;
+	size_t siz;
+	char *p;
 
 	for (r = rerrs; r->code != 0; r++)
 		if (strcmp(r->name, preg->re_endp) == 0)

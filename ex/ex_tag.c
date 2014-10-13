@@ -1237,9 +1237,9 @@ ctag_file(SCR *sp, TAGF *tfp, char *name, char **dirp, size_t *dlenp)
 	while (p < back && *p++ != '\n') continue;
 
 static char *
-binary_search(register char *string, register char *front, register char *back)
+binary_search(char *string, char *front, char *back)
 {
-	register char *p;
+	char *p;
 
 	p = front + (back - front) / 2;
 	SKIP_PAST_NEWLINE(p, back);
@@ -1300,7 +1300,7 @@ linear_search(char *string, char *front, char *back, long tl)
  * However, historic programs did use spaces, and, I got complaints.
  */
 static int
-compare(register char *s1, register char *s2, register char *back)
+compare(char *s1, char *s2, char *back)
 {
 	for (; *s1 && s2 < back && (*s2 != '\t' && *s2 != ' '); ++s1, ++s2)
 		if (*s1 != *s2)
