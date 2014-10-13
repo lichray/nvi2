@@ -45,7 +45,6 @@
 
 /*
  - regfree - free everything
- = extern void regfree(regex_t *);
  */
 void
 regfree(regex_t *preg)

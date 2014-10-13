@@ -293,16 +293,10 @@ int eflags;
 
 /*
  - dissect - figure out what matched what, no back references
- == static const RCHAR_T *dissect(struct match *m, const RCHAR_T *start, \
- ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
 static const RCHAR_T *			/* == stop (success) always */
-dissect(m, start, stop, startst, stopst)
-struct match *m;
-const RCHAR_T *start;
-const RCHAR_T *stop;
-sopno startst;
-sopno stopst;
+dissect(struct match *m, const RCHAR_T *start, const RCHAR_T *stop,
+    sopno startst, sopno stopst)
 {
 	int i;
 	sopno ss;	/* start sop of current subRE */
@@ -481,17 +475,10 @@ sopno stopst;
 
 /*
  - backref - figure out what matched what, figuring in back references
- == static const RCHAR_T *backref(struct match *m, const RCHAR_T *start, \
- ==	const RCHAR_T *stop, sopno startst, sopno stopst, sopno lev);
  */
 static const RCHAR_T *			/* == stop (success) or NULL (failure) */
-backref(m, start, stop, startst, stopst, lev)
-struct match *m;
-const RCHAR_T *start;
-const RCHAR_T *stop;
-sopno startst;
-sopno stopst;
-sopno lev;			/* PLUS nesting level */
+backref(struct match *m, const RCHAR_T *start, const RCHAR_T *stop,
+    sopno startst, sopno stopst, sopno lev) /* PLUS nesting level */
 {
 	int i;
 	sopno ss;	/* start sop of current subRE */
@@ -694,16 +681,10 @@ sopno lev;			/* PLUS nesting level */
 
 /*
  - fast - step through the string at top speed
- == static const RCHAR_T *fast(struct match *m, const RCHAR_T *start, \
- ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
 static const RCHAR_T *			/* where tentative match ended, or NULL */
-fast(m, start, stop, startst, stopst)
-struct match *m;
-const RCHAR_T *start;
-const RCHAR_T *stop;
-sopno startst;
-sopno stopst;
+fast(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst,
+    sopno stopst)
 {
 	states st = m->st;
 	states fresh = m->fresh;
@@ -785,16 +766,10 @@ sopno stopst;
 
 /*
  - slow - step through the string more deliberately
- == static const RCHAR_T *slow(struct match *m, const RCHAR_T *start, \
- ==	const RCHAR_T *stop, sopno startst, sopno stopst);
  */
 static const RCHAR_T *			/* where it ended */
-slow(m, start, stop, startst, stopst)
-struct match *m;
-const RCHAR_T *start;
-const RCHAR_T *stop;
-sopno startst;
-sopno stopst;
+slow(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst,
+    sopno stopst)
 {
 	states st = m->st;
 	states empty = m->empty;
@@ -872,24 +847,15 @@ sopno stopst;
 
 /*
  - step - map set of states reachable before char to set reachable after
- == static states step(struct re_guts *g, sopno start, sopno stop, \
- ==	states bef, int flag, RCHAR_T ch, states aft);
- == #define	BOL	(1)
- == #define	EOL	(BOL+1)
- == #define	BOLEOL	(BOL+2)
- == #define	NOTHING	(BOL+3)
- == #define	BOW	(BOL+4)
- == #define	EOW	(BOL+5)
  */
 static states
-step(g, start, stop, bef, flag, ch, aft)
-struct re_guts *g;
-sopno start;			/* start state within strip */
-sopno stop;			/* state after stop state within strip */
-states bef;		/* states reachable before */
-int flag;			/* NONCHAR flag */
-RCHAR_T ch;			/* character code */
-states aft;		/* states already known reachable after */
+step(struct re_guts *g,
+    sopno start,			/* start state within strip */
+    sopno stop,			/* state after stop state within strip */
+    states bef,		/* states reachable before */
+    int flag,			/* NONCHAR flag */
+    RCHAR_T ch,			/* character code */
+    states aft)		/* states already known reachable after */
 {
 	cset *cs;
 	sop s;
@@ -1004,18 +970,9 @@ states aft;		/* states already known reachable after */
 #ifdef REDEBUG
 /*
  - print - print a set of states
- == #ifdef REDEBUG
- == static void print(struct match *m, char *caption, states st, \
- ==	int ch, FILE *d);
- == #endif
  */
 static void
-print(m, caption, st, ch, d)
-struct match *m;
-char *caption;
-states st;
-int ch;
-FILE *d;
+print(struct match *m, char *caption, states st, int ch, FILE *d)
 {
 	struct re_guts *g = m->g;
 	int i;
@@ -1037,19 +994,10 @@ FILE *d;
 
 /* 
  - at - print current situation
- == #ifdef REDEBUG
- == static void at(struct match *m, char *title, char *start, char *stop, \
- ==						sopno startst, sopno stopst);
- == #endif
  */
 static void
-at(m, title, start, stop, startst, stopst)
-struct match *m;
-char *title;
-char *start;
-char *stop;
-sopno startst;
-sopno stopst;
+at(struct match *m, char *title, char *start, char *stop, sopno startst,
+    sopno stopst)
 {
 	if (!(m->eflags&REG_TRACE))
 		return;
@@ -1063,9 +1011,6 @@ sopno stopst;
 #define	PCHARDONE	/* never again */
 /*
  - pchar - make a character printable
- == #ifdef REDEBUG
- == static char *pchar(int ch);
- == #endif
  *
  * Is this identical to regchar() over in debug.c?  Well, yes.  But a
  * duplicate here avoids having a debugging-capable regexec.o tied to
@@ -1073,8 +1018,7 @@ sopno stopst;
  * the non-debug compilation anyway, so it doesn't matter much.
  */
 static char *			/* -> representation */
-pchar(ch)
-int ch;
+pchar(int ch)
 {
 	static char pbuf[10];
 

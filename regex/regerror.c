@@ -144,7 +144,6 @@ regerror(int errcode, const regex_t *preg, char *errbuf, size_t errbuf_size)
 
 /*
  - regatoi - internal routine to implement REG_ATOI
- == static char *regatoi(const regex_t *preg, char *localbuf);
  */
 static char *
 regatoi(const regex_t *preg, char *localbuf)
