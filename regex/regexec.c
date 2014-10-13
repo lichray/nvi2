@@ -57,10 +57,6 @@ static char sccsid[] = "@(#)regexec.c	8.2 (Berkeley) 3/16/94";
 #include "utils.h"
 #include "regex2.h"
 
-#ifdef notdef
-static int nope = 0;		/* for use in asserts; shuts lint up */
-#endif
-
 /* macros for manipulating states, small version */
 #define	states	int
 #define	states1	int		/* for later use in regexec() decision */
@@ -153,9 +149,10 @@ static int nope = 0;		/* for use in asserts; shuts lint up */
  * have been prototyped.
  */
 int				/* 0 success, REG_NOMATCH failure */
-regexec(const regex_t *preg, const RCHAR_T *string, size_t nmatch, regmatch_t *pmatch, int eflags)
+regexec(const regex_t *preg, const RCHAR_T *string, size_t nmatch,
+    regmatch_t *pmatch, int eflags)
 {
-	register struct re_guts *g = preg->re_g;
+	struct re_guts *g = preg->re_g;
 #ifdef REDEBUG
 #	define	GOODFLAGS(f)	(f)
 #else
