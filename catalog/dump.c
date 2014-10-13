@@ -27,16 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#ifndef lint
-static char copyright[] =
-"@(#) Copyright (c) 1992, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n";
-#endif /* not lint */
-
-#ifndef lint
-static char sccsid[] = "$Id: dump.c,v 8.2 2011/07/14 00:05:25 zy Exp $";
-#endif /* not lint */
-
 #include <ctype.h>
 #include <stdio.h>
 

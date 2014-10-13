@@ -35,10 +35,6 @@
  *	@(#)regexec.c	8.2 (Berkeley) 3/16/94
  */
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)regexec.c	8.2 (Berkeley) 3/16/94";
-#endif /* LIBC_SCCS and not lint */
-
 /*
  * the outer shell of regexec()
  *

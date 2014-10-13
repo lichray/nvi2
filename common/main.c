@@ -9,18 +9,6 @@
 
 #include "config.h"
 
-#ifndef lint
-static const char copyright[] =
-"@(#) Copyright (c) 1992, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n\
-@(#) Copyright (c) 1992, 1993, 1994, 1995, 1996\n\
-	Keith Bostic.  All rights reserved.\n";
-#endif /* not lint */
-
-#ifndef lint
-static const char sccsid[] = "$Id: main.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
-#endif /* not lint */
-
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
