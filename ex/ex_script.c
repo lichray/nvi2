@@ -12,10 +12,6 @@
 
 #include "config.h"
 
-#ifndef lint
-static const char sccsid[] = "$Id: ex_script.c,v 10.44 2012/10/05 10:17:47 zy Exp $";
-#endif /* not lint */
-
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/queue.h>
