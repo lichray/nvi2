@@ -28,6 +28,10 @@ if(DEBUG)
 		"-Wsystem-headers"
 		"-Wstack-protector -fstack-protector"
 		"-Wstrict-aliasing -fstrict-aliasing")
+	if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+		set(_arg_str "${_arg_str}"
+			"-Wno-unused-const-variable")
+	endif()
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
 	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
