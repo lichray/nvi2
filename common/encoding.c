@@ -11,10 +11,10 @@ static const char sccsid[] = "$Id: encoding.c,v 1.4 2011/12/13 19:40:52 zy Exp $
 
 #include <sys/types.h>
 
-int looks_utf8 __P((const char *, size_t));
-int looks_utf16 __P((const char *, size_t));
-int decode_utf8 __P((const char *));
-int decode_utf16 __P((const char *, int));
+int looks_utf8(const char *, size_t);
+int looks_utf16(const char *, size_t);
+int decode_utf8(const char *);
+int decode_utf16(const char *, int);
 
 #define F 0   /* character never appears in text */
 #define T 1   /* character appears in plain ASCII text */
@@ -54,7 +54,7 @@ static char text_chars[256] = {
  *
  *  Based on RFC 3629. UTF-8 with BOM is not accepted.
  *
- * PUBLIC: int looks_utf8 __P((const char *, size_t));
+ * PUBLIC: int looks_utf8(const char *, size_t);
  */
 int
 looks_utf8(const char *ibuf, size_t nbytes)
@@ -115,7 +115,7 @@ done:
  *      1: Little-endian UTF-16
  *      2: Big-endian UTF-16
  *
- * PUBLIC: int looks_utf16 __P((const char *, size_t));
+ * PUBLIC: int looks_utf16(const char *, size_t);
  */
 int
 looks_utf16(const char *ibuf, size_t nbytes)
@@ -175,7 +175,7 @@ looks_utf16(const char *ibuf, size_t nbytes)
  *
  *  Based on RFC 3629, but without error detection.
  *
- * PUBLIC: int decode_utf8 __P((const char *));
+ * PUBLIC: int decode_utf8(const char *);
  */
 int
 decode_utf8(const char *ibuf)
@@ -207,7 +207,7 @@ decode_utf8(const char *ibuf)
  *
  *  No error detection on supplementary bytes.
  *
- * PUBLIC: int decode_utf16 __P((const char *, int));
+ * PUBLIC: int decode_utf16(const char *, int);
  */
 int
 decode_utf16(const char* ibuf, int bigend)

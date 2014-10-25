@@ -37,11 +37,11 @@ static const char sccsid[] = "$Id: exf.c,v 10.62 2014/03/05 15:40:43 zy Exp $";
 
 #include "common.h"
 
-static int	file_backup __P((SCR *, char *, char *));
-static void	file_cinit __P((SCR *));
-static void	file_encinit __P((SCR *));
-static void	file_comment __P((SCR *));
-static int	file_spath __P((SCR *, FREF *, struct stat *, int *));
+static int	file_backup(SCR *, char *, char *);
+static void	file_cinit(SCR *);
+static void	file_encinit(SCR *);
+static void	file_comment(SCR *);
+static int	file_spath(SCR *, FREF *, struct stat *, int *);
 
 /*
  * file_add --
@@ -56,7 +56,7 @@ static int	file_spath __P((SCR *, FREF *, struct stat *, int *));
  * vi now remembers the last location in any file that it has ever edited,
  * not just the previously edited file.
  *
- * PUBLIC: FREF *file_add __P((SCR *, char *));
+ * PUBLIC: FREF *file_add(SCR *, char *);
  */
 FREF *
 file_add(
@@ -118,7 +118,7 @@ file_add(
  *	let go of any previous file.  Don't release the previous file until
  *	absolutely sure we have the new one.
  *
- * PUBLIC: int file_init __P((SCR *, FREF *, char *, int));
+ * PUBLIC: int file_init(SCR *, FREF *, char *, int);
  */
 int
 file_init(
@@ -625,7 +625,7 @@ file_cinit(SCR *sp)
  * file_end --
  *	Stop editing a file.
  *
- * PUBLIC: int file_end __P((SCR *, EXF *, int));
+ * PUBLIC: int file_end(SCR *, EXF *, int);
  */
 int
 file_end(
@@ -737,7 +737,7 @@ file_end(
  *	semantics for whether or not writes would happen.  That's
  *	why all the flags.
  *
- * PUBLIC: int file_write __P((SCR *, MARK *, MARK *, char *, int));
+ * PUBLIC: int file_write(SCR *, MARK *, MARK *, char *, int);
  */
 int
 file_write(
@@ -1302,7 +1302,7 @@ file_comment(SCR *sp)
  * 	First modification check routine.  The :next, :prev, :rewind, :tag,
  *	:tagpush, :tagpop, ^^ modifications check.
  *
- * PUBLIC: int file_m1 __P((SCR *, int, int));
+ * PUBLIC: int file_m1(SCR *, int, int);
  */
 int
 file_m1(
@@ -1343,7 +1343,7 @@ file_m1(
  * 	Second modification check routine.  The :edit, :quit, :recover
  *	modifications check.
  *
- * PUBLIC: int file_m2 __P((SCR *, int));
+ * PUBLIC: int file_m2(SCR *, int);
  */
 int
 file_m2(
@@ -1375,7 +1375,7 @@ file_m2(
  * file_m3 --
  * 	Third modification check routine.
  *
- * PUBLIC: int file_m3 __P((SCR *, int));
+ * PUBLIC: int file_m3(SCR *, int);
  */
 int
 file_m3(
@@ -1411,7 +1411,7 @@ file_m3(
  *	is not set, write the file.  A routine so there's a place to put the
  *	comment.
  *
- * PUBLIC: int file_aw __P((SCR *, int));
+ * PUBLIC: int file_aw(SCR *, int);
  */
 int
 file_aw(
@@ -1472,7 +1472,7 @@ file_aw(
  * If the user edits a temporary file, there may be times when there is no
  * alternative file name.  A name argument of NULL turns it off.
  *
- * PUBLIC: void set_alt_name __P((SCR *, char *));
+ * PUBLIC: void set_alt_name(SCR *, char *);
  */
 void
 set_alt_name(
@@ -1491,7 +1491,7 @@ set_alt_name(
  * file_lock --
  *	Get an exclusive lock on a file.
  *
- * PUBLIC: lockr_t file_lock __P((SCR *, char *, int, int));
+ * PUBLIC: lockr_t file_lock(SCR *, char *, int, int);
  */
 lockr_t
 file_lock(

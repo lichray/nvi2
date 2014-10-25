@@ -31,7 +31,7 @@ static const char sccsid[] = "$Id: v_match.c,v 10.11 2012/02/11 00:33:46 zy Exp 
  * v_match -- %
  *	Search to matching character.
  *
- * PUBLIC: int v_match __P((SCR *, VICMD *));
+ * PUBLIC: int v_match(SCR *, VICMD *);
  */
 int
 v_match(SCR *sp, VICMD *vp)
@@ -154,7 +154,7 @@ nomatch:		msgq(sp, M_BERR, "184|No match character on this line");
  * v_buildmcs --
  *	Build the match character list.
  *
- * PUBLIC: int v_buildmcs __P((SCR *, char *));
+ * PUBLIC: int v_buildmcs(SCR *, char *);
  */
 int
 v_buildmcs(SCR *sp, char *str)

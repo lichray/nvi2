@@ -30,15 +30,15 @@ static const char sccsid[] = "$Id: main.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
 #include "../vi/vi.h"
 #include "pathnames.h"
 
-static void	 attach __P((GS *));
-static void	 v_estr __P((char *, int, char *));
-static int	 v_obsolete __P((char *, char *[]));
+static void	 attach(GS *);
+static void	 v_estr(char *, int, char *);
+static int	 v_obsolete(char *, char *[]);
 
 /*
  * editor --
  *	Main editor routine.
  *
- * PUBLIC: int editor __P((GS *, int, char *[]));
+ * PUBLIC: int editor(GS *, int, char *[]);
  */
 int
 editor(
@@ -428,7 +428,7 @@ err:		rval = 1;
  * v_end --
  *	End the program, discarding screens and most of the global area.
  *
- * PUBLIC: void v_end __P((GS *));
+ * PUBLIC: void v_end(GS *);
  */
 void
 v_end(gp)
