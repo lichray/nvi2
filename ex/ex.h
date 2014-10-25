@@ -13,7 +13,7 @@
 
 typedef struct _excmdlist {		/* Ex command table structure. */
 	CHAR_T *name;			/* Command name, underlying function. */
-	int (*fn) __P((SCR *, EXCMD *));
+	int (*fn)(SCR *, EXCMD *);
 
 #define	E_ADDR1		0x00000001	/* One address. */
 #define	E_ADDR2		0x00000002	/* Two addresses. */

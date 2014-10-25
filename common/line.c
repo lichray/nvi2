@@ -26,13 +26,13 @@ static const char sccsid[] = "$Id: line.c,v 10.26 2011/08/12 12:36:41 zy Exp $";
 #include "common.h"
 #include "../vi/vi.h"
 
-static int scr_update __P((SCR *, recno_t, lnop_t, int));
+static int scr_update(SCR *, recno_t, lnop_t, int);
 
 /*
  * db_eget --
  *	Front-end to db_get, special case handling for empty files.
  *
- * PUBLIC: int db_eget __P((SCR *, recno_t, CHAR_T **, size_t *, int *));
+ * PUBLIC: int db_eget(SCR *, recno_t, CHAR_T **, size_t *, int *);
  */
 int
 db_eget(
@@ -76,7 +76,7 @@ db_eget(
  *	Look in the text buffers for a line, followed by the cache, followed
  *	by the database.
  *
- * PUBLIC: int db_get __P((SCR *, recno_t, u_int32_t, CHAR_T **, size_t *));
+ * PUBLIC: int db_get(SCR *, recno_t, u_int32_t, CHAR_T **, size_t *);
  */
 int
 db_get(
@@ -207,7 +207,7 @@ err3:		if (lenp != NULL)
  * db_delete --
  *	Delete a line from the file.
  *
- * PUBLIC: int db_delete __P((SCR *, recno_t));
+ * PUBLIC: int db_delete(SCR *, recno_t);
  */
 int
 db_delete(
@@ -265,7 +265,7 @@ db_delete(
  * db_append --
  *	Append a line into the file.
  *
- * PUBLIC: int db_append __P((SCR *, int, recno_t, CHAR_T *, size_t));
+ * PUBLIC: int db_append(SCR *, int, recno_t, CHAR_T *, size_t);
  */
 int
 db_append(
@@ -343,7 +343,7 @@ db_append(
  * db_insert --
  *	Insert a line into the file.
  *
- * PUBLIC: int db_insert __P((SCR *, recno_t, CHAR_T *, size_t));
+ * PUBLIC: int db_insert(SCR *, recno_t, CHAR_T *, size_t);
  */
 int
 db_insert(
@@ -412,7 +412,7 @@ db_insert(
  * db_set --
  *	Store a line in the file.
  *
- * PUBLIC: int db_set __P((SCR *, recno_t, CHAR_T *, size_t));
+ * PUBLIC: int db_set(SCR *, recno_t, CHAR_T *, size_t);
  */
 int
 db_set(
@@ -474,7 +474,7 @@ db_set(
  * db_exist --
  *	Return if a line exists.
  *
- * PUBLIC: int db_exist __P((SCR *, recno_t));
+ * PUBLIC: int db_exist(SCR *, recno_t);
  */
 int
 db_exist(
@@ -509,7 +509,7 @@ db_exist(
  * db_last --
  *	Return the number of lines in the file.
  *
- * PUBLIC: int db_last __P((SCR *, recno_t *));
+ * PUBLIC: int db_last(SCR *, recno_t *);
  */
 int
 db_last(
@@ -583,7 +583,7 @@ alloc_err:
  * db_rget --
  *	Retrieve a raw line from database. No cache, no conversion.
  *
- * PUBLIC: int db_rget __P((SCR *, recno_t, char **, size_t *));
+ * PUBLIC: int db_rget(SCR *, recno_t, char **, size_t *);
  */
 int
 db_rget(
@@ -617,7 +617,7 @@ db_rget(
  * db_rset --
  *	Store a line in the file. No log, no conversion.
  *
- * PUBLIC: int db_rset __P((SCR *, recno_t, char *, size_t));
+ * PUBLIC: int db_rset(SCR *, recno_t, char *, size_t);
  */
 int
 db_rset(
@@ -649,7 +649,7 @@ db_rset(
  * db_err --
  *	Report a line error.
  *
- * PUBLIC: void db_err __P((SCR *, recno_t));
+ * PUBLIC: void db_err(SCR *, recno_t);
  */
 void
 db_err(

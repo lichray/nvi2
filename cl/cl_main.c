@@ -36,13 +36,13 @@ static const char sccsid[] = "$Id: cl_main.c,v 10.55 2011/08/15 19:52:28 zy Exp 
 GS *__global_list;				/* GLOBAL: List of screens. */
 sigset_t __sigblockset;				/* GLOBAL: Blocked signals. */
 
-static void	   cl_func_std __P((GS *));
-static CL_PRIVATE *cl_init __P((GS *));
-static GS	  *gs_init __P((char *));
-static void	   perr __P((char *, char *));
-static int	   setsig __P((int, struct sigaction *, void (*)(int)));
-static void	   sig_end __P((GS *));
-static void	   term_init __P((char *, char *));
+static void	   cl_func_std(GS *);
+static CL_PRIVATE *cl_init(GS *);
+static GS	  *gs_init(char *);
+static void	   perr(char *, char *);
+static int	   setsig(int, struct sigaction *, void (*)(int));
+static void	   sig_end(GS *);
+static void	   term_init(char *, char *);
 
 /*
  * main --
@@ -292,7 +292,7 @@ h_winch(int signo)
  * sig_init --
  *	Initialize signals.
  *
- * PUBLIC: int sig_init __P((GS *, SCR *));
+ * PUBLIC: int sig_init(GS *, SCR *);
  */
 int
 sig_init(GS *gp, SCR *sp)

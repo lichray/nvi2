@@ -26,13 +26,13 @@ static const char sccsid[] = "$Id: v_mark.c,v 10.12 2001/06/25 15:19:32 skimo Ex
 #include "vi.h"
 
 enum which {BQMARK, FQMARK};
-static int mark __P((SCR *, VICMD *, int, enum which));
+static int mark(SCR *, VICMD *, int, enum which);
 
 /*
  * v_mark -- m[a-z]
  *	Set a mark.
  *
- * PUBLIC: int v_mark __P((SCR *, VICMD *));
+ * PUBLIC: int v_mark(SCR *, VICMD *);
  */
 int
 v_mark(SCR *sp, VICMD *vp)
@@ -53,7 +53,7 @@ v_mark(SCR *sp, VICMD *vp)
  * people don't know it and will be delighted that you are able to tell
  * them.
  *
- * PUBLIC: int v_bmark __P((SCR *, VICMD *));
+ * PUBLIC: int v_bmark(SCR *, VICMD *);
  */
 int
 v_bmark(SCR *sp, VICMD *vp)
@@ -67,7 +67,7 @@ v_bmark(SCR *sp, VICMD *vp)
  *
  * Move to the first nonblank character of the line containing the mark.
  *
- * PUBLIC: int v_fmark __P((SCR *, VICMD *));
+ * PUBLIC: int v_fmark(SCR *, VICMD *);
  */
 int
 v_fmark(SCR *sp, VICMD *vp)
@@ -79,7 +79,7 @@ v_fmark(SCR *sp, VICMD *vp)
  * v_emark -- <mouse click>
  *	Mouse mark.
  *
- * PUBLIC: int v_emark __P((SCR *, VICMD *));
+ * PUBLIC: int v_emark(SCR *, VICMD *);
  */
 int
 v_emark(SCR *sp, VICMD *vp)

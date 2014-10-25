@@ -30,8 +30,8 @@ static const char sccsid[] = "$Id: search.c,v 10.26 2011/07/04 20:16:26 zy Exp $
 
 typedef enum { S_EMPTY, S_EOF, S_NOPREV, S_NOTFOUND, S_SOF, S_WRAP } smsg_t;
 
-static void	search_msg __P((SCR *, smsg_t));
-static int	search_init __P((SCR *, dir_t, CHAR_T *, size_t, CHAR_T **, u_int));
+static void	search_msg(SCR *, smsg_t);
+static int	search_init(SCR *, dir_t, CHAR_T *, size_t, CHAR_T **, u_int);
 
 /*
  * search_init --
@@ -142,8 +142,8 @@ prev:			if (sp->re == NULL) {
  * f_search --
  *	Do a forward search.
  *
- * PUBLIC: int f_search __P((SCR *,
- * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int));
+ * PUBLIC: int f_search(SCR *,
+ * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int);
  */
 int
 f_search(
@@ -288,8 +288,8 @@ f_search(
  * b_search --
  *	Do a backward search.
  *
- * PUBLIC: int b_search __P((SCR *,
- * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int));
+ * PUBLIC: int b_search(SCR *,
+ * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int);
  */
 int
 b_search(
@@ -487,7 +487,7 @@ search_msg(
  * search_busy --
  *	Put up the busy searching message.
  *
- * PUBLIC: void search_busy __P((SCR *, busy_t));
+ * PUBLIC: void search_busy(SCR *, busy_t);
  */
 void
 search_busy(

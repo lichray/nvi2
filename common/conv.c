@@ -36,7 +36,7 @@ static const char sccsid[] = "$Id: conv.c,v 2.40 2014/02/27 16:25:29 zy Exp $";
  * codeset --
  *	Get the locale encoding.
  *
- * PUBLIC: char * codeset __P((void));
+ * PUBLIC: char * codeset(void);
  */
 char *
 codeset(void)
@@ -308,7 +308,7 @@ cs_int2char(SCR *sp, const CHAR_T * str, ssize_t len, CONVWIN *cw,
  * conv_init --
  *	Initialize the iconv environment.
  *
- * PUBLIC: void conv_init __P((SCR *, SCR *));
+ * PUBLIC: void conv_init(SCR *, SCR *);
  */
 void
 conv_init(SCR *orig, SCR *sp)
@@ -367,7 +367,7 @@ conv_init(SCR *orig, SCR *sp)
  * conv_enc --
  *	Convert file/input encoding.
  *
- * PUBLIC: int conv_enc __P((SCR *, int, char *));
+ * PUBLIC: int conv_enc(SCR *, int, char *);
  */
 int
 conv_enc(SCR *sp, int option, char *enc)
@@ -446,7 +446,7 @@ err:
  * conv_end --
  *	Close the iconv descriptors, release the buffer.
  *
- * PUBLIC: void conv_end __P((SCR *));
+ * PUBLIC: void conv_end(SCR *);
  */
 void
 conv_end(SCR *sp)

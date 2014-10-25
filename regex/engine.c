@@ -88,12 +88,12 @@ extern "C" {
 #endif
 
 /* === engine.c === */
-static int matcher __P((struct re_guts *g, const RCHAR_T *string, size_t nmatch, regmatch_t pmatch[], int eflags));
-static const RCHAR_T *dissect __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
-static const RCHAR_T *backref __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst, sopno lev));
-static const RCHAR_T *fast __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
-static const RCHAR_T *slow __P((struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst));
-static states step __P((struct re_guts *g, sopno start, sopno stop, states bef, int flag, RCHAR_T ch, states aft));
+static int matcher(struct re_guts *g, const RCHAR_T *string, size_t nmatch, regmatch_t pmatch[], int eflags);
+static const RCHAR_T *dissect(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst);
+static const RCHAR_T *backref(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst, sopno lev);
+static const RCHAR_T *fast(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst);
+static const RCHAR_T *slow(struct match *m, const RCHAR_T *start, const RCHAR_T *stop, sopno startst, sopno stopst);
+static states step(struct re_guts *g, sopno start, sopno stop, states bef, int flag, RCHAR_T ch, states aft);
 #define	BOL	(1)
 #define	EOL	(BOL+1)
 #define	BOLEOL	(BOL+2)
@@ -101,13 +101,13 @@ static states step __P((struct re_guts *g, sopno start, sopno stop, states bef, 
 #define	BOW	(BOL+4)
 #define	EOW	(BOL+5)
 #ifdef REDEBUG
-static void print __P((struct match *m, char *caption, states st, int ch, FILE *d));
+static void print(struct match *m, char *caption, states st, int ch, FILE *d);
 #endif
 #ifdef REDEBUG
-static void at __P((struct match *m, char *title, char *start, char *stop, sopno startst, sopno stopst));
+static void at(struct match *m, char *title, char *start, char *stop, sopno startst, sopno stopst);
 #endif
 #ifdef REDEBUG
-static char *pchar __P((int ch));
+static char *pchar(int ch);
 #endif
 
 #ifdef __cplusplus

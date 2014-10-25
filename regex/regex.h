@@ -96,10 +96,10 @@ typedef struct {
 #define	REG_LARGE	01000	/* force large representation */
 #define	REG_BACKR	02000	/* force use of backref code */
 
-int	regcomp __P((regex_t *, const RCHAR_T *, int));
-size_t	regerror __P((int, const regex_t *, char *, size_t));
-int	regexec __P((const regex_t *,
-	    const RCHAR_T *, size_t, regmatch_t [], int));
-void	regfree __P((regex_t *));
+int	regcomp(regex_t *, const RCHAR_T *, int);
+size_t	regerror(int, const regex_t *, char *, size_t);
+int	regexec(const regex_t *,
+	    const RCHAR_T *, size_t, regmatch_t [], int);
+void	regfree(regex_t *);
 
 #endif /* !_REGEX_H_ */
