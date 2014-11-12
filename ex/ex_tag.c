@@ -98,8 +98,7 @@ ex_tag_push(SCR *sp, EXCMD *cmdp)
 	exp = EXP(sp);
 	switch (cmdp->argc) {
 	case 1:
-		if (exp->tag_last != NULL)
-			free(exp->tag_last);
+		free(exp->tag_last);
 
 		if ((exp->tag_last = v_wstrdup(sp, cmdp->argv[0]->bp,
 		    cmdp->argv[0]->len)) == NULL) {
@@ -802,10 +801,8 @@ tagq_push(SCR *sp, TAGQ *tqp, int new_screen, int force)
 
 err:
 alloc_err:
-	if (rtqp != NULL)
-		free(rtqp);
-	if (rtp != NULL)
-		free(rtp);
+	free(rtqp);
+	free(rtp);
 	tagq_free(sp, tqp);
 	return (1);
 }
@@ -896,8 +893,7 @@ ex_tag_free(SCR *sp)
 		tagq_free(sp, tqp);
 	while ((tfp = TAILQ_FIRST(exp->tagfq)) != NULL)
 		tagf_free(sp, tfp);
-	if (exp->tag_last != NULL)
-		free(exp->tag_last);
+	free(exp->tag_last);
 	return (0);
 }
 

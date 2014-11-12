@@ -523,8 +523,7 @@ sscr_setprompt(SCR *sp, char *buf, size_t len)
 	SCRIPT *sc;
 
 	sc = sp->script;
-	if (sc->sh_prompt)
-		free(sc->sh_prompt);
+	free(sc->sh_prompt);
 	MALLOC(sp, sc->sh_prompt, char *, len + 1);
 	if (sc->sh_prompt == NULL) {
 		sscr_end(sp);

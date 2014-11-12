@@ -894,7 +894,6 @@ vs_msgsave(SCR *sp, mtype_t mt, char *p, size_t len)
 	return;
 
 alloc_err:
-	if (mp_n != NULL)
-		free(mp_n);
+	free(mp_n);
 	(void)fprintf(stderr, "%.*s\n", (int)len, p);
 }

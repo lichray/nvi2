@@ -454,14 +454,11 @@ cl_ex_init(SCR *sp)
 
 	/* Enter_standout_mode and exit_standout_mode are paired. */
 	if (clp->smso == NULL || clp->rmso == NULL) {
-		if (clp->smso != NULL) {
-			free(clp->smso);
-			clp->smso = NULL;
-		}
-		if (clp->rmso != NULL) {
-			free(clp->rmso);
-			clp->rmso = NULL;
-		}
+		free(clp->smso);
+		clp->smso = NULL;
+
+		free(clp->rmso);
+		clp->rmso = NULL;
 	}
 
 	/*
@@ -543,32 +540,25 @@ cl_getcap(SCR *sp, char *name, char **elementp)
 static void
 cl_freecap(CL_PRIVATE *clp)
 {
-	if (clp->el != NULL) {
-		free(clp->el);
-		clp->el = NULL;
-	}
-	if (clp->cup != NULL) {
-		free(clp->cup);
-		clp->cup = NULL;
-	}
-	if (clp->cuu1 != NULL) {
-		free(clp->cuu1);
-		clp->cuu1 = NULL;
-	}
-	if (clp->rmso != NULL) {
-		free(clp->rmso);
-		clp->rmso = NULL;
-	}
-	if (clp->smso != NULL) {
-		free(clp->smso);
-		clp->smso = NULL;
-	}
+	free(clp->el);
+	clp->el = NULL;
+
+	free(clp->cup);
+	clp->cup = NULL;
+
+	free(clp->cuu1);
+	clp->cuu1 = NULL;
+
+	free(clp->rmso);
+	clp->rmso = NULL;
+
+	free(clp->smso);
+	clp->smso = NULL;
+
 	/* Required by libcursesw :) */
-	if (clp->cw.bp1.c != NULL) {
-		free(clp->cw.bp1.c);
-		clp->cw.bp1.c = NULL;
-		clp->cw.blen1 = 0;
-	}
+	free(clp->cw.bp1.c);
+	clp->cw.bp1.c = NULL;
+	clp->cw.blen1 = 0;
 }
 
 /*

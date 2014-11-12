@@ -328,8 +328,7 @@ v_buildps(SCR *sp, char *p_p, char *s_p)
 	MALLOC_RET(sp, p, char *, p_len + s_len + 1);
 
 	vip = VIP(sp);
-	if (vip->ps != NULL)
-		free(vip->ps);
+	free(vip->ps);
 
 	if (p_p != NULL)
 		memmove(p, p_p, p_len + 1);

@@ -190,8 +190,7 @@ subagain:	return (ex_subagain(sp, cmdp));
 	if (p[0] == '\0' || p[0] == delim) {
 		if (p[0] == delim)
 			++p;
-		if (sp->repl != NULL)
-			free(sp->repl);
+		free(sp->repl);
 		sp->repl = NULL;
 		sp->repl_len = 0;
 	} else if (p[0] == '%' && (p[1] == '\0' || p[1] == delim))
@@ -230,8 +229,7 @@ tilde:				++p;
 			++len;
 		}
 		if ((sp->repl_len = len) != 0) {
-			if (sp->repl != NULL)
-				free(sp->repl);
+			free(sp->repl);
 			MALLOC(sp, sp->repl, CHAR_T *, len * sizeof(CHAR_T));
 			if (sp->repl == NULL) {
 				FREE_SPACEW(sp, bp, blen);
@@ -870,8 +868,7 @@ err:		rval = 1;
 
 	if (bp != NULL)
 		FREE_SPACEW(sp, bp, blen);
-	if (lb != NULL)
-		free(lb);
+	free(lb);
 	return (rval);
 }
 
@@ -940,10 +937,9 @@ re_compile(SCR *sp, CHAR_T *ptrn, size_t plen, CHAR_T **ptrnp, size_t *lenp, reg
 				return (1);
 
 		/* Discard previous pattern. */
-		if (*ptrnp != NULL) {
-			free(*ptrnp);
-			*ptrnp = NULL;
-		}
+		free(*ptrnp);
+		*ptrnp = NULL;
+
 		if (lenp != NULL)
 			*lenp = plen;
 

@@ -199,8 +199,7 @@
 #define	REALLOC(sp, p, cast, size) {					\
 	cast newp;							\
 	if ((newp = (cast)realloc(p, size)) == NULL) {			\
-		if (p != NULL)						\
-			free(p);					\
+		free(p);						\
 		msgq(sp, M_SYSERR, NULL);				\
 	}								\
 	p = newp;							\

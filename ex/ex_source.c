@@ -88,8 +88,7 @@ err:		msgq_str(sp, M_SYSERR, name, "%s");
 		msgq(sp, M_ERR, "323|Invalid input. Truncated.");
 	/* Put it on the ex queue. */
 	rc = ex_run_str(sp, np, wp, wlen - 1, 1, 0);
-	if (np != NULL)
-		free(np);
+	free(np);
 	free(bp);
 	return (rc);
 }

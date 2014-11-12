@@ -813,8 +813,7 @@ v_event_err(
 	}
 
 	/* Free any allocated memory. */
-	if (evp->e_asp != NULL)
-		free(evp->e_asp);
+	free(evp->e_asp);
 }
 
 /*

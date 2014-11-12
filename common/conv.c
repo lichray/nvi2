@@ -456,7 +456,6 @@ conv_end(SCR *sp)
     for (i = 0; i <= IC_IE_TO_UTF16; ++i)
 	if (sp->conv.id[i] != (iconv_t)-1)
 	    iconv_close(sp->conv.id[i]);
-	if (sp->cw.bp1.c != NULL)
-	    free(sp->cw.bp1.c);
+	free(sp->cw.bp1.c);
 #endif
 }
