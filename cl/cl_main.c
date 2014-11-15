@@ -146,7 +146,7 @@ main(int argc, char **argv)
 	}
 
 	/* Free the global and CL private areas. */
-#if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
+#if defined(DEBUG) || defined(PURIFY)
 	if (clp->oname != NULL)
 		free(clp->oname);
 	free(clp);
