@@ -447,7 +447,7 @@ v_end(gp)
 	while ((sp = TAILQ_FIRST(gp->hq)) != NULL)
 		(void)screen_end(sp);
 
-#if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
+#if defined(DEBUG) || defined(PURIFY)
 	{ FREF *frp;
 		/* Free FREF's. */
 		while ((frp = TAILQ_FIRST(gp->frefq)) != NULL) {
@@ -491,13 +491,13 @@ v_end(gp)
 		(void)fprintf(stderr, "%s%.*s",
 		    mp->mtype == M_ERR ? "ex/vi: " : "", (int)mp->len, mp->buf);
 		SLIST_REMOVE_HEAD(gp->msgq, q);
-#if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
+#if defined(DEBUG) || defined(PURIFY)
 		free(mp->buf);
 		free(mp);
 #endif
 	}
 
-#if defined(DEBUG) || defined(PURIFY) || defined(LIBRARY)
+#if defined(DEBUG) || defined(PURIFY)
 	/* Free any temporary space. */
 	if (gp->tmp_bp != NULL)
 		free(gp->tmp_bp);
