@@ -49,7 +49,7 @@ static void	   term_init(char *, char *);
  *	This is the main loop for the standalone curses editor.
  */
 int
-main(int argc, char **argv)
+main(int argc, char *argv[])
 {
 	static int reenter;
 	CL_PRIVATE *clp;
@@ -337,7 +337,7 @@ sig_init(GS *gp, SCR *sp)
  *	Set a signal handler.
  */
 static int
-setsig(int signo, struct sigaction *oactp, void (*handler) (int))
+setsig(int signo, struct sigaction *oactp, void (*handler)(int))
 {
 	struct sigaction act;
 

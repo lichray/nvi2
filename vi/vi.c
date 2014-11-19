@@ -448,13 +448,8 @@ VIKEYS const tmotion = {
  *	[count] key [character]
  */
 static gcret_t
-v_cmd(
-	SCR *sp,
-	VICMD *dp,
-	VICMD *vp,
-	VICMD *ismotion,	/* Previous key if getting motion component. */
-	int *comcountp,
-	int *mappedp)
+v_cmd(SCR *sp, VICMD *dp, VICMD *vp, VICMD *ismotion, int *comcountp,
+    int *mappedp)
 {
 	enum { COMMANDMODE, ISPARTIAL, NOTPARTIAL } cpart;
 	EVENT ev;
@@ -714,11 +709,7 @@ esc:	switch (cpart) {
  * Get resulting motion mark.
  */
 static int
-v_motion(
-	SCR *sp,
-	VICMD *dm,
-	VICMD *vp,
-	int *mappedp)
+v_motion(SCR *sp, VICMD *dm, VICMD *vp, int *mappedp)
 {
 	VICMD motion;
 	size_t len;
@@ -1092,10 +1083,7 @@ v_curword(SCR *sp)
  *	Check for a command alias.
  */
 static VIKEYS const *
-v_alias(
-	SCR *sp,
-	VICMD *vp,
-	VIKEYS const *kp)
+v_alias(SCR *sp, VICMD *vp, VIKEYS const *kp)
 {
 	CHAR_T push;
 
@@ -1128,10 +1116,7 @@ v_alias(
  *	Return the next count.
  */
 static int
-v_count(
-	SCR *sp,
-	ARG_CHAR_T fkey,
-	u_long *countp)
+v_count(SCR *sp, ARG_CHAR_T fkey, u_long *countp)
 {
 	EVENT ev;
 	u_long count, tc;
@@ -1168,11 +1153,7 @@ v_count(
  *	Return the next event.
  */
 static gcret_t
-v_key(
-	SCR *sp,
-	int command_events,
-	EVENT *evp,
-	u_int32_t ec_flags)
+v_key(SCR *sp, int command_events, EVENT *evp, u_int32_t ec_flags)
 {
 	u_int32_t quote;
 
@@ -1231,9 +1212,7 @@ v_key(
  *	Log the contents of the command structure.
  */
 static void
-v_comlog(
-	SCR *sp,
-	VICMD *vp)
+v_comlog(SCR *sp, VICMD *vp)
 {
 	TRACE(sp, "vcmd: "WC, vp->key);
 	if (F_ISSET(vp, VC_BUFFER))

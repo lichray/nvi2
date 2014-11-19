@@ -64,12 +64,7 @@ static void	cb_rotate(SCR *);
  * PUBLIC: int cut(SCR *, CHAR_T *, MARK *, MARK *, int);
  */
 int
-cut(
-	SCR *sp,
-	CHAR_T *namep,
-	MARK *fm,
-	MARK *tm,
-	int flags)
+cut(SCR *sp, CHAR_T *namep, MARK *fm, MARK *tm, int flags)
 {
 	CB *cbp;
 	CHAR_T name = '\0';
@@ -225,12 +220,7 @@ cb_rotate(SCR *sp)
  * PUBLIC: int cut_line(SCR *, recno_t, size_t, size_t, CB *);
  */
 int
-cut_line(
-	SCR *sp,
-	recno_t lno,
-	size_t fcno,
-	size_t clen,
-	CB *cbp)
+cut_line(SCR *sp, recno_t lno, size_t fcno, size_t clen, CB *cbp)
 {
 	TEXT *tp;
 	size_t len;
@@ -294,11 +284,7 @@ cut_close(GS *gp)
  * PUBLIC: TEXT *text_init(SCR *, const CHAR_T *, size_t, size_t);
  */
 TEXT *
-text_init(
-	SCR *sp,
-	const CHAR_T *p,
-	size_t len,
-	size_t total_len)
+text_init(SCR *sp, const CHAR_T *p, size_t len, size_t total_len)
 {
 	TEXT *tp;
 

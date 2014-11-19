@@ -35,12 +35,7 @@ static int scr_update(SCR *, recno_t, lnop_t, int);
  * PUBLIC: int db_eget(SCR *, recno_t, CHAR_T **, size_t *, int *);
  */
 int
-db_eget(
-	SCR *sp,
-	recno_t lno,				/* Line number. */
-	CHAR_T **pp,				/* Pointer store. */
-	size_t *lenp,				/* Length store. */
-	int *isemptyp)
+db_eget(SCR *sp, recno_t lno, CHAR_T **pp, size_t *lenp, int *isemptyp)
 {
 	recno_t l1;
 
@@ -79,12 +74,7 @@ db_eget(
  * PUBLIC: int db_get(SCR *, recno_t, u_int32_t, CHAR_T **, size_t *);
  */
 int
-db_get(
-	SCR *sp,
-	recno_t lno,				/* Line number. */
-	u_int32_t flags,
-	CHAR_T **pp,				/* Pointer store. */
-	size_t *lenp)				/* Length store. */
+db_get(SCR *sp, recno_t lno, u_int32_t flags, CHAR_T **pp, size_t *lenp)
 {
 	DBT data, key;
 	EXF *ep;
@@ -210,9 +200,7 @@ err3:		if (lenp != NULL)
  * PUBLIC: int db_delete(SCR *, recno_t);
  */
 int
-db_delete(
-	SCR *sp,
-	recno_t lno)
+db_delete(SCR *sp, recno_t lno)
 {
 	DBT key;
 	EXF *ep;
@@ -268,12 +256,7 @@ db_delete(
  * PUBLIC: int db_append(SCR *, int, recno_t, CHAR_T *, size_t);
  */
 int
-db_append(
-	SCR *sp,
-	int update,
-	recno_t lno,
-	CHAR_T *p,
-	size_t len)
+db_append(SCR *sp, int update, recno_t lno, CHAR_T *p, size_t len)
 {
 	DBT data, key;
 	EXF *ep;
@@ -346,11 +329,7 @@ db_append(
  * PUBLIC: int db_insert(SCR *, recno_t, CHAR_T *, size_t);
  */
 int
-db_insert(
-	SCR *sp,
-	recno_t lno,
-	CHAR_T *p,
-	size_t len)
+db_insert(SCR *sp, recno_t lno, CHAR_T *p, size_t len)
 {
 	DBT data, key;
 	EXF *ep;
@@ -415,11 +394,7 @@ db_insert(
  * PUBLIC: int db_set(SCR *, recno_t, CHAR_T *, size_t);
  */
 int
-db_set(
-	SCR *sp,
-	recno_t lno,
-	CHAR_T *p,
-	size_t len)
+db_set(SCR *sp, recno_t lno, CHAR_T *p, size_t len)
 {
 	DBT data, key;
 	EXF *ep;
@@ -477,9 +452,7 @@ db_set(
  * PUBLIC: int db_exist(SCR *, recno_t);
  */
 int
-db_exist(
-	SCR *sp,
-	recno_t lno)
+db_exist(SCR *sp, recno_t lno)
 {
 	EXF *ep;
 
@@ -512,9 +485,7 @@ db_exist(
  * PUBLIC: int db_last(SCR *, recno_t *);
  */
 int
-db_last(
-	SCR *sp,
-	recno_t *lnop)
+db_last(SCR *sp, recno_t *lnop)
 {
 	DBT data, key;
 	EXF *ep;
@@ -586,11 +557,7 @@ alloc_err:
  * PUBLIC: int db_rget(SCR *, recno_t, char **, size_t *);
  */
 int
-db_rget(
-	SCR *sp,
-	recno_t lno,				/* Line number. */
-	char **pp,				/* Pointer store. */
-	size_t *lenp)				/* Length store. */
+db_rget(SCR *sp, recno_t lno, char **pp, size_t *lenp)
 {
 	DBT data, key;
 	EXF *ep;
@@ -620,11 +587,7 @@ db_rget(
  * PUBLIC: int db_rset(SCR *, recno_t, char *, size_t);
  */
 int
-db_rset(
-	SCR *sp,
-	recno_t lno,
-	char *p,
-	size_t len)
+db_rset(SCR *sp, recno_t lno, char *p, size_t len)
 {
 	DBT data, key;
 	EXF *ep;
@@ -652,9 +615,7 @@ db_rset(
  * PUBLIC: void db_err(SCR *, recno_t);
  */
 void
-db_err(
-	SCR *sp,
-	recno_t lno)
+db_err(SCR *sp, recno_t lno)
 {
 	msgq(sp, M_ERR,
 	    "008|Error: unable to retrieve line %lu", (u_long)lno);
@@ -666,11 +627,7 @@ db_err(
  *	just changed.
  */
 static int
-scr_update(
-	SCR *sp,
-	recno_t lno,
-	lnop_t op,
-	int current)
+scr_update(SCR *sp, recno_t lno, lnop_t op, int current)
 {
 	EXF *ep;
 	SCR *tsp;

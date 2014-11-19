@@ -38,13 +38,8 @@ static int	search_init(SCR *, dir_t, CHAR_T *, size_t, CHAR_T **, u_int);
  *	Set up a search.
  */
 static int
-search_init(
-	SCR *sp,
-	dir_t dir,
-	CHAR_T *ptrn,
-	size_t plen,
-	CHAR_T **epp,
-	u_int flags)
+search_init(SCR *sp, dir_t dir, CHAR_T *ptrn, size_t plen, CHAR_T **epp,
+    u_int flags)
 {
 	recno_t lno;
 	int delim;
@@ -146,14 +141,8 @@ prev:			if (sp->re == NULL) {
  * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int);
  */
 int
-f_search(
-	SCR *sp,
-	MARK *fm,
-	MARK *rm,
-	CHAR_T *ptrn,
-	size_t plen,
-	CHAR_T **eptrn,
-	u_int flags)
+f_search(SCR *sp, MARK *fm, MARK *rm, CHAR_T *ptrn, size_t plen,
+    CHAR_T **eptrn, u_int flags)
 {
 	busy_t btype;
 	recno_t lno;
@@ -292,14 +281,8 @@ f_search(
  * PUBLIC:    MARK *, MARK *, CHAR_T *, size_t, CHAR_T **, u_int);
  */
 int
-b_search(
-	SCR *sp,
-	MARK *fm,
-	MARK *rm,
-	CHAR_T *ptrn,
-	size_t plen,
-	CHAR_T **eptrn,
-	u_int flags)
+b_search(SCR *sp, MARK *fm, MARK *rm, CHAR_T *ptrn, size_t plen,
+    CHAR_T **eptrn, u_int flags)
 {
 	busy_t btype;
 	recno_t lno;
@@ -453,9 +436,7 @@ err:	if (LF_ISSET(SEARCH_MSG))
  *	Display one of the search messages.
  */
 static void
-search_msg(
-	SCR *sp,
-	smsg_t msg)
+search_msg(SCR *sp, smsg_t msg)
 {
 	switch (msg) {
 	case S_EMPTY:
@@ -490,9 +471,7 @@ search_msg(
  * PUBLIC: void search_busy(SCR *, busy_t);
  */
 void
-search_busy(
-	SCR *sp,
-	busy_t btype)
+search_busy(SCR *sp, busy_t btype)
 {
 	sp->gp->scr_busy(sp, "078|Searching...", btype);
 }

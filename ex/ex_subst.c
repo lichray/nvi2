@@ -1302,13 +1302,8 @@ re_error(SCR *sp, int errcode, regex_t *preg)
  * 	Do the substitution for a regular expression.
  */
 static int
-re_sub(
-	SCR *sp,
-	CHAR_T *ip,			/* Input line. */
-	CHAR_T **lbp,
-	size_t *lbclenp,
-	size_t *lblenp,
-	regmatch_t match[10])
+re_sub(SCR *sp, CHAR_T *ip, CHAR_T **lbp, size_t *lbclenp, size_t *lblenp,
+    regmatch_t match[10])
 {
 	enum { C_NOTSET, C_LOWER, C_ONELOWER, C_ONEUPPER, C_UPPER } conv;
 	size_t lbclen, lblen;		/* Local copies. */

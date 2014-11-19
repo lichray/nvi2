@@ -35,8 +35,7 @@ static char sccsid[] = "$Id: dump.c,v 8.2 2011/07/14 00:05:25 zy Exp $";
 #include <stdio.h>
 
 static void
-parse(fp)
-	FILE *fp;
+parse(FILE *fp)
 {
 	int ch, s1, s2, s3;
 
@@ -86,9 +85,7 @@ parse(fp)
 }
 
 int
-main(argc, argv)
-	int argc;
-	char *argv[];
+main(int argc, char *argv[])
 {
 	FILE *fp;
 

@@ -143,7 +143,8 @@ read:
  *	Read characters from the input.
  */
 static input_t
-cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp, struct timeval *tp)
+cl_read(SCR *sp, u_int32_t flags, char *bp, size_t blen, int *nrp,
+    struct timeval *tp)
 {
 	struct termios term1, term2;
 	CL_PRIVATE *clp;
