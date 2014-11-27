@@ -646,8 +646,8 @@ msgq_status(
 			memcpy(p, t, len);
 			p += len;
 		} else {
-			t = msg_cat(sp, "027|line %lu of %lu [%ld%%]", &len);
-			(void)snprintf(p, ep - p, t, lno, last,
+			t = msg_cat(sp, "027|line %lu of %lu [%lu%%]", &len);
+			(void)snprintf(p, ep - p, t, (u_long)lno, (u_long)last,
 			    ((u_long)lno * 100) / last);
 			p += strlen(p);
 		}
