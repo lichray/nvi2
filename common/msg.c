@@ -647,7 +647,7 @@ msgq_status(
 			p += len;
 		} else {
 			t = msg_cat(sp, "027|line %lu of %lu [%ld%%]", &len);
-			(void)snprintf(p, ep - p, t, lno, last,
+			(void)snprintf(p, ep - p, t, lno, (u_long)last,
 			    ((u_long)lno * 100) / last);
 			p += strlen(p);
 		}
