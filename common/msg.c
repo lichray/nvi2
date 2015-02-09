@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: msg.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
+static const char sccsid[] = "$Id: msg.c,v 11.1 2015/02/09 11:12:44 marc Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -647,7 +647,7 @@ msgq_status(
 			p += len;
 		} else {
 			t = msg_cat(sp, "027|line %lu of %lu [%ld%%]", &len);
-			(void)snprintf(p, ep - p, t, lno, last,
+			(void)snprintf(p, ep - p, t, (u_long)lno, (u_long)last,
 			    ((u_long)lno * 100) / last);
 			p += strlen(p);
 		}
