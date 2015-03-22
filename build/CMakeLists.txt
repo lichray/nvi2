@@ -1,4 +1,4 @@
-# $Id: CMakeLists.txt,v 1.10 2013/03/15 23:42:32 yamt Exp $
+# $Id: CMakeLists.txt,v 1.11 2015/03/23 12:30:20 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2)
 
@@ -46,11 +46,7 @@ else(DEBUG)
 	join("${_arg_str}" CMAKE_C_FLAGS)
 endif(DEBUG)
 
-# generate the public headers
-add_custom_target(headers ALL DEPENDS
-	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
-	../common/options_def.h ../ex/ex_def.h ../ex/version.h)
-
+# commands to generate the public headers
 set(extract_protos sed -n 's/^ \\* PUBLIC: \\\(.*\\\)/\\1/p')
 set(extract_version sed -n
 	's/^.*version \\\([^\)]*\)\\\).*/\#define VI_VERSION \\\"\\1\\\"/p')
@@ -76,6 +72,9 @@ add_custom_command(OUTPUT ../ex/version.h
 	COMMAND ${extract_version} ../README > $@
 	DEPENDS ../README)
 
+set(MAIN_PROTOS
+	../cl/extern.h ../common/extern.h ../ex/extern.h ../vi/extern.h
+	../common/options_def.h ../ex/ex_def.h ../ex/version.h)
 FILE(GLOB MAIN_SRCS ../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c)
 FILE(GLOB REGEX_SRCS ../regex/reg*.c)
 
@@ -95,8 +94,8 @@ endif(NOT RESOLV_IN_LIBC)
 
 include_directories(. ..)
 
-find_library(_curses_lib NAMES ncurses curses)
-find_library(_cursesw_lib NAMES ncursesw cursesw curses)
+find_library(_curses_lib NAMES ncurses curses HINTS /usr/lib)
+find_library(_cursesw_lib NAMES ncursesw cursesw curses HINTS /usr/lib)
 mark_as_advanced(_curses_lib _cursesw_lib)
 
 if(USE_WIDECHAR)
@@ -157,7 +156,7 @@ configure_file(${CMAKE_SOURCE_DIR}/pathnames.h.in
 configure_file(${CMAKE_SOURCE_DIR}/recover.in
 	${CMAKE_SOURCE_DIR}/recover @ONLY)
 
-add_executable(nvi ${MAIN_SRCS})
+add_executable(nvi ${MAIN_SRCS} ${MAIN_PROTOS})
 target_link_libraries(nvi ${CURSES_LIBRARY} ${UTIL_LIBRARY} ${RESOLV_LIBRARY})
 if(USE_WIDECHAR)
 	target_link_libraries(nvi regex)
