@@ -841,7 +841,6 @@ file_write(
 		return (1);
 
 	/* Open the file. */
-	SIGBLOCK;
 	if ((fd = open(name, oflags,
 	    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) < 0) {
 		if (errno == EACCES && LF_ISSET(FS_FORCE)) {
@@ -873,11 +872,9 @@ file_write(
 			errno = EACCES;
 		}
 		msgq_str(sp, M_SYSERR, name, "%s");
-		SIGUNBLOCK;
 		return (1);
 	}
 success_open:
-	SIGUNBLOCK;
 
 	/* Try and get a lock. */
 	if (!noname && file_lock(sp, NULL, fd, 0) == LOCK_UNAVAIL)

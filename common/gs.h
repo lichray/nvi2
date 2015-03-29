@@ -196,21 +196,3 @@ struct _gs {
 					/* Print usage message. */
 	void	(*scr_usage)(void);
 };
-
-/*
- * XXX
- * Block signals if there are asynchronous events.  Used to keep DB system calls
- * from being interrupted and not restarted, as that will result in consistency
- * problems.  This should be handled by DB.
- */
-#ifdef BLOCK_SIGNALS
-#include <signal.h>
-extern sigset_t	__sigblockset;
-#define	SIGBLOCK \
-	(void)sigprocmask(SIG_BLOCK, &__sigblockset, NULL)
-#define	SIGUNBLOCK \
-	(void)sigprocmask(SIG_UNBLOCK, &__sigblockset, NULL);
-#else
-#define	SIGBLOCK
-#define	SIGUNBLOCK
-#endif
