@@ -92,7 +92,6 @@ db_get(
 	recno_t l1, l2;
 	CHAR_T *wp;
 	size_t wlen;
-	size_t nlen;
 
 	/*
 	 * The underlying recno stuff handles zero by returning NULL, but
@@ -152,8 +151,6 @@ db_get(
 	ep->c_lno = OOBLNO;
 
 nocache:
-	nlen = 1024;
-retry:
 	/* Get the line from the underlying database. */
 	key.data = &lno;
 	key.size = sizeof(lno);
@@ -169,11 +166,6 @@ err3:		if (lenp != NULL)
 		if (pp != NULL)
 			*pp = NULL;
 		return (1);
-	case 0:
-		if (data.size > nlen) {
-			nlen = data.size;
-			goto retry;
-		}
 	}
 
 	if (FILE2INT(sp, data.data, data.size, wp, wlen)) {
@@ -544,8 +536,6 @@ alloc_err:
 	case 1:
 		*lnop = 0;
 		return (0);
-	case 0:
-		;
 	}
 
 	memcpy(&lno, key.data, sizeof(lno));
