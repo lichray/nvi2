@@ -40,10 +40,7 @@ static int	 vs_join(SCR *, SCR **, jdir_t *);
  * PUBLIC: int vs_split(SCR *, SCR *, int);
  */
 int
-vs_split(
-	SCR *sp,
-	SCR *new,
-	int ccl)		/* Colon-command line split. */
+vs_split(SCR *sp, SCR *new, int ccl)
 {
 	GS *gp;
 	SMAP *smp;

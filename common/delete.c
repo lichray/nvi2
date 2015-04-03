@@ -33,11 +33,7 @@ static const char sccsid[] = "$Id: delete.c,v 10.18 2012/02/11 15:52:33 zy Exp $
  * PUBLIC: int del(SCR *, MARK *, MARK *, int);
  */
 int
-del(
-	SCR *sp,
-	MARK *fm,
-	MARK *tm,
-	int lmode)
+del(SCR *sp, MARK *fm, MARK *tm, int lmode)
 {
 	recno_t lno;
 	size_t blen, len, nlen, tlen;

@@ -238,16 +238,8 @@ txt_map_end(SCR *sp)
  * PUBLIC:    const CHAR_T *, size_t, ARG_CHAR_T, recno_t, u_long, u_int32_t);
  */
 int
-v_txt(
-	SCR *sp,
-	VICMD *vp,
-	MARK *tm,		/* To MARK. */
-	const CHAR_T *lp,	/* Input line. */
-	size_t len,		/* Input line length. */
-	ARG_CHAR_T prompt,	/* Prompt to display. */
-	recno_t ai_line,	/* Line number to use for autoindent count. */
-	u_long rcount,		/* Replay count. */
-	u_int32_t flags)	/* TXT_* flags. */
+v_txt(SCR *sp, VICMD *vp, MARK *tm, const CHAR_T *lp, size_t len,
+    ARG_CHAR_T prompt, recno_t ai_line, u_long rcount, u_int32_t flags)
 {
 	EVENT ev, *evp = NULL;	/* Current event. */
 	EVENT fc;		/* File name completion event. */

@@ -40,9 +40,7 @@ static int	vs_paint(SCR *, u_int);
  * PUBLIC: int vs_repaint(SCR *, EVENT *);
  */
 int
-vs_repaint(
-	SCR *sp,
-	EVENT *evp)
+vs_repaint(SCR *sp, EVENT *evp)
 {
 	SMAP *smp;
 
@@ -62,9 +60,7 @@ vs_repaint(
  * PUBLIC: int vs_refresh(SCR *, int);
  */
 int
-vs_refresh(
-	SCR *sp,
-	int forcepaint)
+vs_refresh(SCR *sp, int forcepaint)
 {
 	GS *gp;
 	SCR *tsp;
@@ -159,9 +155,7 @@ vs_refresh(
  *	what you're doing.  It's subtle and quick to anger.
  */
 static int
-vs_paint(
-	SCR *sp,
-	u_int flags)
+vs_paint(SCR *sp, u_int flags)
 {
 	GS *gp;
 	SMAP *smp, tmp;

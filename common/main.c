@@ -41,10 +41,7 @@ static int	 v_obsolete(char *, char *[]);
  * PUBLIC: int editor(GS *, int, char *[]);
  */
 int
-editor(
-	GS *gp,
-	int argc,
-	char *argv[])
+editor(GS *gp, int argc, char *argv[])
 {
 	extern int optind;
 	extern char *optarg;
@@ -515,9 +512,7 @@ v_end(gp)
  *	Convert historic arguments into something getopt(3) will like.
  */
 static int
-v_obsolete(
-	char *name,
-	char *argv[])
+v_obsolete(char *name, char *argv[])
 {
 	size_t len;
 	char *p;
@@ -593,10 +588,7 @@ attach(GS *gp)
 #endif
 
 static void
-v_estr(
-	char *name,
-	int eno,
-	char *msg)
+v_estr(char *name, int eno, char *msg)
 {
 	(void)fprintf(stderr, "%s", name);
 	if (msg != NULL)

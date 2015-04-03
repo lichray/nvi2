@@ -116,10 +116,7 @@ static int	 rcv_dlnread(SCR *, char **, char **, FILE *);
  * PUBLIC: int rcv_tmp(SCR *, EXF *, char *);
  */
 int
-rcv_tmp(
-	SCR *sp,
-	EXF *ep,
-	char *name)
+rcv_tmp(SCR *sp, EXF *ep, char *name)
 {
 	struct stat sb;
 	int fd;
@@ -237,9 +234,7 @@ err:	msgq(sp, M_ERR,
  * PUBLIC: int rcv_sync(SCR *, u_int);
  */
 int
-rcv_sync(
-	SCR *sp,
-	u_int flags)
+rcv_sync(SCR *sp, u_int flags)
 {
 	EXF *ep;
 	int fd, rval;
@@ -318,10 +313,7 @@ err:		rval = 1;
  *	Build the file to mail to the user.
  */
 static int
-rcv_mailfile(
-	SCR *sp,
-	int issync,
-	char *cp_path)
+rcv_mailfile(SCR *sp, int issync, char *cp_path)
 {
 	EXF *ep;
 	GS *gp;
@@ -612,9 +604,7 @@ next:		(void)fclose(fp);
  * PUBLIC: int rcv_read(SCR *, FREF *);
  */
 int
-rcv_read(
-	SCR *sp,
-	FREF *frp)
+rcv_read(SCR *sp, FREF *frp)
 {
 	struct dirent *dp;
 	struct stat sb;
@@ -790,10 +780,7 @@ next:			free(recpath);
  *	Copy a recovery file.
  */
 static int
-rcv_copy(
-	SCR *sp,
-	int wfd,
-	char *fname)
+rcv_copy(SCR *sp, int wfd, char *fname)
 {
 	int nr, nw, off, rfd;
 	char buf[8 * 1024];
@@ -816,10 +803,7 @@ err:	msgq_str(sp, M_SYSERR, fname, "%s");
  *	Paranoid make temporary file routine.
  */
 static int
-rcv_mktemp(
-	SCR *sp,
-	char *path,
-	char *dname)
+rcv_mktemp(SCR *sp, char *path, char *dname)
 {
 	int fd;
 
@@ -833,9 +817,7 @@ rcv_mktemp(
  *	Send email.
  */
 static void
-rcv_email(
-	SCR *sp,
-	char *fname)
+rcv_email(SCR *sp, char *fname)
 {
 	char *buf;
 
@@ -854,11 +836,7 @@ rcv_email(
  *	Encode a string into an X-vi-data line and write it.
  */
 static int
-rcv_dlnwrite(
-	SCR *sp,
-	const char *dtype,
-	const char *src,
-	FILE *fp)
+rcv_dlnwrite(SCR *sp, const char *dtype, const char *src, FILE *fp)
 {
 	char *bp = NULL, *p;
 	size_t blen = 0;
@@ -901,11 +879,7 @@ alloc_err:
  *	Read an X-vi-data line and decode it.
  */
 static int
-rcv_dlnread(
-	SCR *sp,
-	char **dtypep,
-	char **datap,		/* free *datap if != NULL after use. */
-	FILE *fp)
+rcv_dlnread(SCR *sp, char **dtypep, char **datap, FILE *fp)
 {
 	int ch;
 	char buf[1024];

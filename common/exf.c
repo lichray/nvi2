@@ -59,9 +59,7 @@ static int	file_spath(SCR *, FREF *, struct stat *, int *);
  * PUBLIC: FREF *file_add(SCR *, char *);
  */
 FREF *
-file_add(
-	SCR *sp,
-	char *name)
+file_add(SCR *sp, char *name)
 {
 	GS *gp;
 	FREF *frp, *tfrp;
@@ -121,11 +119,7 @@ file_add(
  * PUBLIC: int file_init(SCR *, FREF *, char *, int);
  */
 int
-file_init(
-	SCR *sp,
-	FREF *frp,
-	char *rcv_name,
-	int flags)
+file_init(SCR *sp, FREF *frp, char *rcv_name, int flags)
 {
 	EXF *ep;
 	RECNOINFO oinfo = { 0 };
@@ -444,11 +438,7 @@ oerr:	if (F_ISSET(ep, F_RCV_ON))
  *	try and open.
  */
 static int
-file_spath(
-	SCR *sp,
-	FREF *frp,
-	struct stat *sbp,
-	int *existsp)
+file_spath(SCR *sp, FREF *frp, struct stat *sbp, int *existsp)
 {
 	int savech;
 	size_t len;
@@ -628,10 +618,7 @@ file_cinit(SCR *sp)
  * PUBLIC: int file_end(SCR *, EXF *, int);
  */
 int
-file_end(
-	SCR *sp,
-	EXF *ep,
-	int force)
+file_end(SCR *sp, EXF *ep, int force)
 {
 	FREF *frp;
 
@@ -740,12 +727,7 @@ file_end(
  * PUBLIC: int file_write(SCR *, MARK *, MARK *, char *, int);
  */
 int
-file_write(
-	SCR *sp,
-	MARK *fm,
-	MARK *tm,
-	char *name,
-	int flags)
+file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 {
 	enum { NEWFILE, OLDFILE } mtype;
 	struct stat sb;
@@ -1012,10 +994,7 @@ success_open:
  * recreate the file.  So, let's not risk it.
  */
 static int
-file_backup(
-	SCR *sp,
-	char *name,
-	char *bname)
+file_backup(SCR *sp, char *name, char *bname)
 {
 	struct dirent *dp;
 	struct stat sb;
@@ -1302,10 +1281,7 @@ file_comment(SCR *sp)
  * PUBLIC: int file_m1(SCR *, int, int);
  */
 int
-file_m1(
-	SCR *sp,
-	int force,
-	int flags)
+file_m1(SCR *sp, int force, int flags)
 {
 	EXF *ep;
 
@@ -1343,9 +1319,7 @@ file_m1(
  * PUBLIC: int file_m2(SCR *, int);
  */
 int
-file_m2(
-	SCR *sp,
-	int force)
+file_m2(SCR *sp, int force)
 {
 	EXF *ep;
 
@@ -1375,9 +1349,7 @@ file_m2(
  * PUBLIC: int file_m3(SCR *, int);
  */
 int
-file_m3(
-	SCR *sp,
-	int force)
+file_m3(SCR *sp, int force)
 {
 	EXF *ep;
 
@@ -1411,9 +1383,7 @@ file_m3(
  * PUBLIC: int file_aw(SCR *, int);
  */
 int
-file_aw(
-	SCR *sp,
-	int flags)
+file_aw(SCR *sp, int flags)
 {
 	if (!F_ISSET(sp->ep, F_MODIFIED))
 		return (0);
@@ -1472,9 +1442,7 @@ file_aw(
  * PUBLIC: void set_alt_name(SCR *, char *);
  */
 void
-set_alt_name(
-	SCR *sp,
-	char *name)
+set_alt_name(SCR *sp, char *name)
 {
 	if (sp->alt_name != NULL)
 		free(sp->alt_name);
@@ -1491,11 +1459,7 @@ set_alt_name(
  * PUBLIC: lockr_t file_lock(SCR *, char *, int, int);
  */
 lockr_t
-file_lock(
-	SCR *sp,
-	char *name,
-	int fd,
-	int iswrite)
+file_lock(SCR *sp, char *name, int fd, int iswrite)
 {
 	if (!O_ISSET(sp, O_LOCKFILES))
 		return (LOCK_SUCCESS);

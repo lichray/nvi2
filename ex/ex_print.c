@@ -261,10 +261,7 @@ intr:	*colp = col;
  * PUBLIC: int ex_printf(SCR *, const char *, ...);
  */
 int
-ex_printf(
-	SCR *sp,
-	const char *fmt,
-	...)
+ex_printf(SCR *sp, const char *fmt, ...)
 {
 	EX_PRIVATE *exp;
 	va_list ap;
