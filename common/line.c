@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: line.c,v 10.26 2011/08/12 12:36:41 zy Exp $";
+static const char sccsid[] = "$Id: line.c,v 10.27 2015/04/03 14:17:21 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -563,7 +563,7 @@ alloc_err:
 
 /*
  * db_rget --
- *	Retrieve a raw line from database. No cache, no conversion.
+ *	Retrieve a raw line from the database.
  *
  * PUBLIC: int db_rget(SCR *, recno_t, char **, size_t *);
  */
@@ -575,29 +575,24 @@ db_rget(
 	size_t *lenp)				/* Length store. */
 {
 	DBT data, key;
-	EXF *ep;
-
-	/* Check for no underlying file. */
-	if ((ep = sp->ep) == NULL)
-		return (1);
+	EXF *ep = sp->ep;
+	int rval;
 
 	/* Get the line from the underlying database. */
 	key.data = &lno;
 	key.size = sizeof(lno);
-	if (ep->db->get(ep->db, &key, &data, 0))
-	/* We do not report error, and do not ensure the size! */
-		return (1);
-
-	if (lenp != NULL)
+	if ((rval = ep->db->get(ep->db, &key, &data, 0)) == 0)
+	{
 		*lenp = data.size;
-	if (pp != NULL)
 		*pp = data.data;
-	return (0);
+	}
+
+	return (rval);
 }
 
 /*
  * db_rset --
- *	Store a line in the file. No log, no conversion.
+ *	Store a raw line into the database.
  *
  * PUBLIC: int db_rset(SCR *, recno_t, char *, size_t);
  */
@@ -609,22 +604,14 @@ db_rset(
 	size_t len)
 {
 	DBT data, key;
-	EXF *ep;
+	EXF *ep = sp->ep;
 
-	/* Check for no underlying file. */
-	if ((ep = sp->ep) == NULL)
-		return (1);
-		
 	/* Update file. */
 	key.data = &lno;
 	key.size = sizeof(lno);
 	data.data = p;
 	data.size = len;
-	if (ep->db->put(ep->db, &key, &data, 0) == -1)
-	/* We do not report error, and do not ensure the size! */
-		return (1);
-
-	return (0);
+	return ep->db->put(ep->db, &key, &data, 0);
 }
 
 /*
