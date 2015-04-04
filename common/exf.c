@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.62 2014/03/05 15:40:43 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.63 2015/04/04 05:36:47 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -259,6 +259,8 @@ file_init(
 	    DB_RECNO, &oinfo)) == NULL) {
 		msgq_str(sp,
 		    M_SYSERR, rcv_name == NULL ? oname : rcv_name, "%s");
+		if (F_ISSET(frp, FR_NEWFILE))
+			goto err;
 		/*
 		 * !!!
 		 * Historically, vi permitted users to edit files that couldn't
