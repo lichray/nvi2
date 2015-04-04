@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: recover.c,v 11.2 2012/10/09 08:06:58 zy Exp $";
+static const char sccsid[] = "$Id: recover.c,v 11.3 2015/04/04 03:50:42 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -632,7 +632,7 @@ rcv_read(
 		return (1);
 	rp = O_STR(sp, O_RECDIR);
 	if ((dirp = opendir(rp)) == NULL) {
-		msgq_str(sp, M_ERR, rp, "%s");
+		msgq_str(sp, M_SYSERR, rp, "%s");
 		return (1);
 	}
 
