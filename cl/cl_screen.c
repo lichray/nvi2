@@ -56,8 +56,13 @@ cl_screen(SCR *sp, u_int32_t flags)
 	clp = CLP(sp);
 	win = CLSP(sp) ? CLSP(sp) : stdscr;
 
+	if (F_ISSET(gp, G_WRESIZE))
+	{
+		resizeterm(O_VAL(sp, O_LINES), O_VAL(sp, O_COLUMNS));
+		F_CLR(gp, G_WRESIZE | G_SRESTART);
+	}
 	/* See if the current information is incorrect. */
-	if (F_ISSET(gp, G_SRESTART)) {
+	else if (F_ISSET(gp, G_SRESTART)) {
 		if (CLSP(sp)) {
 		    delwin(CLSP(sp));
 		    sp->cl_private = NULL;

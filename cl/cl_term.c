@@ -270,6 +270,8 @@ cl_optchange(SCR *sp, int opt, char *str, u_long *valp)
 	switch (opt) {
 	case O_COLUMNS:
 	case O_LINES:
+		F_SET(sp->gp, G_WRESIZE | G_SRESTART);
+		break;
 	case O_TERM:
 		/*
 		 * Changing the columns, lines or terminal require that

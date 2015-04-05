@@ -140,6 +140,7 @@ struct _gs {
 #define	G_SNAPSHOT	0x0040		/* Always snapshot files. */
 #define	G_SRESTART	0x0080		/* Screen restarted. */
 #define	G_TMP_INUSE	0x0100		/* Temporary buffer in use. */
+#define	G_WRESIZE	0x0200
 	u_int32_t flags;
 
 	/* Screen interface functions. */
