@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_screen.c,v 10.57 2015/04/05 00:10:53 zy Exp $";
+static const char sccsid[] = "$Id: cl_screen.c,v 10.58 2015/04/08 02:12:11 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -58,11 +58,9 @@ cl_screen(SCR *sp, u_int32_t flags)
 
 	/* See if the current information is incorrect. */
 	if (F_ISSET(gp, G_SRESTART)) {
-		if (CLSP(sp)) {
-		    delwin(CLSP(sp));
-		    sp->cl_private = NULL;
-		}
-		if (cl_quit(gp))
+		if ((!F_ISSET(sp, SC_SCR_EX | SC_SCR_VI) ||
+		     resizeterm(O_VAL(sp, O_LINES), O_VAL(sp, O_COLUMNS))) &&
+		    cl_quit(gp))
 			return (1);
 		F_CLR(gp, G_SRESTART);
 	}

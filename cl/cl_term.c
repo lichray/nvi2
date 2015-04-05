@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_term.c,v 10.34 2013/12/07 16:21:14 wjenkner Exp $";
+static const char sccsid[] = "$Id: cl_term.c,v 10.35 2015/04/08 02:12:11 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -268,15 +268,16 @@ cl_optchange(SCR *sp, int opt, char *str, u_long *valp)
 	clp = CLP(sp);
 
 	switch (opt) {
+	case O_TERM:
+		F_CLR(sp, SC_SCR_EX | SC_SCR_VI);
+		/* FALLTHROUGH */
 	case O_COLUMNS:
 	case O_LINES:
-	case O_TERM:
 		/*
-		 * Changing the columns, lines or terminal require that
-		 * we restart the screen.
+		 * Changing the terminal type requires that we reinitialize
+		 * curses, while resizing does not.
 		 */
 		F_SET(sp->gp, G_SRESTART);
-		F_CLR(sp, SC_SCR_EX | SC_SCR_VI);
 		break;
 	case O_MESG:
 		(void)cl_omesg(sp, clp, *valp);
