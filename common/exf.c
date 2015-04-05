@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.63 2015/04/04 05:36:47 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.64 2015/04/05 15:21:55 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -342,6 +342,8 @@ file_init(
 			break;
 		case LOCK_UNAVAIL:
 			readonly = 1;
+			if (F_ISSET(sp, SC_READONLY))
+				break;
 			msgq_str(sp, M_INFO, oname,
 			    "239|%s already locked, session is read-only");
 			break;

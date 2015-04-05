@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_split.c,v 10.42 2001/06/25 15:19:38 skimo Exp $";
+static const char sccsid[] = "$Id: vs_split.c,v 10.43 2015/04/05 15:21:55 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -194,7 +194,7 @@ vs_split(
 	 */
 	F_SET(new,
 	    SC_SCR_REFORMAT | SC_STATUS |
-	    F_ISSET(sp, SC_EX | SC_VI | SC_SCR_VI | SC_SCR_EX));
+	    F_ISSET(sp, SC_EX | SC_VI | SC_SCR_VI | SC_SCR_EX | SC_READONLY));
 	return (0);
 }
 
@@ -285,7 +285,7 @@ vs_vsplit(SCR *sp, SCR *new)
 	 */
 	F_SET(new,
 	    SC_SCR_REFORMAT | SC_STATUS |
-	    F_ISSET(sp, SC_EX | SC_VI | SC_SCR_VI | SC_SCR_EX));
+	    F_ISSET(sp, SC_EX | SC_VI | SC_SCR_VI | SC_SCR_EX | SC_READONLY));
 	return (0);
 }
 
