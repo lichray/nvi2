@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_main.c,v 10.55 2011/08/15 19:52:28 zy Exp $";
+static const char sccsid[] = "$Id: cl_main.c,v 10.56 2015/04/05 06:20:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 	 * have to use termcap/terminfo to find out how big the screen is.
 	 */
 	if ((ttype = getenv("TERM")) == NULL)
-		ttype = "unknown";
+		ttype = "ansi";
 	term_init(gp->progname, ttype);
 
 	/* Add the terminal type to the global structure. */
