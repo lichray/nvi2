@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_screen.c,v 10.56 2002/05/03 19:59:44 skimo Exp $";
+static const char sccsid[] = "$Id: cl_screen.c,v 10.57 2015/04/05 00:10:53 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -234,20 +234,15 @@ cl_vi_init(SCR *sp)
 	cl_putenv("COLUMNS", NULL, (u_long)O_VAL(sp, O_COLUMNS));
 
 	/*
-	 * We don't care about the SCREEN reference returned by newterm, we
-	 * never have more than one SCREEN at a time.
-	 *
-	 * XXX
-	 * The SunOS initscr() can't be called twice.  Don't even think about
-	 * using it.  It fails in subtle ways (e.g. select(2) on fileno(stdin)
-	 * stops working).  (The SVID notes that applications should only call
-	 * initscr() once.)
-	 *
-	 * XXX
-	 * The HP/UX newterm doesn't support the NULL first argument, so we
-	 * have to specify the terminal type.
+	 * The terminal is aways initialized, either in `main`, or by a
+	 * previous call to newterm(3X).
 	 */
 	(void)del_curterm(cur_term);
+
+	/*
+	 * We never have more than one SCREEN at a time, so set_term(NULL) will
+	 * give us the last SCREEN.
+	 */
 	errno = 0;
 	if (newterm(ttype, stdout, stdin) == NULL) {
 		if (errno)
@@ -415,6 +410,9 @@ cl_vi_end(GS *gp)
 
 	/* End curses window. */
 	(void)endwin();
+
+	/* Free the SCREEN created by newterm(3X). */
+	delscreen(set_term(NULL));
 
 	/*
 	 * XXX
