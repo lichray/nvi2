@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: vs_refresh.c,v 10.53 2013/11/01 11:57:36 zy Exp $";
+static const char sccsid[] = "$Id: vs_refresh.c,v 10.54 2015/04/08 16:32:49 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -593,7 +593,7 @@ slow:	for (smp = HMAP; smp->lno != LNO; ++smp);
 		 * for the number option offset.
 		 */
 		cnt = vs_columns(sp, NULL, LNO, &CNO, NULL);
-		if (O_ISSET(sp, O_NUMBER) && cnt >= O_NUMBER_LENGTH)
+		if (O_ISSET(sp, O_NUMBER))
 			cnt -= O_NUMBER_LENGTH;
 
 		/* Adjust the window towards the beginning of the line. */
