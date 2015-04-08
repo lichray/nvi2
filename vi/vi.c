@@ -1216,7 +1216,6 @@ v_key(
 			break;
 		case E_WRESIZE:
 			return (GC_ERR);
-			/* FALLTHROUGH */
 		default:
 			v_event_err(sp, evp);
 			return (GC_ERR);
