@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: delete.c,v 10.18 2012/02/11 15:52:33 zy Exp $";
+static const char sccsid[] = "$Id: delete.c,v 10.19 2015/12/21 03:05:46 marc Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -90,14 +90,16 @@ del(SCR *sp, MARK *fm, MARK *tm, int lmode)
 	if (tm->lno == fm->lno) {
 		if (db_get(sp, fm->lno, DBG_FATAL, &p, &len))
 			return (1);
-		GET_SPACE_RETW(sp, bp, blen, len);
-		if (fm->cno != 0)
-			MEMCPY(bp, p, fm->cno);
-		MEMCPY(bp + fm->cno, p + (tm->cno + 1), 
-			len - (tm->cno + 1));
-		if (db_set(sp, fm->lno,
-		    bp, len - ((tm->cno - fm->cno) + 1)))
-			goto err;
+		if (len != 0) {
+			GET_SPACE_RETW(sp, bp, blen, len);
+			if (fm->cno != 0)
+				MEMCPY(bp, p, fm->cno);
+			MEMCPY(bp + fm->cno, p + (tm->cno + 1),
+			    len - (tm->cno + 1));
+			if (db_set(sp, fm->lno,
+			    bp, len - ((tm->cno - fm->cno) + 1)))
+				goto err;
+		}
 		goto done;
 	}
 
