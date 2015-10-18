@@ -35,10 +35,7 @@ static const char sccsid[] = "$Id: screen.c,v 10.25 2011/12/04 04:06:45 zy Exp $
  * PUBLIC: int screen_init(GS *, SCR *, SCR **);
  */
 int
-screen_init(
-	GS *gp,
-	SCR *orig,
-	SCR **spp)
+screen_init(GS *gp, SCR *orig, SCR **spp)
 {
 	SCR *sp;
 	size_t len;

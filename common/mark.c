@@ -66,9 +66,7 @@ static LMARK *mark_find(SCR *, ARG_CHAR_T);
  * PUBLIC: int mark_init(SCR *, EXF *);
  */
 int
-mark_init(
-	SCR *sp,
-	EXF *ep)
+mark_init(SCR *sp, EXF *ep)
 {
 	/*
 	 * !!!
@@ -87,9 +85,7 @@ mark_init(
  * PUBLIC: int mark_end(SCR *, EXF *);
  */
 int
-mark_end(
-	SCR *sp,
-	EXF *ep)
+mark_end(SCR *sp, EXF *ep)
 {
 	LMARK *lmp;
 
@@ -111,11 +107,7 @@ mark_end(
  * PUBLIC: int mark_get(SCR *, ARG_CHAR_T, MARK *, mtype_t);
  */
 int
-mark_get(
-	SCR *sp,
-	ARG_CHAR_T key,
-	MARK *mp,
-	mtype_t mtype)
+mark_get(SCR *sp, ARG_CHAR_T key, MARK *mp, mtype_t mtype)
 {
 	LMARK *lmp;
 
@@ -156,11 +148,7 @@ mark_get(
  * PUBLIC: int mark_set(SCR *, ARG_CHAR_T, MARK *, int);
  */
 int
-mark_set(
-	SCR *sp,
-	ARG_CHAR_T key,
-	MARK *value,
-	int userset)
+mark_set(SCR *sp, ARG_CHAR_T key, MARK *value, int userset)
 {
 	LMARK *lmp, *lmt;
 
@@ -198,9 +186,7 @@ mark_set(
  *	where it would go.
  */
 static LMARK *
-mark_find(
-	SCR *sp,
-	ARG_CHAR_T key)
+mark_find(SCR *sp, ARG_CHAR_T key)
 {
 	LMARK *lmp, *lastlmp = NULL;
 
@@ -223,10 +209,7 @@ mark_find(
  * PUBLIC: int mark_insdel(SCR *, lnop_t, recno_t);
  */
 int
-mark_insdel(
-	SCR *sp,
-	lnop_t op,
-	recno_t lno)
+mark_insdel(SCR *sp, lnop_t op, recno_t lno)
 {
 	LMARK *lmp;
 	recno_t lline;
