@@ -33,13 +33,7 @@ static const char sccsid[] = "$Id: put.c,v 10.19 04/07/11 17:00:24 zy Exp $";
  * PUBLIC: int put(SCR *, CB *, CHAR_T *, MARK *, MARK *, int);
  */
 int
-put(
-	SCR *sp,
-	CB *cbp,
-	CHAR_T *namep,
-	MARK *cp,
-	MARK *rp,
-	int append)
+put(SCR *sp, CB *cbp, CHAR_T *namep, MARK *cp, MARK *rp, int append)
 {
 	CHAR_T name;
 	TEXT *ltp, *tp;

@@ -297,9 +297,7 @@ static OABBREV const abbrev[] = {
  * PUBLIC: int opts_init(SCR *, int *);
  */
 int
-opts_init(
-	SCR *sp,
-	int *oargs)
+opts_init(SCR *sp, int *oargs)
 {
 	ARGS *argv[2], a, b;
 	OPTLIST const *op;
@@ -463,10 +461,7 @@ err:	msgq_wstr(sp, M_ERR, optlist[optindx].name,
  * PUBLIC: int opts_set(SCR *, ARGS *[], char *);
  */
 int
-opts_set(
-	SCR *sp,
-	ARGS *argv[],
-	char *usage)
+opts_set(SCR *sp, ARGS *argv[], char *usage)
 {
 	enum optdisp disp;
 	enum nresult nret;
@@ -757,12 +752,7 @@ badnum:				INT2CHAR(sp, name, STRLEN(name) + 1,
  * PUBLIC: int o_set(SCR *, int, u_int, char *, u_long);
  */
 int
-o_set(
-	SCR *sp,
-	int opt,
-	u_int flags,
-	char *str,
-	u_long val)
+o_set(SCR *sp, int opt, u_int flags, char *str, u_long val)
 {
 	OPTION *op;
 
@@ -801,10 +791,7 @@ o_set(
  * PUBLIC: int opts_empty(SCR *, int, int);
  */
 int
-opts_empty(
-	SCR *sp,
-	int off,
-	int silent)
+opts_empty(SCR *sp, int off, int silent)
 {
 	char *p;
 
@@ -824,9 +811,7 @@ opts_empty(
  * PUBLIC: void opts_dump(SCR *, enum optdisp);
  */
 void
-opts_dump(
-	SCR *sp,
-	enum optdisp type)
+opts_dump(SCR *sp, enum optdisp type)
 {
 	OPTLIST const *op;
 	int base, b_num, cnt, col, colwidth, curlen, s_num;
@@ -958,9 +943,7 @@ opts_dump(
  *	Print out an option.
  */
 static int
-opts_print(
-	SCR *sp,
-	OPTLIST const *op)
+opts_print(SCR *sp, OPTLIST const *op)
 {
 	int curlen, offset;
 
@@ -990,9 +973,7 @@ opts_print(
  * PUBLIC: int opts_save(SCR *, FILE *);
  */
 int
-opts_save(
-	SCR *sp,
-	FILE *fp)
+opts_save(SCR *sp, FILE *fp)
 {
 	OPTLIST const *op;
 	CHAR_T ch, *p;
@@ -1093,26 +1074,20 @@ opts_search(CHAR_T *name)
  * PUBLIC: void opts_nomatch(SCR *, CHAR_T *);
  */
 void
-opts_nomatch(
-	SCR *sp,
-	CHAR_T *name)
+opts_nomatch(SCR *sp, CHAR_T *name)
 {
 	msgq_wstr(sp, M_ERR, name,
 	    "033|set: no %s option: 'set all' gives all option values");
 }
 
 static int
-opts_abbcmp(
-	const void *a,
-	const void *b)
+opts_abbcmp(const void *a, const void *b)
 {
 	return(STRCMP(((OABBREV *)a)->name, ((OABBREV *)b)->name));
 }
 
 static int
-opts_cmp(
-	const void *a,
-	const void *b)
+opts_cmp(const void *a, const void *b)
 {
 	return(STRCMP(((OPTLIST *)a)->name, ((OPTLIST *)b)->name));
 }
@@ -1124,9 +1099,7 @@ opts_cmp(
  * PUBLIC: int opts_copy(SCR *, SCR *);
  */
 int
-opts_copy(
-	SCR *orig,
-	SCR *sp)
+opts_copy(SCR *orig, SCR *sp)
 {
 	int cnt, rval;
 

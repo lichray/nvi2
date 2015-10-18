@@ -93,9 +93,7 @@ typedef struct {
  * PUBLIC: int log_init(SCR *, EXF *);
  */
 int
-log_init(
-	SCR *sp,
-	EXF *ep)
+log_init(SCR *sp, EXF *ep)
 {
 	/*
 	 * !!!
@@ -129,9 +127,7 @@ log_init(
  * PUBLIC: int log_end(SCR *, EXF *);
  */
 int
-log_end(
-	SCR *sp,
-	EXF *ep)
+log_end(SCR *sp, EXF *ep)
 {
 	/*
 	 * !!!
@@ -186,9 +182,7 @@ log_cursor(SCR *sp)
  *	Actually push a cursor record out.
  */
 static int
-log_cursor1(
-	SCR *sp,
-	int type)
+log_cursor1(SCR *sp, int type)
 {
 	DBT data, key;
 	EXF *ep;
@@ -224,10 +218,7 @@ log_cursor1(
  * PUBLIC: int log_line(SCR *, recno_t, u_int);
  */
 int
-log_line(
-	SCR *sp,
-	recno_t lno,
-	u_int action)
+log_line(SCR *sp, recno_t lno, u_int action)
 {
 	DBT data, key;
 	EXF *ep;
@@ -327,9 +318,7 @@ log_line(
  * PUBLIC: int log_mark(SCR *, LMARK *);
  */
 int
-log_mark(
-	SCR *sp,
-	LMARK *lmp)
+log_mark(SCR *sp, LMARK *lmp)
 {
 	DBT data, key;
 	EXF *ep;
@@ -373,9 +362,7 @@ log_mark(
  * PUBLIC: int log_backward(SCR *, MARK *);
  */
 int
-log_backward(
-	SCR *sp,
-	MARK *rp)
+log_backward(SCR *sp, MARK *rp)
 {
 	DBT key, data;
 	EXF *ep;
@@ -561,9 +548,7 @@ err:	F_CLR(ep, F_NOLOG);
  * PUBLIC: int log_forward(SCR *, MARK *);
  */
 int
-log_forward(
-	SCR *sp,
-	MARK *rp)
+log_forward(SCR *sp, MARK *rp)
 {
 	DBT key, data;
 	EXF *ep;
@@ -658,10 +643,7 @@ err:	F_CLR(ep, F_NOLOG);
  *	Try and restart the log on failure, i.e. if we run out of memory.
  */
 static void
-log_err(
-	SCR *sp,
-	char *file,
-	int line)
+log_err(SCR *sp, char *file, int line)
 {
 	EXF *ep;
 
@@ -674,11 +656,7 @@ log_err(
 
 #if defined(DEBUG) && 0
 static void
-log_trace(
-	SCR *sp,
-	char *msg,
-	recno_t rno,
-	u_char *p)
+log_trace(SCR *sp, char *msg, recno_t rno, u_char *p)
 {
 	LMARK lm;
 	MARK m;
@@ -729,12 +707,8 @@ log_trace(
  *	Apply a realigned line from the log db to the file db.
  */
 static int
-apply_with(
-	int (*db_func)(SCR *, recno_t, CHAR_T *, size_t),
-	SCR *sp,
-	recno_t lno,
-	u_char *p,
-	size_t len)
+apply_with(int (*db_func)(SCR *, recno_t, CHAR_T *, size_t), SCR *sp,
+    recno_t lno, u_char *p, size_t len)
 {
 #ifdef USE_WIDECHAR
 	typedef unsigned long nword;
