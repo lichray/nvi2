@@ -316,7 +316,7 @@ v_hpagedown(SCR *sp, VICMD *vp)
  * !!!
  * Historic vi did not move to the EOF if the screen couldn't move, i.e.
  * if EOF was already displayed on the screen.  This implementation does
- * move to EOF in that case, making ^F more like the the historic ^D.
+ * move to EOF in that case, making ^F more like the historic ^D.
  *
  * PUBLIC: int v_pagedown(SCR *, VICMD *);
  */
@@ -362,7 +362,7 @@ v_pagedown(SCR *sp, VICMD *vp)
  * !!!
  * Historic vi did not move to the SOF if the screen couldn't move, i.e.
  * if SOF was already displayed on the screen.  This implementation does
- * move to SOF in that case, making ^B more like the the historic ^U.
+ * move to SOF in that case, making ^B more like the historic ^U.
  *
  * PUBLIC: int v_pageup(SCR *, VICMD *);
  */
