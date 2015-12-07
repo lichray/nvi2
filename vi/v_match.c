@@ -164,7 +164,7 @@ v_buildmcs(SCR *sp, char *str)
 
 	if (*mp != NULL)
 		free(*mp);
-	MALLOC(sp, *mp, CHAR_T *, len * sizeof(CHAR_T));
+	MALLOC(sp, *mp, len * sizeof(CHAR_T));
 	if (*mp == NULL)
 		return (1);
 #ifdef USE_WIDECHAR

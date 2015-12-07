@@ -396,7 +396,7 @@ rcv_mailfile(SCR *sp, int issync, char *cp_path)
 		goto err;
 	}
 
-	MALLOC(sp, host, char *, hostmax + 1);
+	MALLOC(sp, host, hostmax + 1);
 	if (host == NULL)
 		goto err;
 	(void)gethostname(host, hostmax + 1);
@@ -924,7 +924,7 @@ rcv_dlnread(SCR *sp, char **dtypep,
 	len -= src - bp;
 
 	/* Memory looks like: "<data>\0<dtype>\0". */
-	MALLOC(sp, data, char *, dlen + len / 4 * 3 + 2);
+	MALLOC(sp, data, dlen + len / 4 * 3 + 2);
 	if (data == NULL)
 		goto err;
 	if ((xlen = (b64_pton(p + dlen + 1,
