@@ -255,7 +255,7 @@ v_strdup(
 {
 	char *copy;
 
-	MALLOC(sp, copy, char *, len + 1);
+	MALLOC(sp, copy, len + 1);
 	if (copy == NULL)
 		return (NULL);
 	memcpy(copy, str, len);
@@ -276,7 +276,7 @@ v_wstrdup(SCR *sp,
 {
 	CHAR_T *copy;
 
-	MALLOC(sp, copy, CHAR_T *, (len + 1) * sizeof(CHAR_T));
+	MALLOC(sp, copy, (len + 1) * sizeof(CHAR_T));
 	if (copy == NULL)
 		return (NULL);
 	MEMCPY(copy, str, len);

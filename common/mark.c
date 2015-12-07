@@ -175,7 +175,7 @@ mark_set(
 	 */
 	lmp = mark_find(sp, key);
 	if (lmp == NULL || lmp->name != key) {
-		MALLOC_RET(sp, lmt, LMARK *, sizeof(LMARK));
+		MALLOC_RET(sp, lmt, sizeof(LMARK));
 		if (lmp == NULL) {
 			SLIST_INSERT_HEAD(sp->ep->marks, lmt, q);
 		} else

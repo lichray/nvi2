@@ -126,7 +126,7 @@ copyloop:
 	 * Otherwise, if it's not an append, free its current contents.
 	 */
 	if (cbp == NULL) {
-		CALLOC_RET(sp, cbp, CB *, 1, sizeof(CB));
+		CALLOC_RET(sp, cbp, 1, sizeof(CB));
 		cbp->name = name;
 		TAILQ_INIT(cbp->textq);
 		SLIST_INSERT_HEAD(sp->gp->cutq, cbp, q);
@@ -302,12 +302,12 @@ text_init(
 {
 	TEXT *tp;
 
-	CALLOC(sp, tp, TEXT *, 1, sizeof(TEXT));
+	CALLOC(sp, tp, 1, sizeof(TEXT));
 	if (tp == NULL)
 		return (NULL);
 	/* ANSI C doesn't define a call to malloc(3) for 0 bytes. */
 	if ((tp->lb_len = total_len * sizeof(CHAR_T)) != 0) {
-		MALLOC(sp, tp->lb, CHAR_T *, tp->lb_len);
+		MALLOC(sp, tp->lb, tp->lb_len);
 		if (tp->lb == NULL) {
 			free(tp);
 			return (NULL);

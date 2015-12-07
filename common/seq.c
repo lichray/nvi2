@@ -76,7 +76,7 @@ seq_set(
 	}
 
 	/* Allocate and initialize SEQ structure. */
-	CALLOC(sp, qp, SEQ *, 1, sizeof(SEQ));
+	CALLOC(sp, qp, 1, sizeof(SEQ));
 	if (qp == NULL) {
 		sv_errno = errno;
 		goto mem1;

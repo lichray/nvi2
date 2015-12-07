@@ -64,7 +64,7 @@ vs_split(
 	vs_resolve(sp, NULL, 1);
 
 	/* Get a new screen map. */
-	CALLOC(sp, _HMAP(new), SMAP *, SIZE_HMAP(sp), sizeof(SMAP));
+	CALLOC(sp, _HMAP(new), SIZE_HMAP(sp), sizeof(SMAP));
 	if (_HMAP(new) == NULL)
 		return (1);
 	_HMAP(new)->lno = sp->lno;
@@ -224,7 +224,7 @@ vs_vsplit(SCR *sp, SCR *new)
 	vs_resolve(sp, NULL, 1);
 
 	/* Get a new screen map. */
-	CALLOC(sp, _HMAP(new), SMAP *, SIZE_HMAP(sp), sizeof(SMAP));
+	CALLOC(sp, _HMAP(new), SIZE_HMAP(sp), sizeof(SMAP));
 	if (_HMAP(new) == NULL)
 		return (1);
 	_HMAP(new)->lno = sp->lno;
@@ -758,7 +758,7 @@ vs_swap(SCR *sp, SCR **nspp, char *name)
 	nsp->defscroll = nsp->t_maxrows / 2;
 
 	/* Allocate a new screen map. */
-	CALLOC_RET(nsp, _HMAP(nsp), SMAP *, SIZE_HMAP(nsp), sizeof(SMAP));
+	CALLOC_RET(nsp, _HMAP(nsp), SIZE_HMAP(nsp), sizeof(SMAP));
 	_TMAP(nsp) = _HMAP(nsp) + (nsp->t_rows - 1);
 
 	/* Fill the map. */

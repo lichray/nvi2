@@ -46,7 +46,7 @@ ex_screen_copy(SCR *orig, SCR *sp)
 	EX_PRIVATE *oexp, *nexp;
 
 	/* Create the private ex structure. */
-	CALLOC_RET(orig, nexp, EX_PRIVATE *, 1, sizeof(EX_PRIVATE));
+	CALLOC_RET(orig, nexp, 1, sizeof(EX_PRIVATE));
 	sp->ex_private = nexp;
 
 	/* Initialize queues. */
@@ -291,7 +291,7 @@ ex_run_str(SCR *sp, char *name, CHAR_T *str, size_t len, int ex_flags, int nocop
 
 	gp = sp->gp;
 	if (EXCMD_RUNNING(gp)) {
-		CALLOC_RET(sp, ecp, EXCMD *, 1, sizeof(EXCMD));
+		CALLOC_RET(sp, ecp, 1, sizeof(EXCMD));
 		SLIST_INSERT_HEAD(gp->ecq, ecp, q);
 	} else
 		ecp = &gp->excmd;

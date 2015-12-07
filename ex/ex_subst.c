@@ -232,7 +232,7 @@ tilde:				++p;
 		if ((sp->repl_len = len) != 0) {
 			if (sp->repl != NULL)
 				free(sp->repl);
-			MALLOC(sp, sp->repl, CHAR_T *, len * sizeof(CHAR_T));
+			MALLOC(sp, sp->repl, len * sizeof(CHAR_T));
 			if (sp->repl == NULL) {
 				FREE_SPACEW(sp, bp, blen);
 				return (1);
@@ -954,7 +954,7 @@ re_compile(SCR *sp, CHAR_T *ptrn, size_t plen, CHAR_T **ptrnp, size_t *lenp, reg
 		 * Regcomp isn't 8-bit clean, so the pattern is nul-terminated
 		 * for now.  There's just no other solution.  
 		 */
-		MALLOC(sp, *ptrnp, CHAR_T *, (plen + 1) * sizeof(CHAR_T));
+		MALLOC(sp, *ptrnp, (plen + 1) * sizeof(CHAR_T));
 		if (*ptrnp != NULL) {
 			MEMCPY(*ptrnp, ptrn, plen);
 			(*ptrnp)[plen] = '\0';
@@ -1289,7 +1289,7 @@ re_error(SCR *sp, int errcode, regex_t *preg)
 	char *oe;
 
 	s = regerror(errcode, preg, "", 0);
-	MALLOC(sp, oe, char *, s);
+	MALLOC(sp, oe, s);
 	if (oe != NULL) {
 		(void)regerror(errcode, preg, oe, s);
 		msgq(sp, M_ERR, "RE error: %s", oe);

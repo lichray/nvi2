@@ -44,7 +44,7 @@ screen_init(
 	size_t len;
 
 	*spp = NULL;
-	CALLOC_RET(orig, sp, SCR *, 1, sizeof(SCR));
+	CALLOC_RET(orig, sp, 1, sizeof(SCR));
 	*spp = sp;
 
 /* INITIALIZED AT SCREEN CREATE. */
@@ -94,7 +94,7 @@ screen_init(
 		sp->repl_len = orig->repl_len;
 		if (orig->newl_len) {
 			len = orig->newl_len * sizeof(size_t);
-			MALLOC(sp, sp->newl, size_t *, len);
+			MALLOC(sp, sp->newl, len);
 			if (sp->newl == NULL) {
 mem:				msgq(orig, M_SYSERR, NULL);
 				goto err;

@@ -90,7 +90,7 @@ file_add(
 		}
 
 	/* Allocate and initialize the FREF structure. */
-	CALLOC(sp, frp, FREF *, 1, sizeof(FREF));
+	CALLOC(sp, frp, 1, sizeof(FREF));
 	if (frp == NULL)
 		return (NULL);
 
@@ -160,7 +160,7 @@ file_init(
 	 *	Default recover mail file fd to -1.
 	 *	Set initial EXF flag bits.
 	 */
-	CALLOC_RET(sp, ep, EXF *, 1, sizeof(EXF));
+	CALLOC_RET(sp, ep, 1, sizeof(EXF));
 	ep->c_lno = ep->c_nlines = OOBLNO;
 	ep->rcv_fd = -1;
 	F_SET(ep, F_FIRSTMODIFY);
