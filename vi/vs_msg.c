@@ -352,16 +352,16 @@ vs_msg(SCR *sp, mtype_t mtype, char *line, size_t len)
 		}
 	vip->mtype = mtype;
 	for (s = line;; s = t) {
-		for (; len > 0 && isblank(*s); --len, ++s);
+		for (; len > 0 && isblank((u_char)*s); --len, ++s);
 		if (len == 0)
 			break;
 		if (len + vip->lcontinue > maxcols) {
 			for (e = s + (maxcols - vip->lcontinue);
-			    e > s && !isblank(*e); --e);
+			    e > s && !isblank((u_char)*e); --e);
 			if (e == s)
 				 e = t = s + (maxcols - vip->lcontinue);
 			else
-				for (t = e; isblank(e[-1]); --e);
+				for (t = e; isblank((u_char)e[-1]); --e);
 		} else
 			e = t = s + len;
 

@@ -212,8 +212,8 @@ quote(char *str)
 			n++;
 		if (unsafe)
 			continue;
-		if (isascii(*p)) {
-			if (isalnum(*p))
+		if (isascii((u_char)*p)) {
+			if (isalnum((u_char)*p))
 				continue;
 			switch (*p) {
 			case '%': case '+': case ',': case '-': case '.':
