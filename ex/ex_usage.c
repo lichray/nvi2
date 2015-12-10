@@ -170,7 +170,8 @@ nokey:			(void)ex_printf(sp,
 		else
 			(void)ex_printf(sp,
 			    "  Key:%s%s\nUsage: %s\n",
-			    isblank(*kp->help) ? "" : " ", kp->help, kp->usage);
+			    isblank((u_char)*kp->help) ? "" : " ",
+			    kp->help, kp->usage);
 		break;
 	case 0:
 		for (key = 0; key <= MAXVIKEY && !INTERRUPTED(sp); ++key) {

@@ -202,12 +202,12 @@ retry:		FREE_SPACE(sp, bp, blen);
 		if (*p == '\0')
 			break;
 		++p;
-		if (!isdigit(*p)) {
+		if (!isdigit((u_char)*p)) {
 			if (*p == '%')
 				++p;
 			continue;
 		}
-		for (u = p; *++p != '\0' && isdigit(*p););
+		for (u = p; *++p != '\0' && isdigit((u_char)*p););
 		if (*p != '$')
 			continue;
 
@@ -839,8 +839,9 @@ msg_cat(
 	 * If it's not a catalog message, i.e. has doesn't have a leading
 	 * number and '|' symbol, we're done.
 	 */
-	if (isdigit(str[0]) &&
-	    isdigit(str[1]) && isdigit(str[2]) && str[3] == '|') {
+	if (isdigit((u_char)str[0]) &&
+	    isdigit((u_char)str[1]) &&
+	    isdigit((u_char)str[2]) && str[3] == '|') {
 		msgno = atoi(str);
 		str = &str[4];
 
