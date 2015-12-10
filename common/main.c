@@ -18,6 +18,7 @@ static const char sccsid[] = "$Id: main.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
 #include <sys/stat.h>
 
 #include <bitstring.h>
+#include <err.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -31,8 +32,7 @@ static const char sccsid[] = "$Id: main.c,v 11.0 2012/10/17 06:34:37 zy Exp $";
 #include "pathnames.h"
 
 static void	 attach(GS *);
-static void	 v_estr(char *, int, char *);
-static int	 v_obsolete(char *, char *[]);
+static int	 v_obsolete(char *[]);
 
 /*
  * editor --
@@ -79,12 +79,12 @@ editor(GS *gp, int argc, char *argv[])
 
 	/* Set initial screen type and mode based on the program name. */
 	readonly = 0;
-	if (!strcmp(gp->progname, "ex") || !strcmp(gp->progname, "nex"))
+	if (!strcmp(getprogname(), "ex") || !strcmp(getprogname(), "nex"))
 		LF_INIT(SC_EX);
 	else {
 		/* Nview, view are readonly. */
-		if (!strcmp(gp->progname, "nview") ||
-		    !strcmp(gp->progname, "view"))
+		if (!strcmp(getprogname(), "nview") ||
+		    !strcmp(getprogname(), "view"))
 			readonly = 1;
 		
 		/* Vi is the default. */
@@ -92,7 +92,7 @@ editor(GS *gp, int argc, char *argv[])
 	}
 
 	/* Convert old-style arguments into new-style ones. */
-	if (v_obsolete(gp->progname, argv))
+	if (v_obsolete(argv))
 		return (1);
 
 	/* Parse the arguments. */
@@ -116,8 +116,7 @@ editor(GS *gp, int argc, char *argv[])
 			 * We should support multiple -c options.
 			 */
 			if (gp->c_option != NULL) {
-				v_estr(gp->progname, 0,
-				    "only one -c command may be specified.");
+				warnx("only one -c command may be specified.");
 				return (1);
 			}
 			gp->c_option = optarg;
@@ -132,8 +131,7 @@ editor(GS *gp, int argc, char *argv[])
 				attach(gp);
 				break;
 			default:
-				v_estr(gp->progname, 0,
-				    "usage: -D requires s or w argument.");
+				warnx("usage: -D requires s or w argument.");
 				return (1);
 			}
 			break;
@@ -153,8 +151,7 @@ editor(GS *gp, int argc, char *argv[])
 			break;
 		case 'r':		/* Recover. */
 			if (flagchk == 't') {
-				v_estr(gp->progname, 0,
-				    "only one of -r and -t may be specified.");
+				warnx("only one of -r and -t may be specified.");
 				return (1);
 			}
 			flagchk = 'r';
@@ -168,7 +165,7 @@ editor(GS *gp, int argc, char *argv[])
 #ifdef DEBUG
 		case 'T':		/* Trace. */
 			if ((gp->tracefp = fopen(optarg, "w")) == NULL) {
-				v_estr(gp->progname, errno, optarg);
+				warn("%s", optarg);
 				goto err;
 			}
 			(void)fprintf(gp->tracefp,
@@ -177,13 +174,11 @@ editor(GS *gp, int argc, char *argv[])
 #endif
 		case 't':		/* Tag. */
 			if (flagchk == 'r') {
-				v_estr(gp->progname, 0,
-				    "only one of -r and -t may be specified.");
+				warnx("only one of -r and -t may be specified.");
 				return (1);
 			}
 			if (flagchk == 't') {
-				v_estr(gp->progname, 0,
-				    "only one tag file may be specified.");
+				warnx("only one tag file may be specified.");
 				return (1);
 			}
 			flagchk = 't';
@@ -210,7 +205,7 @@ editor(GS *gp, int argc, char *argv[])
 	 * If not reading from a terminal, it's like -s was specified.
 	 */
 	if (silent && !LF_ISSET(SC_EX)) {
-		v_estr(gp->progname, 0, "-s option is only applicable to ex.");
+		warnx("-s option is only applicable to ex.");
 		goto err;
 	}
 	if (LF_ISSET(SC_EX) && F_ISSET(gp, G_SCRIPTED))
@@ -338,7 +333,7 @@ editor(GS *gp, int argc, char *argv[])
 			/* Cheat -- we know we have an extra argv slot. */
 			*--argv = strdup(sp->frp->name);
 			if (*argv == NULL) {
-				v_estr(gp->progname, errno, NULL);
+				warn(NULL);
 				goto err;
 			}
 		}
@@ -512,7 +507,7 @@ v_end(gp)
  *	Convert historic arguments into something getopt(3) will like.
  */
 static int
-v_obsolete(char *name, char *argv[])
+v_obsolete(char *argv[])
 {
 	size_t len;
 	char *p;
@@ -550,7 +545,7 @@ v_obsolete(char *name, char *argv[])
 			if (argv[0][1] == '\0') {
 				argv[0] = strdup("-s");
 				if (argv[0] == NULL) {
-nomem:					v_estr(name, errno, NULL);
+nomem:					warn(NULL);
 					return (1);
 				}
 			} else
@@ -569,7 +564,7 @@ attach(GS *gp)
 	char ch;
 
 	if ((fd = open(_PATH_TTY, O_RDONLY, 0)) < 0) {
-		v_estr(gp->progname, errno, _PATH_TTY);
+		warn("%s", _PATH_TTY);
 		return;
 	}
 
@@ -586,14 +581,3 @@ attach(GS *gp)
 	(void)close(fd);
 }
 #endif
-
-static void
-v_estr(char *name, int eno, char *msg)
-{
-	(void)fprintf(stderr, "%s", name);
-	if (msg != NULL)
-		(void)fprintf(stderr, ": %s", msg);
-	if (eno)
-		(void)fprintf(stderr, ": %s", strerror(errno));
-	(void)fprintf(stderr, "\n");
-}

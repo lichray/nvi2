@@ -17,6 +17,7 @@ static const char sccsid[] = "$Id: cl_main.c,v 10.56 2015/04/05 06:20:53 zy Exp 
 #include <sys/queue.h>
 
 #include <bitstring.h>
+#include <err.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -38,11 +39,10 @@ sigset_t __sigblockset;				/* GLOBAL: Blocked signals. */
 
 static void	   cl_func_std(GS *);
 static CL_PRIVATE *cl_init(GS *);
-static GS	  *gs_init(char *);
-static void	   perr(char *, char *);
+static GS	  *gs_init(void);
 static int	   setsig(int, struct sigaction *, void (*)(int));
 static void	   sig_end(GS *);
-static void	   term_init(char *, char *);
+static void	   term_init(char *);
 
 /*
  * main --
@@ -63,7 +63,7 @@ main(int argc, char *argv[])
 		abort();
 
 	/* Create and initialize the global structure. */
-	__global_list = gp = gs_init(argv[0]);
+	__global_list = gp = gs_init();
 
 	/*
 	 * Strip out any arguments that vi isn't going to understand.  There's
@@ -93,12 +93,12 @@ main(int argc, char *argv[])
 	 */
 	if ((ttype = getenv("TERM")) == NULL)
 		ttype = "ansi";
-	term_init(gp->progname, ttype);
+	term_init(ttype);
 
 	/* Add the terminal type to the global structure. */
 	if ((OG_D_STR(gp, GO_TERM) =
 	    OG_STR(gp, GO_TERM) = strdup(ttype)) == NULL)
-		perr(gp->progname, NULL);
+		err(1, NULL);
 
 	/* Figure out how big the screen is. */
 	if (cl_ssize(NULL, 0, &rows, &cols, NULL))
@@ -162,21 +162,15 @@ main(int argc, char *argv[])
  *	Create and partially initialize the GS structure.
  */
 static GS *
-gs_init(char *name)
+gs_init(void)
 {
 	GS *gp;
-	char *p;
-
-	/* Figure out what our name is. */
-	if ((p = strrchr(name, '/')) != NULL)
-		name = p + 1;
 
 	/* Allocate the global structure. */
 	CALLOC_NOMSG(NULL, gp, 1, sizeof(GS));
 	if (gp == NULL)
-		perr(name, NULL);
+		err(1, NULL);
 
-	gp->progname = name;
 	return (gp);
 }
 
@@ -193,7 +187,7 @@ cl_init(GS *gp)
 	/* Allocate the CL private structure. */
 	CALLOC_NOMSG(NULL, clp, 1, sizeof(CL_PRIVATE));
 	if (clp == NULL)
-		perr(gp->progname, NULL);
+		err(1, NULL);
 	gp->cl_private = clp;
 
 	/*
@@ -216,7 +210,7 @@ cl_init(GS *gp)
 			goto tcfail;
 	} else if ((fd = open(_PATH_TTY, O_RDONLY, 0)) != -1) {
 		if (tcgetattr(fd, &clp->orig) == -1) {
-tcfail:			perr(gp->progname, "tcgetattr");
+tcfail:			err(1, "tcgetattr");
 			exit (1);
 		}
 		(void)close(fd);
@@ -233,7 +227,7 @@ tcfail:			perr(gp->progname, "tcgetattr");
  *	Initialize terminal information.
  */
 static void
-term_init(char *name, char *ttype)
+term_init(char *ttype)
 {
 	int err;
 
@@ -241,13 +235,9 @@ term_init(char *name, char *ttype)
 	setupterm(ttype, STDOUT_FILENO, &err);
 	switch (err) {
 	case -1:
-		(void)fprintf(stderr,
-		    "%s: No terminal database found\n", name);
-		exit (1);
+		errx(1, "No terminal database found");
 	case 0:
-		(void)fprintf(stderr,
-		    "%s: %s: unknown terminal type\n", name, ttype);
-		exit (1);
+		errx(1, "%s: unknown terminal type", ttype);
 	}
 }
 
@@ -315,7 +305,7 @@ sig_init(GS *gp, SCR *sp)
 		    setsig(SIGWINCH, &clp->oact[INDX_WINCH], h_winch)
 #endif
 		    ) {
-			perr(gp->progname, NULL);
+			err(1, NULL);
 			return (1);
 		}
 	} else
@@ -405,18 +395,4 @@ cl_func_std(GS *gp)
 	gp->scr_split = cl_split;
 	gp->scr_suspend = cl_suspend;
 	gp->scr_usage = cl_usage;
-}
-
-/*
- * perr --
- *	Print system error.
- */
-static void
-perr(char *name, char *msg)
-{
-	(void)fprintf(stderr, "%s:", name);
-	if (msg != NULL)
-		(void)fprintf(stderr, "%s:", msg);
-	(void)fprintf(stderr, "%s\n", strerror(errno));
-	exit(1);
 }
