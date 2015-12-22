@@ -19,6 +19,7 @@ static const char sccsid[] = "$Id: vs_refresh.c,v 10.54 2015/04/08 16:32:49 zy E
 
 #include <bitstring.h>
 #include <ctype.h>
+#include <libgen.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -469,7 +470,7 @@ adjust:	if (!O_ISSET(sp, O_LEFTRIGHT) &&
 	/* Sanity checking. */
 	if (CNO >= len && len != 0) {
 		msgq(sp, M_ERR, "Error: %s/%d: cno (%zu) >= len (%zu)",
-		     tail(__FILE__), __LINE__, CNO, len);
+		     basename(__FILE__), __LINE__, CNO, len);
 		return (1);
 	}
 #endif

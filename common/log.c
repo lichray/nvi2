@@ -20,6 +20,7 @@ static const char sccsid[] = "$Id: log.c,v 10.27 2011/07/13 06:25:50 zy Exp $";
 #include <bitstring.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -647,7 +648,7 @@ log_err(SCR *sp, char *file, int line)
 {
 	EXF *ep;
 
-	msgq(sp, M_SYSERR, "015|%s/%d: log put error", tail(file), line);
+	msgq(sp, M_SYSERR, "015|%s/%d: log put error", basename(file), line);
 	ep = sp->ep;
 	(void)ep->log->close(ep->log);
 	if (!log_init(sp, ep))

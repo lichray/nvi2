@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: util.c,v 10.30 2013/03/19 10:00:27 yamt Exp $";
+static const char sccsid[] = "$Id: util.c,v 10.31 2015/12/22 03:14:55 martijn Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -100,22 +100,6 @@ nonblank(SCR *sp, recno_t lno, size_t *cnop)
 	/* Set the return. */
 	*cnop = len ? cnt : cnt - 1;
 	return (0);
-}
-
-/*
- * tail --
- *	Return tail of a path.
- *
- * PUBLIC: char *tail(char *);
- */
-char *
-tail(char *path)
-{
-	char *p;
-
-	if ((p = strrchr(path, '/')) == NULL)
-		return (path);
-	return (p + 1);
 }
 
 /*
