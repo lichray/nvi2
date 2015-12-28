@@ -162,8 +162,7 @@ v_buildmcs(SCR *sp, char *str)
 	CHAR_T **mp = &VIP(sp)->mcs;
 	size_t len = strlen(str) + 1;
 
-	if (*mp != NULL)
-		free(*mp);
+	free(*mp);
 	MALLOC(sp, *mp, len * sizeof(CHAR_T));
 	if (*mp == NULL)
 		return (1);

@@ -1236,8 +1236,7 @@ mcadd(struct parse *p, cset *cs, const char *cp)
 	cs->smultis += strlen(cp) + 1;
 	np = realloc(cs->multis, cs->smultis);
 	if (np == NULL) {
-		if (cs->multis)
-			free(cs->multis);
+		free(cs->multis);
 		cs->multis = NULL;
 		SETERROR(REG_ESPACE);
 		return;

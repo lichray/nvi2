@@ -331,7 +331,6 @@ text_lfree(TEXTH *headp)
 void
 text_free(TEXT *tp)
 {
-	if (tp->lb != NULL)
-		free(tp->lb);
+	free(tp->lb);
 	free(tp);
 }
