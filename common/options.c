@@ -1153,9 +1153,7 @@ opts_free(SCR *sp)
 		if (optlist[cnt].type != OPT_STR ||
 		    F_ISSET(&sp->opts[cnt], OPT_GLOBAL))
 			continue;
-		if (O_STR(sp, cnt) != NULL)
-			free(O_STR(sp, cnt));
-		if (O_D_STR(sp, cnt) != NULL)
-			free(O_D_STR(sp, cnt));
+		free(O_STR(sp, cnt));
+		free(O_D_STR(sp, cnt));
 	}
 }

@@ -88,17 +88,12 @@ v_screen_end(SCR *sp)
 
 	if ((vip = VIP(sp)) == NULL)
 		return (0);
-	if (vip->keyw != NULL)
-		free(vip->keyw);
-	if (vip->rep != NULL)
-		free(vip->rep);
-	if (vip->mcs != NULL)
-		free(vip->mcs);
-	if (vip->ps != NULL)
-		free(vip->ps);
+	free(vip->keyw);
+	free(vip->rep);
+	free(vip->mcs);
+	free(vip->ps);
 
-	if (HMAP != NULL)
-		free(HMAP);
+	free(HMAP);
 
 	free(vip);
 	sp->vi_private = NULL;

@@ -72,7 +72,6 @@ regfree(regex_t *preg)
 		free((char *)g->sets);
 	if (g->setbits != NULL)
 		free((char *)g->setbits);
-	if (g->must != NULL)
-		free(g->must);
+	free(g->must);
 	free((char *)g);
 }

@@ -112,8 +112,7 @@ ex_read(SCR *sp, EXCMD *cmdp)
 
 		/* Set the last bang command. */
 		exp = EXP(sp);
-		if (exp->lastbcomm != NULL)
-			free(exp->lastbcomm);
+		free(exp->lastbcomm);
 		if ((exp->lastbcomm =
 		    v_wstrdup(sp, cmdp->argv[argc]->bp,
 				cmdp->argv[argc]->len)) == NULL) {

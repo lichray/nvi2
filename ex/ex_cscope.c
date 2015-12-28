@@ -361,10 +361,8 @@ get_paths(SCR *sp, CSC *csc)
 	return (0);
 
 alloc_err:
-	if (csc->pbuf != NULL) {
-		free(csc->pbuf);
-		csc->pbuf = NULL;
-	}
+	free(csc->pbuf);
+	csc->pbuf = NULL;
 	return (1);
 }
 
@@ -496,8 +494,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	np = strdup(np);
 	if ((tqp = create_cs_cmd(sp, np, &search)) == NULL)
 		goto err;
-	if (np != NULL)
-		free(np);
+	free(np);
 
 	/*
 	 * Stick the current context in a convenient place, we'll lose it
@@ -528,10 +525,8 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 
 	if (matches == 0) {
 		msgq(sp, M_INFO, "278|No matches for query");
-nomatch:	if (rtp != NULL)
-			free(rtp);
-		if (rtqp != NULL)
-			free(rtqp);
+nomatch:	free(rtp);
+		free(rtqp);
 		tagq_free(sp, tqp);
 		return (1);
 	}
@@ -587,12 +582,9 @@ nomatch:	if (rtp != NULL)
 
 err:
 alloc_err:
-	if (rtqp != NULL)
-		free(rtqp);
-	if (rtp != NULL)
-		free(rtp);
-	if (np != NULL)
-		free(np);
+	free(rtqp);
+	free(rtp);
+	free(np);
 	return (1);
 }
 
@@ -941,10 +933,8 @@ badno:		msgq(sp, M_ERR, "312|%d: no such cscope session", n);
 	(void)waitpid(csc->pid, &pstat, 0);
 
 	/* Discard cscope connection information. */
-	if (csc->pbuf != NULL)
-		free(csc->pbuf);
-	if (csc->paths != NULL)
-		free(csc->paths);
+	free(csc->pbuf);
+	free(csc->paths);
 	free(csc);
 	return (0);
 }

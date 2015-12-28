@@ -67,8 +67,7 @@ ex_bang(SCR *sp, EXCMD *cmdp)
 
 	/* Set the "last bang command" remembered value. */
 	exp = EXP(sp);
-	if (exp->lastbcomm != NULL)
-		free(exp->lastbcomm);
+	free(exp->lastbcomm);
 	if ((exp->lastbcomm = v_wstrdup(sp, ap->bp, ap->len)) == NULL) {
 		msgq(sp, M_SYSERR, NULL);
 		return (1);

@@ -1007,10 +1007,8 @@ v_dtoh(SCR *sp)
 	/* Move all screens to the hidden queue, tossing screen maps. */
 	for (hidden = 0, gp = sp->gp;
 	    (tsp = TAILQ_FIRST(gp->dq)) != NULL; ++hidden) {
-		if (_HMAP(tsp) != NULL) {
-			free(_HMAP(tsp));
-			_HMAP(tsp) = NULL;
-		}
+		free(_HMAP(tsp));
+		_HMAP(tsp) = NULL;
 		TAILQ_REMOVE(gp->dq, tsp, q);
 		TAILQ_INSERT_TAIL(gp->hq, tsp, q);
 		/* XXXX Change if hidden screens per window */
