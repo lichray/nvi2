@@ -166,8 +166,7 @@ gs_init(void)
 {
 	GS *gp;
 
-	/* Allocate the global structure. */
-	CALLOC_NOMSG(NULL, gp, 1, sizeof(GS));
+	gp = calloc(1, sizeof(GS));
 	if (gp == NULL)
 		err(1, NULL);
 
@@ -184,8 +183,7 @@ cl_init(GS *gp)
 	CL_PRIVATE *clp;
 	int fd;
 
-	/* Allocate the CL private structure. */
-	CALLOC_NOMSG(NULL, clp, 1, sizeof(CL_PRIVATE));
+	clp = calloc(1, sizeof(CL_PRIVATE));
 	if (clp == NULL)
 		err(1, NULL);
 	gp->cl_private = clp;

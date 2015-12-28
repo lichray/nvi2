@@ -157,9 +157,6 @@
 	if ((p = calloc(nmemb, size)) == NULL)				\
 		goto alloc_err;						\
 }
-#define	CALLOC_NOMSG(sp, p, nmemb, size) {				\
-	p = calloc(nmemb, size);					\
-}
 #define	CALLOC_RET(sp, p, nmemb, size) {				\
 	if ((p = calloc(nmemb, size)) == NULL) {			\
 		msgq(sp, M_SYSERR, NULL);				\
