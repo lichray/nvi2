@@ -6,7 +6,7 @@
  *
  * See the LICENSE file for redistribution information.
  *
- *	$Id: mem.h,v 10.17 2012/10/07 00:40:29 zy Exp $
+ *	$Id: mem.h,v 10.18 2016/01/03 15:47:56 zy Exp $
  */
 
 #ifdef DEBUG
@@ -191,13 +191,6 @@
 	}								\
 	p = newp;							\
 }
-
-/*
- * Versions of bcopy(3) and bzero(3) that use the size of the
- * initial pointer to figure out how much memory to manipulate.
- */
-#define	BCOPY(p, t, len)	bcopy(p, t, (len) * sizeof(*(p)))
-#define	BZERO(p, len)		bzero(p, (len) * sizeof(*(p)))
 
 /* 
  * p2roundup --

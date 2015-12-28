@@ -374,8 +374,8 @@ v_event_push(SCR *sp,
 	if (total >= gp->i_nelem && v_event_grow(sp, MAX(total, 64)))
 		return (1);
 	if (gp->i_cnt)
-		BCOPY(gp->i_event + gp->i_next,
-		    gp->i_event + TERM_PUSH_SHIFT + nitems, gp->i_cnt);
+		memmove(gp->i_event + TERM_PUSH_SHIFT + nitems,
+		    gp->i_event + gp->i_next, gp->i_cnt * sizeof(EVENT));
 	gp->i_next = TERM_PUSH_SHIFT;
 
 	/* Put the new items into the queue. */
