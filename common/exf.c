@@ -78,8 +78,7 @@ file_add(SCR *sp, char *name)
 		TAILQ_FOREACH_SAFE(frp, gp->frefq, q, tfrp) {
 			if (frp->name == NULL) {
 				TAILQ_REMOVE(gp->frefq, frp, q);
-				if (frp->name != NULL)
-					free(frp->name);
+				free(frp->name);
 				free(frp);
 				continue;
 			}
@@ -412,10 +411,8 @@ file_init(SCR *sp, FREF *frp, char *rcv_name, int flags)
 
 	return (0);
 
-err:	if (frp->name != NULL) {
-		free(frp->name);
-		frp->name = NULL;
-	}
+err:	free(frp->name);
+	frp->name = NULL;
 	if (frp->tname != NULL) {
 		(void)unlink(frp->tname);
 		free(frp->tname);
@@ -424,10 +421,9 @@ err:	if (frp->name != NULL) {
 
 oerr:	if (F_ISSET(ep, F_RCV_ON))
 		(void)unlink(ep->rcv_path);
-	if (ep->rcv_path != NULL) {
-		free(ep->rcv_path);
-		ep->rcv_path = NULL;
-	}
+	free(ep->rcv_path);
+	ep->rcv_path = NULL;
+
 	if (ep->db != NULL)
 		(void)ep->db->close(ep->db);
 	free(ep);
@@ -668,8 +664,7 @@ file_end(SCR *sp, EXF *ep, int force)
 		frp->tname = NULL;
 		if (F_ISSET(frp, FR_TMPFILE)) {
 			TAILQ_REMOVE(sp->gp->frefq, frp, q);
-			if (frp->name != NULL)
-				free(frp->name);
+			free(frp->name);
 			free(frp);
 		}
 		sp->frp = NULL;
@@ -711,10 +706,8 @@ file_end(SCR *sp, EXF *ep, int force)
 	}
 	if (ep->rcv_fd != -1)
 		(void)close(ep->rcv_fd);
-	if (ep->rcv_path != NULL)
-		free(ep->rcv_path);
-	if (ep->rcv_mpath != NULL)
-		free(ep->rcv_mpath);
+	free(ep->rcv_path);
+	free(ep->rcv_mpath);
 	if (ep->c_blen > 0)
 		free(ep->c_lp);
 
@@ -1180,8 +1173,7 @@ err:	if (rfd != -1)
 	}
 	if (estr)
 		msgq_str(sp, M_SYSERR, estr, "%s");
-	if (d != NULL)
-		free(d);
+	free(d);
 	if (bp != NULL)
 		FREE_SPACE(sp, bp, blen);
 	return (1);
@@ -1448,8 +1440,7 @@ file_aw(SCR *sp, int flags)
 void
 set_alt_name(SCR *sp, char *name)
 {
-	if (sp->alt_name != NULL)
-		free(sp->alt_name);
+	free(sp->alt_name);
 	if (name == NULL)
 		sp->alt_name = NULL;
 	else if ((sp->alt_name = strdup(name)) == NULL)

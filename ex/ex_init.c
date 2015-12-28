@@ -94,14 +94,11 @@ ex_screen_end(SCR *sp)
 	if (argv_free(sp))
 		rval = 1;
 
-	if (exp->ibp != NULL)
-		free(exp->ibp);
+	free(exp->ibp);
 
-	if (exp->lastbcomm != NULL)
-		free(exp->lastbcomm);
+	free(exp->lastbcomm);
 
-	if (exp->ibcw.bp1.c != NULL)
-		free(exp->ibcw.bp1.c);
+	free(exp->ibcw.bp1.c);
 
 	if (ex_tag_free(sp))
 		rval = 1;

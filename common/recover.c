@@ -586,10 +586,8 @@ rcv_list(SCR *sp)
 
 		/* Close, discarding lock. */
 next:		(void)fclose(fp);
-		if (file != NULL)
-			free(file);
-		if (path != NULL)
-			free(path);
+		free(file);
+		free(path);
 	}
 	if (found == 0)
 		(void)printf("%s: No files to recover\n", getprogname());
@@ -722,12 +720,10 @@ rcv_read(SCR *sp, FREF *frp)
 			sv_fd = dup(fileno(fp));
 		} else {
 next:			free(recpath);
-			if (path != NULL)
-				free(path);
+			free(path);
 		}
 		(void)fclose(fp);
-		if (file != NULL)
-			free(file);
+		free(file);
 	}
 	(void)closedir(dirp);
 

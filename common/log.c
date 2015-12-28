@@ -138,10 +138,8 @@ log_end(SCR *sp, EXF *ep)
 		(void)(ep->log->close)(ep->log);
 		ep->log = NULL;
 	}
-	if (ep->l_lp != NULL) {
-		free(ep->l_lp);
-		ep->l_lp = NULL;
-	}
+	free(ep->l_lp);
+	ep->l_lp = NULL;
 	ep->l_len = 0;
 	ep->l_cursor.lno = 1;		/* XXX Any valid recno. */
 	ep->l_cursor.cno = 0;

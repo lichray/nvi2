@@ -769,14 +769,14 @@ o_set(SCR *sp, int opt, u_int flags, char *str, u_long val)
 	/* Free the previous string, if requested, and set the value. */
 	if LF_ISSET(OS_DEF)
 		if (LF_ISSET(OS_STR | OS_STRDUP)) {
-			if (!LF_ISSET(OS_NOFREE) && op->o_def.str != NULL)
+			if (!LF_ISSET(OS_NOFREE))
 				free(op->o_def.str);
 			op->o_def.str = str;
 		} else
 			op->o_def.val = val;
 	else
 		if (LF_ISSET(OS_STR | OS_STRDUP)) {
-			if (!LF_ISSET(OS_NOFREE) && op->o_cur.str != NULL)
+			if (!LF_ISSET(OS_NOFREE))
 				free(op->o_cur.str);
 			op->o_cur.str = str;
 		} else
@@ -1153,9 +1153,7 @@ opts_free(SCR *sp)
 		if (optlist[cnt].type != OPT_STR ||
 		    F_ISSET(&sp->opts[cnt], OPT_GLOBAL))
 			continue;
-		if (O_STR(sp, cnt) != NULL)
-			free(O_STR(sp, cnt));
-		if (O_D_STR(sp, cnt) != NULL)
-			free(O_D_STR(sp, cnt));
+		free(O_STR(sp, cnt));
+		free(O_D_STR(sp, cnt));
 	}
 }

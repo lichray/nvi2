@@ -444,17 +444,14 @@ v_end(gp)
 		/* Free FREF's. */
 		while ((frp = TAILQ_FIRST(gp->frefq)) != NULL) {
 			TAILQ_REMOVE(gp->frefq, frp, q);
-			if (frp->name != NULL)
-				free(frp->name);
-			if (frp->tname != NULL)
-				free(frp->tname);
+			free(frp->name);
+			free(frp->tname);
 			free(frp);
 		}
 	}
 
 	/* Free key input queue. */
-	if (gp->i_event != NULL)
-		free(gp->i_event);
+	free(gp->i_event);
 
 	/* Free cut buffers. */
 	cut_close(gp);
@@ -491,8 +488,7 @@ v_end(gp)
 
 #if defined(DEBUG) || defined(PURIFY)
 	/* Free any temporary space. */
-	if (gp->tmp_bp != NULL)
-		free(gp->tmp_bp);
+	free(gp->tmp_bp);
 
 #if defined(DEBUG)
 	/* Close debugging file descriptor. */
