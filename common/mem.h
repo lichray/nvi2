@@ -175,9 +175,6 @@
 	if ((p = malloc(size)) == NULL)					\
 		goto alloc_err;						\
 }
-#define	MALLOC_NOMSG(sp, p, size) {					\
-	p = malloc(size);						\
-}
 #define	MALLOC_RET(sp, p, size) {					\
 	if ((p = malloc(size)) == NULL) {				\
 		msgq(sp, M_SYSERR, NULL);				\
