@@ -159,11 +159,13 @@ extern KEYLIST keylist[];
  * can't use the standard isspace(3) macro because it returns true for
  * characters like ^K in the ASCII character set.  The POSIX isblank(3)
  * has the same problem for non-ASCII locale, so we need a standalone one.
- *
- * XXX
- * Note side effect, ch is evaluated multiple times.
  */
-#define	cmdskip(ch)	((ch) == ' ' || (ch) == '\t')
+
+static __inline int
+cmdskip(CHAR_T ch)
+{
+	return ch == ' ' || ch == '\t';
+}
 
 /* The "standard" tab width, for displaying things to users. */
 #define	STANDARD_TAB	6

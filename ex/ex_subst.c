@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_subst.c,v 10.53 2011/12/21 20:40:35 zy Exp $";
+static const char sccsid[] = "$Id: ex_subst.c,v 10.54 2015/12/29 11:30:58 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -78,7 +78,7 @@ ex_s(SCR *sp, EXCMD *cmdp)
 subagain:	return (ex_subagain(sp, cmdp));
 
 	delim = *p++;
-	if (!isascii(delim) || isalnum(delim) || delim == '\\')
+	if (is09azAZ(delim) || delim == '\\')
 		return (s(sp, cmdp, p, &sp->subre_c, SUB_MUSTSETR));
 
 	/*

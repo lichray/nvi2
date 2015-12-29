@@ -213,7 +213,7 @@ ex_prchars(SCR *sp, const CHAR_T *p, size_t *colp, size_t len,
 	gp = sp->gp;
 	ts = O_VAL(sp, O_TABSTOP);
 	for (col = *colp; len--;)
-		if ((ch = *p++) == L('\t') && !LF_ISSET(E_C_LIST))
+		if ((ch = *p++) == '\t' && !LF_ISSET(E_C_LIST))
 			for (tlen = ts - col % ts;
 			    col < sp->cols && tlen--; ++col) {
 				(void)ex_printf(sp,

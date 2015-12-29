@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_global.c,v 10.32 2011/12/26 23:37:01 zy Exp $";
+static const char sccsid[] = "$Id: ex_global.c,v 10.33 2015/12/29 11:30:58 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -91,7 +91,7 @@ ex_g_setup(SCR *sp, EXCMD *cmdp, enum which cmd)
 	if (cmdp->argc == 0)
 		goto usage;
 	for (p = cmdp->argv[0]->bp; cmdskip(*p); ++p);
-	if (!isascii(*p) || *p == '\0' || isalnum(*p) ||
+	if (*p == '\0' || is09azAZ(*p) ||
 	    *p == '\\' || *p == '|' || *p == '\n') {
 usage:		ex_emsg(sp, cmdp->cmd->usage, EXM_USAGE);
 		return (1);
