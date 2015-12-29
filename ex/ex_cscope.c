@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex_cscope.c,v 10.25 2012/10/04 09:23:03 zy Exp $";
+static const char sccsid[] = "$Id: ex_cscope.c,v 10.26 2015/12/29 01:05:32 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -760,9 +760,11 @@ parse(SCR *sp, CSC *csc, TAGQ *tqp, int *matchesp)
 		memcpy(tp->fname + dlen, name, nlen + 1);
 		tp->fnlen = dlen + nlen;
 		tp->slno = slno;
-		tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
-		CHAR2INT(sp, search, slen + 1, wp, wlen);
-		MEMCPY(tp->search, wp, (tp->slen = slen) + 1);
+		if (slen != 0) {
+			tp->search = (CHAR_T*)(tp->fname + tp->fnlen + 1);
+			CHAR2INT(sp, search, slen + 1, wp, wlen);
+			MEMCPY(tp->search, wp, (tp->slen = slen) + 1);
+		}
 		TAILQ_INSERT_TAIL(tqp->tagq, tp, q);
 
 		/* Try to preset the tag within the current file. */
