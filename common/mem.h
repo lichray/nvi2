@@ -193,11 +193,10 @@
 }
 
 /*
- * Versions of bcopy(3) and bzero(3) that use the size of the
+ * A versions of bcopy(3) that uses the size of the
  * initial pointer to figure out how much memory to manipulate.
  */
 #define	BCOPY(p, t, len)	bcopy(p, t, (len) * sizeof(*(p)))
-#define	BZERO(p, len)		bzero(p, (len) * sizeof(*(p)))
 
 /* 
  * p2roundup --
