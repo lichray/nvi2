@@ -12,7 +12,7 @@ The directory layout is as follows:
     catalog ....... Message catalogs; see catalog/README.
     cl ............ Vi interface to the curses(3) library.
     common ........ Code shared by ex and vi.
-    docs .......... Ex/vi documentation, both current and historic.
+    man ........... Ex/vi documentation
     ex ............ Ex source code.
     regex ......... Modified regex library with wide character support.
     vi ............ Vi source code.
