@@ -353,7 +353,7 @@ matches the beginning of the word.
 .Sq \e>
 matches the end of the word.
 .It
-.Sq \(a~
+.Sq \(ti
 matches the replacement part of the last
 .Cm substitute
 command.
@@ -403,7 +403,7 @@ commands depend on their associated motion command:
 .Cm F ,
 .Cm T ,
 .Cm W ,
-.Cm ^ ,
+.Cm \(ha ,
 .Cm b ,
 .Cm e ,
 .Cm f
@@ -711,7 +711,7 @@ command being entered, or cancel it if it is only partial.
 .It Aq Cm control-]
 Push a tag reference onto the tag stack.
 .Pp
-.It Aq Cm control-^
+.It Aq Cm control-\(ha
 Switch to the most recently edited file.
 .Pp
 .It Xo
@@ -1263,7 +1263,7 @@ Move forward
 .Ar count
 section boundaries.
 .Pp
-.It Cm ^
+.It Cm \(ha
 Move to the first non-blank character on the current line.
 .Pp
 .It Xo
@@ -1504,7 +1504,7 @@ in the center of the screen.
 Place the line
 .Ar count1
 at the bottom of the screen.
-.It Cm ^
+.It Cm \(ha
 If
 .Ar count1
 is given,
@@ -1544,7 +1544,7 @@ paragraphs.
 .Pp
 .It Xo
 .Op Ar count
-.Cm ~
+.Cm \(ti
 .Ar motion
 .Xc
 If the
@@ -1557,7 +1557,7 @@ can be specified.
 Otherwise
 .Ar motion
 is mandatory and
-.Cm ~
+.Cm \(ti
 reverses the case of the characters in a text region specified by the
 .Ar count
 and
@@ -1585,7 +1585,7 @@ Erase to the previous
 .Ar shiftwidth
 column boundary.
 .Pp
-.It Cm ^ Ns Aq Cm control-D
+.It Cm \(ha Ns Aq Cm control-D
 Erase all of the autoindent characters, and reset the autoindent level.
 .Pp
 .It Cm 0 Ns Aq Cm control-D
@@ -2032,7 +2032,7 @@ commands from a file.
 .Xc
 .It Xo
 .Op Ar range
-.Cm ~
+.Cm \(ti
 .Op Ar options
 .Op Ar count
 .Op Ar flags
@@ -2045,7 +2045,7 @@ field may contain any of the following sequences:
 .It Sq \*(Am
 The text matched by
 .Ar pattern .
-.It Sq \(a~
+.It Sq \(ti
 The replacement part of the previous
 .Cm substitute
 command.
@@ -2453,7 +2453,7 @@ commands.
 Turns off all access to external programs.
 .It Cm shell , sh Bo environment variable Ev SHELL , or Pa /bin/sh Bc
 Select the shell used by the editor.
-.It Cm shellmeta Bq ~{[*?$\`\(aq\&"\e
+.It Cm shellmeta Bq \(ti{[*?$\`\(aq\&"\e
 Set the meta characters checked to determine if file name expansion
 is necessary.
 .It Cm shiftwidth , sw Bq 8
@@ -2494,7 +2494,7 @@ This option has historically made editor messages less verbose.
 It has no effect in this implementation.
 .It Cm tildeop Bq off
 Modify the
-.Cm ~
+.Cm \(ti
 command to take an associated motion.
 .It Cm timeout , to Bq on
 Time out on keys which may be mapped.
