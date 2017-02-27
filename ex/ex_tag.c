@@ -593,8 +593,10 @@ tagf_copy(SCR *sp, TAGF *otfp, TAGF **tfpp)
 	*tfp = *otfp;
 
 	/* XXX: Allocate as part of the TAGF structure!!! */
-	if ((tfp->name = strdup(otfp->name)) == NULL)
+	if ((tfp->name = strdup(otfp->name)) == NULL) {
+		free(tfp);
 		return (1);
+	}
 
 	*tfpp = tfp;
 	return (0);
