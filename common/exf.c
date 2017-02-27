@@ -1160,6 +1160,7 @@ file_backup(SCR *sp, char *name, char *bname)
 		estr = wfname;
 		goto err;
 	}
+	free(d);
 	if (bp != NULL)
 		FREE_SPACE(sp, bp, blen);
 	return (0);
