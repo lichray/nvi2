@@ -495,6 +495,7 @@ cscope_find(SCR *sp, EXCMD *cmdp, CHAR_T *pattern)
 	if ((tqp = create_cs_cmd(sp, np, &search)) == NULL)
 		goto err;
 	free(np);
+	np = NULL;
 
 	/*
 	 * Stick the current context in a convenient place, we'll lose it
