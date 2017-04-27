@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: ex.c,v 10.81 2015/12/29 11:30:58 zy Exp $";
+static const char sccsid[] = "$Id: ex.c,v 10.82 2017/04/27 14:01:59 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -1503,7 +1503,7 @@ addr_verify:
 
 		ecp->save_cmd -= arg1_len;
 		ecp->save_cmdlen += arg1_len;
-		MEMCPY(ecp->save_cmd, arg1, arg1_len);
+		MEMMOVE(ecp->save_cmd, arg1, arg1_len);
 
 		/*
 		 * Any commands executed from a +cmd are executed starting at
