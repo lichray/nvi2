@@ -19,7 +19,7 @@ function(JOIN VALUES OUTPUT)
 endfunction()
 
 if(DEBUG)
-	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O0 -g"
+	set(_arg_str "${CMAKE_C_FLAGS} -O0 -g"
 		"-DCOMLOG"
 		"-Wall"
 		"-Wno-parentheses"
@@ -34,7 +34,7 @@ if(DEBUG)
 	endif()
 	join("${_arg_str}" CMAKE_C_FLAGS)
 else(DEBUG)
-	set(_arg_str "${CMAKE_C_FLAGS} -ansi -O2"
+	set(_arg_str "${CMAKE_C_FLAGS} -O2"
 		"-Wuninitialized"
 		"-Wstack-protector -fstack-protector")
 	if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
