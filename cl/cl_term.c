@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: cl_term.c,v 10.35 2015/04/08 02:12:11 zy Exp $";
+static const char sccsid[] = "$Id: cl_term.c,v 11.0 2017/04/27 15:02:23 zy Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -35,6 +35,7 @@ static const char sccsid[] = "$Id: cl_term.c,v 10.35 2015/04/08 02:12:11 zy Exp 
 #include "cl.h"
 
 static int cl_pfmap(SCR *, seq_t, CHAR_T *, size_t, CHAR_T *, size_t);
+static size_t atoz_or(const char *, size_t);
 
 /*
  * XXX
@@ -453,15 +454,31 @@ noterm:	if (row == 0)
 	 * dot-files.
 	 */
 	if ((p = getenv("LINES")) != NULL)
-		row = strtol(p, NULL, 10);
+		row = atoz_or(p, row);
 	if ((p = getenv("COLUMNS")) != NULL)
-		col = strtol(p, NULL, 10);
+		col = atoz_or(p, col);
 
 	if (rowp != NULL)
 		*rowp = row;
 	if (colp != NULL)
 		*colp = col;
 	return (0);
+}
+
+/*
+ * atoz_or --
+ *	Parse non-zero positive decimal with a fallback.
+ */
+static size_t
+atoz_or(const char *s, size_t y)
+{
+	char *ep;
+	long x = strtol(s, &ep, 10);
+
+	if (*ep == '\0' && (0 < x && x < INT_MAX))
+		return (size_t)x;
+	else
+		return y;
 }
 
 /*
