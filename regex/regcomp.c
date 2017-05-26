@@ -102,17 +102,17 @@ static int freezeset(struct parse *p, cset *cs);
 static int firstch(struct parse *p, cset *cs);
 static int nch(struct parse *p, cset *cs);
 static void mcadd(struct parse *p, cset *cs, const char *cp);
-#ifdef notdef
+#if 0
 static void mcsub(cset *cs, char *cp);
 static int mcin(cset *cs, char *cp);
 static char *mcfind(cset *cs, char *cp);
-#endif
+#endif /* 0 */
 static void mcinvert(struct parse *p, cset *cs);
 static void mccase(struct parse *p, cset *cs);
-#ifdef notdef
+#if 0
 static int isinsets(struct re_guts *g, int c);
 static int samesets(struct re_guts *g, int c1, int c2);
-#endif
+#endif /* 0 */
 static void categorize(struct parse *p, struct re_guts *g);
 static sopno dupl(struct parse *p, sopno start, sopno finish);
 static void doemit(struct parse *p, sop op, size_t opnd);
@@ -1271,7 +1271,7 @@ mccase(struct parse *p, cset *cs)
 	assert(cs->multis == NULL);	/* xxx */
 }
 
-#ifdef notdef
+#if 0
 /*
  - isinsets - is this character in any sets?
  */
@@ -1306,7 +1306,7 @@ samesets(struct re_guts *g, int c1, int c2)
 			return(0);
 	return(1);
 }
-#endif
+#endif /* 0 */
 
 /*
  - categorize - sort out character categories
@@ -1314,7 +1314,7 @@ samesets(struct re_guts *g, int c1, int c2)
 static void
 categorize(struct parse *p, struct re_guts *g)
 {
-#ifdef notdef
+#if 0
 	cat_t *cats = g->categories;
 	int c;
 	int c2;
@@ -1332,7 +1332,7 @@ categorize(struct parse *p, struct re_guts *g)
 				if (cats[c2] == 0 && samesets(g, c, c2))
 					cats[c2] = cat;
 		}
-#endif
+#endif /* 0 */
 }
 
 /*
