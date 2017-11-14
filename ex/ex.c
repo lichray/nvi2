@@ -429,7 +429,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 			break;
 		case 'E': case 'F': case 'N': case 'P': case 'T': case 'V':
 			newscreen = 1;
-			p[0] = tolower(p[0]);
+			p[0] = TOLOWER(p[0]);
 			break;
 		}
 
@@ -477,7 +477,7 @@ loop:	ecp = SLIST_FIRST(gp->ecq);
 				/* FALLTHROUGH */
 			default:
 unknown:			if (newscreen)
-					p[0] = toupper(p[0]);
+					p[0] = TOUPPER(p[0]);
 				ex_unknown(sp, p, namelen);
 				goto err;
 			}
