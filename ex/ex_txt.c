@@ -246,7 +246,7 @@ notlast:			TAILQ_REMOVE(tiqh, tp, q);
 			 */
 			if (LF_ISSET(TXT_CNTRLD)) {
 				for (cnt = 0; cnt < tp->len; ++cnt)
-					if (!isblank(tp->lb[cnt]))
+					if (!issptab(tp->lb[cnt]))
 						break;
 				if (cnt == tp->len) {
 					tp->len = 1;

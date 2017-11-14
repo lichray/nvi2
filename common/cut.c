@@ -101,10 +101,10 @@ cut(SCR *sp, CHAR_T *namep, MARK *fm, MARK *tm, int flags)
 			copy_one = 1;
 			cb_rotate(sp);
 		}
-		if ((append = isupper(name))) {
+		if ((append = isAtoZ(name))) {
 			if (!copy_one)
 				copy_def = 1;
-			name = tolower(name);
+			name = TOLOWER(name);
 		}
 namecb:		CBNAME(sp, cbp, name);
 	} else if (LF_ISSET(CUT_NUMREQ) || (LF_ISSET(CUT_NUMOPT) &&

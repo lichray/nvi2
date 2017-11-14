@@ -164,7 +164,7 @@ extern KEYLIST keylist[];
 static __inline int
 cmdskip(CHAR_T ch)
 {
-	return ch == ' ' || ch == '\t';
+	return issptab(ch);
 }
 
 /* The "standard" tab width, for displaying things to users. */

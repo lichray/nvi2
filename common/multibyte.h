@@ -117,6 +117,12 @@ typedef	char		RCHAR_T;
  */
 
 static __inline int
+issptab(CHAR_T ch)
+{
+	return ch == ' ' || ch == '\t';
+}
+
+static __inline int
 isatoz(CHAR_T c)
 {
 	return 'a' <= c && c <= 'z';
