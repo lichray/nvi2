@@ -6,7 +6,7 @@
  */
 
 #ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.4 2011/12/13 19:40:52 zy Exp $";
+static const char sccsid[] = "$Id: encoding.c,v 1.5 2018/11/26 21:33:19 yuripv Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -96,7 +96,7 @@ looks_utf8(const char *ibuf, size_t nbytes)
 				if (i >= nbytes)
 					goto done;
 
-				if (buf[i] & 0x40)	/* 10xxxxxx */
+				if ((buf[i] & 0xc0) != 0x80)	/* 10xxxxxx */
 					return -1;
 			}
 
