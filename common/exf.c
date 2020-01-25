@@ -10,7 +10,7 @@
 #include "config.h"
 
 #ifndef lint
-static const char sccsid[] = "$Id: exf.c,v 10.64 2015/04/05 15:21:55 zy Exp $";
+static const char sccsid[] = "$Id: exf.c,v 10.65 2020/01/25 17:25:01 mohd-akram Exp $";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -550,7 +550,7 @@ file_cinit(SCR *sp)
 		}
 		CHAR2INT(sp, gp->c_option, strlen(gp->c_option) + 1,
 			 wp, wlen);
-		if (ex_run_str(sp, "-c option", wp, wlen - 1, 1, 1))
+		if (ex_run_str(sp, "-c option", wp, wlen - 1, 1, 0))
 			return;
 		gp->c_option = NULL;
 	} else if (F_ISSET(sp, SC_EX)) {
