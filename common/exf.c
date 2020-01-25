@@ -550,7 +550,7 @@ file_cinit(SCR *sp)
 		}
 		CHAR2INT(sp, gp->c_option, strlen(gp->c_option) + 1,
 			 wp, wlen);
-		if (ex_run_str(sp, "-c option", wp, wlen - 1, 1, 1))
+		if (ex_run_str(sp, "-c option", wp, wlen - 1, 1, 0))
 			return;
 		gp->c_option = NULL;
 	} else if (F_ISSET(sp, SC_EX)) {
