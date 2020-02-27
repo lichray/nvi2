@@ -10,7 +10,7 @@
  */
 
 #include <db.h>		/* Only include db1. */
-#include <regex.h>		/* May refer to the bundled regex. */
+#include <regex.h>	/* May refer to the bundled regex. */
 
 /*
  * Forward structure declarations.  Not pretty, but the include files

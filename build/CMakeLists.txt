@@ -93,6 +93,7 @@ include_directories(. ..)
 find_library(_curses_lib NAMES ncurses curses HINTS /usr/lib)
 find_library(_cursesw_lib NAMES ncursesw cursesw curses HINTS /usr/lib)
 mark_as_advanced(_curses_lib _cursesw_lib)
+find_path(db.h NAMES db.h PATHS /usr/)
 
 if(USE_WIDECHAR)
 	set(CURSES_LIBRARY ${_cursesw_lib})
