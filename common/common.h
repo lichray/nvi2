@@ -9,7 +9,12 @@
  *	$Id: common.h,v 10.23 2017/11/14 00:34:44 zy Exp $
  */
 
-#include "/usr/include/db.h"	/* Only include db1. */
+/* Only include db1. */
+#ifdef __APPLE__
+  #include "/usr/local/include/db.h"
+#else
+  #include "/usr/include/db.h"
+#endif
 #include <regex.h>		/* May refer to the bundled regex. */
 
 /*
