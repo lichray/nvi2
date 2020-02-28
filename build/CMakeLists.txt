@@ -100,9 +100,9 @@ mark_as_advanced(_curses_lib _cursesw_lib)
 
 if(LOCATE_DB)
 	set(CMAKE_REQUIRED_INCLUDES "${LOCATE_DB}")
-else (LOCATE_DB)
+else(LOCATE_DB)
 	message(FATAL_ERROR "db.h not found. Make sure you have db.h in your tree.")
-endif (LOCATE_DB)
+endif(LOCATE_DB)
 
 if(USE_WIDECHAR)
 	set(CURSES_LIBRARY ${_cursesw_lib})
