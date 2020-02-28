@@ -10,7 +10,7 @@
 #ifndef	_PATH_MSGCAT
 /*
  * macOS already uses Vim as its system-bundled Vi implementation
- * and onwards macOS 10.14, system folders are write protected,
+ * and onwards macOS 10.11, system folders are write protected,
  * therefore it's not possible to use /usr/share/ directly.
  * Since we assume (n)vi would always be installed by the user, we
  * use /usr/local/share/.
