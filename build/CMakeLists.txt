@@ -90,7 +90,7 @@ endif(NOT RESOLV_IN_LIBC)
 
 include_directories(. ..)
 
-find_path(LOCATE_DB
+find_path(DB1_INCLUDE_DIR
 	NAMES db.h
 	PATHS /usr/include /usr/local/include /opt/include/ /opt/X11/include/)
 
@@ -98,11 +98,11 @@ find_library(_curses_lib NAMES ncurses curses HINTS /usr/lib)
 find_library(_cursesw_lib NAMES ncursesw cursesw curses HINTS /usr/lib)
 mark_as_advanced(_curses_lib _cursesw_lib)
 
-if(LOCATE_DB)
-	set(CMAKE_REQUIRED_INCLUDES "${LOCATE_DB}")
-else(LOCATE_DB)
+if(DB1_INCLUDE_DIR)
+	set(CMAKE_REQUIRED_INCLUDES "${DB1_INCLUDE_DIR}")
+else(DB1_INCLUDE_DIR)
 	message(FATAL_ERROR "db.h not found. Make sure you have db.h in your tree.")
-endif(LOCATE_DB)
+endif(DB1_INCLUDE_DIR)
 
 if(USE_WIDECHAR)
 	set(CURSES_LIBRARY ${_cursesw_lib})
