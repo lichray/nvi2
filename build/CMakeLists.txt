@@ -144,6 +144,11 @@ check_include_files(term.h HAVE_TERM_H)
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_SOURCE_DIR}/config.h)
 
 set(vi_cv_path_preserve /var/tmp/vi.recover/)
+if(APPLE)
+	set(vi_cv_path_msgcat /usr/local/share/vi/catalog/)
+else()
+	set(vi_cv_path_msgcat /usr/share/vi/catalog/)
+endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/pathnames.h.in
 	${CMAKE_SOURCE_DIR}/pathnames.h)

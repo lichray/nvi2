@@ -1,4 +1,4 @@
-/* $Id: pathnames.h.in,v 8.7 2012/04/23 08:34:52 zy Exp $ */
+/* $Id: pathnames.h.in,v 8.8 2020/03/02 10:29:31 zy Exp $ */
 
 /* Read standard system paths first. */
 #include <paths.h>
@@ -8,7 +8,7 @@
 #endif
 
 #ifndef	_PATH_MSGCAT
-#define	_PATH_MSGCAT	"/usr/share/vi/catalog/"
+#define	_PATH_MSGCAT	"@vi_cv_path_msgcat@"
 #endif
 
 #ifndef	_PATH_NEXRC
