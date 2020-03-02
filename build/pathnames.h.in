@@ -1,4 +1,4 @@
-/* $Id: pathnames.h.in,v 8.7 2012/04/23 08:34:52 zy Exp $ */
+/* $Id: pathnames.h.in,v 8.8 2020/03/02 12:09:00 bitigchi Exp $ */
 
 /* Read standard system paths first. */
 #include <paths.h>
