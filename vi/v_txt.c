@@ -32,7 +32,7 @@ static const char sccsid[] = "$Id: v_txt.c,v 11.6 2015/12/29 11:59:43 bentley Ex
 static int	 txt_abbrev(SCR *, TEXT *, CHAR_T *, int, int *, int *);
 static void	 txt_ai_resolve(SCR *, TEXT *, int *);
 static TEXT	*txt_backup(SCR *, TEXTH *, TEXT *, u_int32_t *);
-static int	 txt_dent(SCR *, TEXT *, int);
+static int	 txt_dent(SCR *, TEXT *, int, int);
 static int	 txt_emark(SCR *, TEXT *, size_t);
 static void	 txt_err(SCR *, TEXTH *);
 static int	 txt_fc(SCR *, TEXT *, int *);
@@ -968,7 +968,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 			if (tp->ai == 0 || tp->cno > tp->ai + tp->offset)
 				goto ins_ch;
 
-			(void)txt_dent(sp, tp, 0);
+			(void)txt_dent(sp, tp, O_SHIFTWIDTH, 0);
 			break;
 		default:
 			abort();
@@ -1184,7 +1184,7 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 	case K_CNTRLT:			/* Add autoindent characters. */
 		if (!LF_ISSET(TXT_CNTRLT))
 			goto ins_ch;
-		if (txt_dent(sp, tp, 1))
+		if (txt_dent(sp, tp, O_SHIFTWIDTH, 1))
 			goto err;
 		goto ebuf_chk;
 	case K_VLNEXT:			/* Quote next character. */
@@ -1207,6 +1207,13 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		goto insl_ch;
 	case K_HEXCHAR:
 		hexcnt = 1;
+		goto insq_ch;
+	case K_TAB:
+		if (quote != Q_VTHIS && O_ISSET(sp, O_EXPANDTAB)) {
+			if (txt_dent(sp, tp, O_TABSTOP, 1))
+				goto err;
+			goto ebuf_chk;
+		}
 		goto insq_ch;
 	default:			/* Insert the character. */
 		if (LF_ISSET(TXT_SHOWMATCH)) {
@@ -1685,13 +1692,19 @@ txt_ai_resolve(SCR *sp, TEXT *tp, int *changedp)
 	/*
 	 * If there are no spaces, or no tabs after spaces and less than
 	 * ts spaces, it's already minimal.
+	 * Keep analysing if expandtab is set.
 	 */
-	if (!spaces || (!tab_after_sp && spaces < ts))
+	if ((!spaces || (!tab_after_sp && spaces < ts)) &&
+	    !O_ISSET(sp, O_EXPANDTAB))
 		return;
 
 	/* Count up spaces/tabs needed to get to the target. */
-	for (cno = 0, tabs = 0; cno + COL_OFF(cno, ts) <= scno; ++tabs)
-		cno += COL_OFF(cno, ts);
+	cno = 0;
+	tabs = 0;
+	if (!O_ISSET(sp, O_EXPANDTAB)) {
+		for (; cno + COL_OFF(cno, ts) <= scno; ++tabs)
+			cno += COL_OFF(cno, ts);
+	}
 	spaces = scno - cno;
 
 	/*
@@ -1850,7 +1863,7 @@ txt_backup(SCR *sp, TEXTH *tiqh, TEXT *tp, u_int32_t *flagsp)
  * changes.
  */
 static int
-txt_dent(SCR *sp, TEXT *tp, int isindent)
+txt_dent(SCR *sp, TEXT *tp, int swopt, int isindent)
 {
 	CHAR_T ch;
 	u_long sw, ts;
@@ -1858,7 +1871,7 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 	int ai_reset;
 
 	ts = O_VAL(sp, O_TABSTOP);
-	sw = O_VAL(sp, O_SHIFTWIDTH);
+	sw = O_VAL(sp, swopt);
 
 	/*
 	 * Since we don't know what precedes the character(s) being inserted
@@ -1925,9 +1938,12 @@ txt_dent(SCR *sp, TEXT *tp, int isindent)
 	if (current >= target)
 		spaces = tabs = 0;
 	else {
-		for (cno = current,
-		    tabs = 0; cno + COL_OFF(cno, ts) <= target; ++tabs)
-			cno += COL_OFF(cno, ts);
+		cno = current;
+		tabs = 0;
+		if (!O_ISSET(sp, O_EXPANDTAB)) {
+			for (; cno + COL_OFF(cno, ts) <= target; ++tabs)
+				cno += COL_OFF(cno, ts);
+		}
 		spaces = target - cno;
 	}
 
