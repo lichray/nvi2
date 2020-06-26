@@ -11,10 +11,6 @@
 
 #include "config.h"
 
-#ifndef lint
-static const char sccsid[] = "$Id: conv.c,v 2.40 2014/02/27 16:25:29 zy Exp $";
-#endif /* not lint */
-
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/time.h>

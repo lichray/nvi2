@@ -1,5 +1,3 @@
-#	$Id: Makefile,v 9.0 2012/10/19 15:13:11 zy Exp $
-
 CAT=	dutch english french german polish ru_RU.KOI8-R spanish \
 	swedish tr_TR.ISO8859-9 tr_TR.UTF-8 uk_UA.KOI8-U zh_CN.GB2312
 FILES=	../cl/*.c ../common/*.c ../ex/*.c ../vi/*.c

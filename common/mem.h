@@ -5,8 +5,6 @@
  *	Keith Bostic.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
- *
- *	$Id: mem.h,v 10.18 2016/01/03 15:47:56 zy Exp $
  */
 
 #ifdef DEBUG

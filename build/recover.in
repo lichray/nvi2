@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-#	$Id: recover.in,v 9.3 2012/10/09 08:17:50 zy Exp $
-#
 # Script to recover nvi edit sessions.
 
 RECDIR="@vi_cv_path_preserve@"

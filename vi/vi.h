@@ -5,8 +5,6 @@
  *	Keith Bostic.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
- *
- *	$Id: vi.h,v 10.30 2015/12/29 11:59:43 bentley Exp $
  */
 
 /* Definition of a vi "word". */

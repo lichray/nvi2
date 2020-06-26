@@ -1,4 +1,3 @@
-# $Id: CMakeLists.txt,v 1.12 2015/04/03 15:36:00 zy Exp $
 cmake_minimum_required(VERSION 2.6)
 project(nvi2 C)
 

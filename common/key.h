@@ -5,8 +5,6 @@
  *	Keith Bostic.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
- *
- *	$Id: key.h,v 10.56 2013/11/13 12:15:27 zy Exp $
  */
 
 #include "multibyte.h"

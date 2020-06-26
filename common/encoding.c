@@ -5,10 +5,6 @@
  * See the LICENSE file for redistribution information.
  */
 
-#ifndef lint
-static const char sccsid[] = "$Id: encoding.c,v 1.5 2018/11/26 21:33:19 yuripv Exp $";
-#endif /* not lint */
-
 #include <sys/types.h>
 
 int looks_utf8(const char *, size_t);

@@ -5,8 +5,6 @@
  *	Keith Bostic.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
- *
- *	$Id: common.h,v 10.23 2017/11/14 00:34:44 zy Exp $
  */
 
 #include "/usr/include/db.h"	/* Only include db1. */

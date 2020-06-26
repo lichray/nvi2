@@ -5,8 +5,6 @@
  *	Keith Bostic.  All rights reserved.
  *
  * See the LICENSE file for redistribution information.
- *
- *	$Id: multibyte.h,v 1.32 2012/10/07 01:35:58 zy Exp $
  */
 
 #ifndef MULTIBYTE_H
