@@ -1205,7 +1205,8 @@ leftmargin:		tp->lb[tp->cno - 1] = ' ';
 		hexcnt = 1;
 		goto insq_ch;
 	case K_TAB:
-		if (quote != Q_VTHIS && O_ISSET(sp, O_EXPANDTAB)) {
+		if (sp->showmode != SM_COMMAND && quote != Q_VTHIS &&
+		    O_ISSET(sp, O_EXPANDTAB)) {
 			if (txt_dent(sp, tp, O_TABSTOP, 1))
 				goto err;
 			goto ebuf_chk;
