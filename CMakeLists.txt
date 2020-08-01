@@ -1,4 +1,14 @@
 cmake_minimum_required(VERSION 3.9)
+
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(is_multi_config)
+    set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE STRING
+        "Semicolon separated list of supported configuration types")
+    mark_as_advanced(CMAKE_CONFIGURATION_TYPES)
+elseif(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_C_FLAGS)
+    message(WARNING "No CMAKE_BUILD_TYPE is selected")
+endif()
+
 project(nvi2 C)
 
 include(CheckIncludeFiles)
