@@ -6,12 +6,12 @@ The directory layout is as follows:
 
     LICENSE ....... Copyright, use and redistribution information.
     README ........ This file.
-    build ......... Build directory.
     catalog ....... Message catalogs; see catalog/README.
     cl ............ Vi interface to the curses(3) library.
     common ........ Code shared by ex and vi.
-    man ........... Ex/vi documentation.
     ex ............ Ex source code.
+    files ......... Template files.
+    man ........... Ex/vi documentation.
     regex ......... Modified regex library with wide character support.
     vi ............ Vi source code.
 
