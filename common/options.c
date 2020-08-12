@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unctrl.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -945,6 +946,7 @@ static int
 opts_print(SCR *sp, OPTLIST const *op)
 {
 	int curlen, offset;
+	const char *p;
 
 	curlen = 0;
 	offset = op - optlist;
@@ -958,8 +960,13 @@ opts_print(SCR *sp, OPTLIST const *op)
 		curlen += ex_printf(sp, WS"=%ld", op->name, O_VAL(sp, offset));
 		break;
 	case OPT_STR:
-		curlen += ex_printf(sp, WS"=\"%s\"", op->name,
-		    O_STR(sp, offset) == NULL ? "" : O_STR(sp, offset));
+		curlen += ex_printf(sp, WS"=\"", op->name);
+		p = O_STR(sp, offset);
+		/* Keep correct count for unprintable character sequences */
+		if (p != NULL)
+			for (; *p != '\0'; ++p)
+				curlen += ex_puts(sp, unctrl(*p));
+		curlen += ex_puts(sp, "\"");
 		break;
 	}
 	return (curlen);
