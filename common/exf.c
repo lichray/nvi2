@@ -199,7 +199,7 @@ file_init(SCR *sp, FREF *frp, char *rcv_name, int flags)
 		if (!LF_ISSET(FS_OPENERR))
 			F_SET(frp, FR_NEWFILE);
 
-		ep->mtim = sb.st_mtimespec;
+		ep->mtim = sb.st_mtim;
 	} else {
 		/*
 		 * XXX
@@ -218,7 +218,7 @@ file_init(SCR *sp, FREF *frp, char *rcv_name, int flags)
 		ep->mdev = sb.st_dev;
 		ep->minode = sb.st_ino;
 
-		ep->mtim = sb.st_mtimespec;
+		ep->mtim = sb.st_mtim;
 
 		if (!S_ISREG(sb.st_mode))
 			msgq_str(sp, M_ERR, oname,
@@ -796,7 +796,7 @@ file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 		if (noname && !LF_ISSET(FS_FORCE | FS_APPEND) &&
 		    ((F_ISSET(ep, F_DEVSET) &&
 		    (sb.st_dev != ep->mdev || sb.st_ino != ep->minode)) ||
-		    timespeccmp(&sb.st_mtimespec, &ep->mtim, !=))) {
+		    timespeccmp(&sb.st_mtim, &ep->mtim, !=))) {
 			msgq_str(sp, M_ERR, name, LF_ISSET(FS_POSSIBLE) ?
 "250|%s: file modified more recently than this copy; use ! to override" :
 "251|%s: file modified more recently than this copy");
@@ -895,7 +895,7 @@ success_open:
 			ep->mdev = sb.st_dev;
 			ep->minode = sb.st_ino;
 
-			ep->mtim = sb.st_mtimespec;
+			ep->mtim = sb.st_mtim;
 		}
 
 	/*
