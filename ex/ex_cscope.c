@@ -411,7 +411,8 @@ err:		if (to_cs[0] != -1)
 			free(dn);
 			goto nomem;
 		}
-		(void)asprintf(&cmd, CSCOPE_CMD_FMT, dn, dbn);
+		if (asprintf(&cmd, CSCOPE_CMD_FMT, dn, dbn) == -1)
+			cmd = NULL;
 		free(dbn);
 		free(dn);
 		if (cmd == NULL) {

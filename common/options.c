@@ -367,7 +367,7 @@ opts_init(SCR *sp, int *oargs)
 	OI(O_PARAGRAPHS, L("paragraphs=IPLPPPQPP LIpplpipbp"));
 	(void)SPRINTF(b2, SIZE(b2), L("path=%s"), "");
 	OI(O_PATH, b2);
-	(void)SPRINTF(b2, SIZE(b2), L("recdir=%s"), _PATH_PRESERVE);
+	(void)SPRINTF(b2, SIZE(b2), L("recdir=%s"), NVI_PATH_PRESERVE);
 	OI(O_RECDIR, b2);
 	OI(O_SECTIONS, L("sections=NHSHH HUnhsh"));
 	(void)SPRINTF(b2, SIZE(b2),
