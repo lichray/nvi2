@@ -48,8 +48,8 @@ editor(GS *gp, int argc, char *argv[])
 	size_t len;
 	u_int flags;
 	int ch, flagchk, lflag, secure, startup, readonly, rval, silent;
-	char *tag_f, *wsizearg, path[256];
-	CHAR_T *w;
+	char *tag_f, *wsizearg;
+	CHAR_T *w, path[256];
 	size_t wlen;
 
 	/* Initialize the busy routine, if not defined by the screen. */
@@ -242,9 +242,9 @@ editor(GS *gp, int argc, char *argv[])
 	}
 	if (wsizearg != NULL) {
 		ARGS *av[2], a, b;
-		(void)snprintf(path, sizeof(path), "window=%s", wsizearg);
+		(void)SPRINTF(path, SIZE(path), L("window=%s"), wsizearg);
 		a.bp = (CHAR_T *)path;
-		a.len = strlen(path);
+		a.len = SIZE(path);
 		b.bp = NULL;
 		b.len = 0;
 		av[0] = &a;
