@@ -887,7 +887,7 @@ success_open:
 	 * we re-init the time.  That way the user can clean up the disk
 	 * and rewrite without having to force it.
 	 */
-	if (noname)
+	if (noname) {
 		if (stat(name, &sb))
 			timepoint_system(&ep->mtim);
 		else {
@@ -897,6 +897,7 @@ success_open:
 
 			ep->mtim = sb.st_mtim;
 		}
+	}
 
 	/*
 	 * If the write failed, complain loudly.  ex_writefp() has already
@@ -925,11 +926,12 @@ success_open:
 	 */
 	if (LF_ISSET(FS_ALL) && !LF_ISSET(FS_APPEND)) {
 		F_CLR(ep, F_MODIFIED);
-		if (F_ISSET(frp, FR_TMPFILE))
+		if (F_ISSET(frp, FR_TMPFILE)) {
 			if (noname)
 				F_SET(frp, FR_TMPEXIT);
 			else
 				F_CLR(frp, FR_TMPEXIT);
+		}
 	}
 
 	p = msg_print(sp, name, &nf);
@@ -1290,7 +1292,7 @@ file_m1(SCR *sp, int force, int flags)
 	 * unless force is also set.  Otherwise, we fail unless forced or
 	 * there's another open screen on this file.
 	 */
-	if (F_ISSET(ep, F_MODIFIED))
+	if (F_ISSET(ep, F_MODIFIED)) {
 		if (O_ISSET(sp, O_AUTOWRITE)) {
 			if (!force && file_aw(sp, flags))
 				return (1);
@@ -1300,6 +1302,7 @@ file_m1(SCR *sp, int force, int flags)
 "263|File modified since last complete write; write or use :edit! to override");
 			return (1);
 		}
+	}
 
 	return (file_m3(sp, force));
 }

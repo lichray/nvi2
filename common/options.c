@@ -313,7 +313,7 @@ opts_init(SCR *sp, int *oargs)
 	argv[1] = &b;
 
 	/* Set numeric and string default values. */
-#define	OI(indx, str) {							\
+#define	OI(indx, str) do {						\
 	a.len = STRLEN(str);						\
 	if ((CHAR_T*)str != b2)	  /* GCC puts strings in text-space. */	\
 		(void)MEMCPY(b2, str, a.len+1);				\
@@ -321,7 +321,7 @@ opts_init(SCR *sp, int *oargs)
 		 optindx = indx;					\
 		goto err;						\
 	}								\
-}
+} while (0)
 	/*
 	 * Indirect global options to global space.  Specifically, set up
 	 * terminal, lines, columns first, they're used by other options.
@@ -574,13 +574,14 @@ opts_set(SCR *sp, ARGS *argv[], char *usage)
 			 * functions can be expensive.
 			 */
 			isset = !turnoff;
-			if (!F_ISSET(op, OPT_ALWAYS))
+			if (!F_ISSET(op, OPT_ALWAYS)) {
 				if (isset) {
 					if (O_ISSET(sp, offset))
 						break;
 				} else
 					if (!O_ISSET(sp, offset))
 						break;
+			}
 
 			/* Report to subsystems. */
 			if ((op->func != NULL &&
