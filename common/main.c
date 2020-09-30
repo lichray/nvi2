@@ -533,7 +533,7 @@ v_obsolete(char *argv[])
 				argv[0][1] = 'c';
 				(void)strlcpy(argv[0] + 2, p + 1, len);
 			}
-		} else if (argv[0][0] == '-')
+		} else if (argv[0][0] == '-') {
 			if (argv[0][1] == '\0') {
 				argv[0] = strdup("-s");
 				if (argv[0] == NULL) {
@@ -545,6 +545,7 @@ nomem:					warn(NULL);
 				    argv[0][1] == 't' || argv[0][1] == 'w') &&
 				    argv[0][2] == '\0')
 					++argv;
+		}
 	return (0);
 }
 
