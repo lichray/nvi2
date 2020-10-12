@@ -192,6 +192,8 @@ check_function_exists(dbopen DBOPEN_IN_LIBC)
 if(NOT DBOPEN_IN_LIBC)
     target_link_libraries(nvi PRIVATE db1)
 endif()
+find_path(DB_INCLUDE_DIR db.h PATH_SUFFIXES db1)
+target_include_directories(nvi PRIVATE ${DB_INCLUDE_DIR})
 
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)

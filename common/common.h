@@ -11,11 +11,7 @@
 #define TCSASOFT 0
 #endif
 
-#ifdef __linux__
-#include "/usr/include/db1/db.h"	/* Only include db1. */
-#else
-#include "/usr/include/db.h"	/* Only include db1. */
-#endif
+#include <db.h>
 #include <regex.h>		/* May refer to the bundled regex. */
 
 /*
