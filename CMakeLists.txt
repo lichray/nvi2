@@ -199,6 +199,10 @@ check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
 check_include_files(pty.h HAVE_PTY_H)
 check_include_files(term.h HAVE_TERM_H)
 check_struct_has_member("struct dirent" d_namlen dirent.h HAVE_DIRENT_D_NAMLEN LANGUAGE C)
+check_struct_has_member("struct stat" st_mtimespec
+    "sys/types.h;sys/stat.h" HAVE_STRUCT_STAT_ST_MTIMESPEC LANGUAGE C)
+check_struct_has_member("struct stat" st_mtim
+    "sys/types.h;sys/stat.h" HAVE_STRUCT_STAT_ST_MTIM LANGUAGE C)
 
 configure_file(files/config.h.in config.h)
 
