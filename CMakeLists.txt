@@ -142,7 +142,10 @@ else()
     target_compile_options(nvi PRIVATE -Wno-pointer-sign)
 endif()
 
-target_link_libraries(nvi PRIVATE ${CURSES_LIBRARY} ${TERMINFO_LIBRARY})
+target_link_libraries(nvi PRIVATE ${CURSES_LIBRARY})
+if(TERMINFO_LIBRARY)
+    target_link_libraries(nvi PRIVATE ${TERMINFO_LIBRARY})
+endif()
 
 if(USE_ICONV)
     check_function_exists(iconv ICONV_IN_LIBC)
