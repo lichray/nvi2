@@ -142,7 +142,10 @@ else()
     target_compile_options(nvi PRIVATE -Wno-pointer-sign)
 endif()
 
-target_link_libraries(nvi PRIVATE ${CURSES_LIBRARY} ${TERMINFO_LIBRARY})
+target_link_libraries(nvi PRIVATE ${CURSES_LIBRARY})
+if(TERMINFO_LIBRARY)
+    target_link_libraries(nvi PRIVATE ${TERMINFO_LIBRARY})
+endif()
 
 if(USE_ICONV)
     check_function_exists(iconv ICONV_IN_LIBC)
@@ -189,6 +192,8 @@ check_function_exists(dbopen DBOPEN_IN_LIBC)
 if(NOT DBOPEN_IN_LIBC)
     target_link_libraries(nvi PRIVATE db1)
 endif()
+find_path(DB_INCLUDE_DIR db.h PATH_SUFFIXES db1)
+target_include_directories(nvi PRIVATE ${DB_INCLUDE_DIR})
 
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
@@ -196,6 +201,10 @@ check_include_files(ncursesw/ncurses.h HAVE_NCURSESW_NCURSES_H)
 check_include_files(pty.h HAVE_PTY_H)
 check_include_files(term.h HAVE_TERM_H)
 check_struct_has_member("struct dirent" d_namlen dirent.h HAVE_DIRENT_D_NAMLEN LANGUAGE C)
+check_struct_has_member("struct stat" st_mtimespec
+    "sys/types.h;sys/stat.h" HAVE_STRUCT_STAT_ST_MTIMESPEC LANGUAGE C)
+check_struct_has_member("struct stat" st_mtim
+    "sys/types.h;sys/stat.h" HAVE_STRUCT_STAT_ST_MTIM LANGUAGE C)
 
 configure_file(files/config.h.in config.h)
 
