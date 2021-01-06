@@ -11,7 +11,11 @@
 #define TCSASOFT 0
 #endif
 
+#ifdef DB_H_ABS_PATH
+#include DB_H_ABS_PATH
+#else
 #include <db.h>
+#endif
 #include <regex.h>		/* May refer to the bundled regex. */
 
 /*
