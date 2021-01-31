@@ -29,40 +29,50 @@
 int
 v_right(SCR *sp, VICMD *vp)
 {
+	recno_t cnt = F_ISSET(vp, VC_C1SET) ? vp->count : 1;
+	recno_t cno = vp->m_start.cno;
+	recno_t lno = vp->m_start.lno;
 	size_t len;
-	int isempty;
 
-	if (db_eget(sp, vp->m_start.lno, NULL, &len, &isempty)) {
-		if (isempty)
-			goto eol;
-		return (1);
+	if (db_get(sp, lno, 0, NULL, &len))
+		return 1;
+
+	if (cnt == 1 && cno + 1 == len && ISMOTION(vp)) {
+		/* Historically, "[cdsy]l" worked at the end of a line. */
+		vp->m_stop.cno = len - 1;
+		vp->m_final = vp->m_start;
+		return 0;
 	}
 
-	/* It's always illegal to move right on empty lines. */
-	if (len == 0) {
-eol:		v_eol(sp, NULL);
-		return (1);
+	while (cnt) {
+		size_t next_len;
+
+		if (cno + cnt < len) {
+			cno += cnt;
+			break;
+		}
+
+		cnt -= len ? len - cno : 1;
+
+		if (db_get(sp, lno + 1, 0, NULL, &next_len)) {
+			cno = len ? len - 1 : 0;
+			break;
+		}
+
+		len = next_len;
+		lno++;
+		cno = 0;
 	}
+
+	vp->m_stop.lno = lno;
+	vp->m_stop.cno = cno;
 
 	/*
 	 * Non-motion commands move to the end of the range.  Delete and
 	 * yank stay at the start.  Ignore others.  Adjust the end of the
 	 * range for motion commands.
-	 *
-	 * !!!
-	 * Historically, "[cdsy]l" worked at the end of a line.  Also,
-	 * EOL is a count sink.
 	 */
-	vp->m_stop.cno = vp->m_start.cno +
-	    (F_ISSET(vp, VC_C1SET) ? vp->count : 1);
-	if (vp->m_start.cno == len - 1 && !ISMOTION(vp)) {
-		v_eol(sp, NULL);
-		return (1);
-	}
-	if (vp->m_stop.cno >= len) {
-		vp->m_stop.cno = len - 1;
-		vp->m_final = ISMOTION(vp) ? vp->m_start : vp->m_stop;
-	} else if (ISMOTION(vp)) {
+	if (ISMOTION(vp)) {
 		--vp->m_stop.cno;
 		vp->m_final = vp->m_start;
 	} else
