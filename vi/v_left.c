@@ -29,23 +29,33 @@
 int
 v_left(SCR *sp, VICMD *vp)
 {
-	recno_t cnt;
+	recno_t cnt = F_ISSET(vp, VC_C1SET) ? vp->count : 1;
+	recno_t cno = vp->m_start.cno;
+	recno_t lno = vp->m_start.lno;
 
-	/*
-	 * !!!
-	 * The ^H and h commands always failed in the first column.
-	 */
-	if (vp->m_start.cno == 0) {
-		v_sol(sp);
-		return (1);
+	while (cnt) {
+		size_t len;
+
+		if (cno >= cnt) {
+			cno -= cnt;
+			break;
+		}
+
+		if (lno <= 1) {
+			cno = 0;
+			break;
+		}
+
+		cnt -= cno + 1;
+
+		if (db_get(sp, --lno, 0, NULL, &len))
+			break;
+
+		cno = len ? len - 1 : 0;
 	}
 
-	/* Find the end of the range. */
-	cnt = F_ISSET(vp, VC_C1SET) ? vp->count : 1;
-	if (vp->m_start.cno > cnt)
-		vp->m_stop.cno = vp->m_start.cno - cnt;
-	else
-		vp->m_stop.cno = 0;
+	vp->m_stop.lno = lno;
+	vp->m_stop.cno = cno;
 
 	/*
 	 * All commands move to the end of the range.  Motion commands
