@@ -15,13 +15,18 @@ include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
+include(CheckCCompilerFlag)
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
 option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
-add_compile_options(-fcolor-diagnostics)
+check_c_compiler_flag(-fcolor-diagnostics USE_FCOLOR_DIAGNOSTICS)
+if(USE_FCOLOR_DIAGNOSTICS)
+    add_compile_options(-fcolor-diagnostics)
+endif()
+
 add_compile_options($<$<CONFIG:Debug>:-Wall>)
 add_compile_options($<$<CONFIG:Debug>:-Wno-parentheses>)
 add_compile_options($<$<CONFIG:Debug>:-Wno-uninitialized>)
