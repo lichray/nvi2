@@ -2207,8 +2207,7 @@ screen.
 .It Xo
 .Op Ar range
 .Cm w Ns Op Cm rite
-.Op Cm !\&
-.Op Ar file
+.Cm !\& Ns Ar shell-command
 .Xc
 .It Xo
 .Op Ar range
@@ -2222,7 +2221,21 @@ screen.
 .Op >>
 .Op Ar file
 .Xc
-Write the file.
+Write the entire file, or
+.Ar range .
+.Sq !\&
+overwrites a different, preexisting file.
+.Sq >>
+appends to a file that may preexist. Whitespace followed by
+.Sq !\&
+pipes the file to
+.Ar shell-command .
+.Cm wn
+moves to the next file if writing succeeds.
+.Cm wq
+exits the editor if writing succeeds, unless there are more files to edit;
+.Sq !\&
+exits regardless.
 .Pp
 .It Xo
 .Op Ar range
