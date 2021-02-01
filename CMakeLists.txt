@@ -13,15 +13,21 @@ project(nvi2 C)
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
+include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
+include(CheckCCompilerFlag)
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
 option(USE_WIDECHAR "Enable wide character support" ON)
 option(USE_ICONV "Enable iconv support" ON)
 
-add_compile_options(-fcolor-diagnostics)
+check_c_compiler_flag(-fcolor-diagnostics USE_FCOLOR_DIAGNOSTICS)
+if(USE_FCOLOR_DIAGNOSTICS)
+    add_compile_options(-fcolor-diagnostics)
+endif()
+
 add_compile_options($<$<CONFIG:Debug>:-Wall>)
 add_compile_options($<$<CONFIG:Debug>:-Wno-parentheses>)
 add_compile_options($<$<CONFIG:Debug>:-Wno-uninitialized>)
@@ -126,6 +132,11 @@ check_function_exists(__b64_ntop RESOLV_IN_LIBC)
 if(NOT RESOLV_IN_LIBC)
     find_library(RESOLV_LIBRARY resolv)
     target_link_libraries(nvi PRIVATE ${RESOLV_LIBRARY})
+endif()
+
+check_symbol_exists(asprintf "stdio.h" ASPRINTF_IN_STDIO_H)
+if(NOT ASPRINTF_IN_STDIO_H)
+    target_compile_definitions(nvi PRIVATE _GNU_SOURCE)
 endif()
 
 if(USE_WIDECHAR)
