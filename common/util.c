@@ -253,7 +253,7 @@ v_wstrdup(SCR *sp, const CHAR_T *str, size_t len)
 	if (copy == NULL)
 		return (NULL);
 	MEMCPY(copy, str, len);
-	copy[len] = '\0';
+	copy[len] = L('\0');
 	return (copy);
 }
 
