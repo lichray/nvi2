@@ -1151,7 +1151,7 @@ re_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 static int
 re_tag_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 {
-	size_t blen, len;
+	int blen, len;
 	int lastdollar;
 	CHAR_T *bp, *p, *t;
 
