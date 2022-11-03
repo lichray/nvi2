@@ -1151,7 +1151,7 @@ re_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 static int
 re_tag_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 {
-	int blen, len;
+	size_t blen, len;
 	int lastdollar;
 	CHAR_T *bp, *p, *t;
 
@@ -1195,7 +1195,8 @@ re_tag_conv(SCR *sp, CHAR_T **ptrnp, size_t *plenp, int *replacedp)
 	for (; len > 0; --len) {
 		if (p[0] == '\\' && (p[1] == '/' || p[1] == '?')) {
 			++p;
-			--len;
+			if (len > 1)
+				--len;
 		} else if (STRCHR(L("^.[]$*"), p[0]))
 			*t++ = '\\';
 		*t++ = *p++;
