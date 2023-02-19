@@ -1,50 +1,47 @@
+# Install from source
 
-# Installing from source
+For instructions to bring nvi2 as a part of your operating system's base system, see [Porting](https://github.com/lichray/nvi2/wiki/Porting) in the Wiki. This document is an overview of the build process that allows you to give nvi2 a try.
 
-For a detailed explanation of building nvi2 see [porting](https://github.com/lichray/nvi2/wiki/Porting)
-in the wiki. This document is just a quick overview of the build and installation process.
+## Prerequisites
 
-## Overview
+- CMake >= 3.17;
+- Ninja build system;
+- libiconv (for `USE_ICONV`);
+- libncursesw (for `USE_WIDECHAR`);
 
-nvi2 project supports multiple building approaches.
-
-- Out-of-source build
-- Ninja
-- Multi-configuration build with Ninja
-
-## System Requirements
-
-- CMake >= 3.9;
-- Ninja
-- POSIX.1-2008-compatible libc;
-- libiconv (for USE_ICONV);
-- libncursesw (for USE_WIDECHAR);
-- libutil;
-- uudecode(1) with -m option (Base64);
-
-Anything required by a minimal nvi-1.79, notably:
+Anything required by a minimal nvi, notably:
 
 - Berkeley DB1 in libc;
 - /var/tmp/vi.recover/ with mode 41777.
 
-## Building nvi2 using cmake and Ninja
+## Building
 
-nvi2 project supports multi-configuration builds including with the [Ninja](https://ninja-build.org/).
-Ninga is a very fast parallel build system. You will need to have cmake, ninja build, and
-your C toolchain installed.
+Nvi2 uses CMake build system generator. By specifying "Ninja Multi-Config" as the build system to generate, you can compile the project in both Debug and Release modes without re-running CMake. Under the project root directory, run
 
-Building nvi2 using cmake and ninja is done with the following commands
+```sh
+cmake -G "Ninja Multi-Config" -B build
+```
 
-> cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Debug
-> ninja -C build
+Now `build` becomes your build directory to hold the artifacts. To build nvi2 in Debug mode, run
 
-## Multi-configuration build with Ninja
+```sh
+ninja -C build
+```
 
-It is often annoying to switch the build between Debug and Release. With CMake >= 3.17, you can hold both in the same build directory:
+Upon finishing, the nvi2 executable will be available as `build/Debug/nvi`. To launch it in `ex` mode, you can create a symlink
 
-> cmake -G "Ninja Multi-Config" -B build
-> ninja -C build              # default -- do debug build
-> ninja -C build -f build-Release.ninja  # do release build
+```sh
+ln -s nvi build/Debug/ex
+```
 
-The debug build produces the nvi binary under build/Debug/, and the release build produces binary under build/Release/.
+and run `./build/Debug/ex` rather than `./build/Debug/nvi`.
 
+To build nvi2 in Release mode, use the following command instead:
+
+```sh
+ninja -C build -f build-Release.ninja
+```
+
+Upon finishing, you will be able to edit files with `./build/Release/nvi`.
+
+To change configure-time options, such as disabling wide character support, use `ccmake build`.
