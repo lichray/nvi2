@@ -2459,6 +2459,9 @@ Characters that are always handled as printable characters.
 .Nm ex
 only.
 Display a command prompt.
+.It Cm readable Bq off
+Display control characters less than 0x20 in human-readable <C-char> notation.
+Carriage feed, escape, and delete are marked as <Enter>, <Esc>, and <Del>, respectively.
 .It Cm readonly , ro Bq off
 Mark the file and session as read-only.
 .It Cm recdir Bq /var/tmp/vi.recover

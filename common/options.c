@@ -153,6 +153,8 @@ OPTLIST const optlist[] = {
 	{L("print"),	f_print,	OPT_STR,	0},
 /* O_PROMPT	    4BSD */
 	{L("prompt"),	NULL,		OPT_1BOOL,	0},
+/* O_READABLE */
+	{L("readable"),	f_print,	OPT_0BOOL,	0},
 /* O_READONLY	    4BSD (undocumented) */
 	{L("readonly"),	f_readonly,	OPT_0BOOL,	OPT_ALWAYS},
 /* O_RECDIR	  4.4BSD */
