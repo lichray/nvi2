@@ -317,7 +317,7 @@ opts_init(SCR *sp, int *oargs)
 	/* Set numeric and string default values. */
 #define	OI(indx, str) do {						\
 	a.len = STRLEN(str);						\
-	if ((CHAR_T*)str != b2)	  /* GCC puts strings in text-space. */	\
+	if (STRCMP((CHAR_T*)str, b2))					\
 		(void)MEMCPY(b2, str, a.len+1);				\
 	if (opts_set(sp, argv, NULL)) {					\
 		 optindx = indx;					\
