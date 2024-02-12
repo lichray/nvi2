@@ -795,7 +795,7 @@ vs_modeline(SCR *sp)
 
 	/* If more than one screen in the display, show the file name. */
 	curlen = 0;
-	if (IS_SPLIT(sp)) {
+	if (IS_SPLIT(sp) || O_ISSET(sp, O_SHOWFILENAME)) {
 		CHAR_T *wp, *p;
 		size_t l;
 
