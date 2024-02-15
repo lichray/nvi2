@@ -181,6 +181,8 @@ OPTLIST const optlist[] = {
 	{L("shellmeta"),	NULL,		OPT_STR,	0},
 /* O_SHIFTWIDTH	    4BSD */
 	{L("shiftwidth"),	NULL,		OPT_NUM,	OPT_NOZERO},
+/* O_SHOWFILENAME */
+	{L("showfilename"),	NULL,		OPT_0BOOL,	0},
 /* O_SHOWMATCH	    4BSD */
 	{L("showmatch"),	NULL,		OPT_0BOOL,	0},
 /* O_SHOWMODE	  4.4BSD */
