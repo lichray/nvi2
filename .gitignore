@@ -2,8 +2,6 @@
 *~
 *.orig
 *.core
-*_def.h
-version.h
 tags
 build/
 
