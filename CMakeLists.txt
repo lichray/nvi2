@@ -43,7 +43,6 @@ add_compile_options(-Wstrict-aliasing -fstrict-aliasing)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(MAIN_PROTOS
-    cl/extern.h common/extern.h ex/extern.h vi/extern.h
     common/options_def.h ex/ex_def.h ex/version.h)
 
 set(CL_SRCS
@@ -81,27 +80,38 @@ set(VI_SRCS
 set(REGEX_SRCS
     regex/regcomp.c regex/regerror.c regex/regexec.c regex/regfree.c)
 
+set(EXTERN_HDRS
+    ${CMAKE_CURRENT_BINARY_DIR}/cl_extern.h
+    ${CMAKE_CURRENT_BINARY_DIR}/common_extern.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ex_extern.h
+    ${CMAKE_CURRENT_BINARY_DIR}/vi_extern.h)
+
 # commands to generate the public headers
 set(extract_protos sed -n 's/^ \\* PUBLIC: \\\(.*\\\)/\\1/p')
 set(extract_version sed -n
     's/^.*version \\\([^\)]*\)\\\).*/\#define VI_VERSION \\\"\\1\\\"/p')
 
-add_custom_command(OUTPUT cl/extern.h
-                   COMMAND ${extract_protos} ${CL_SRCS} > cl/extern.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cl_extern.h
+                   COMMAND ${extract_protos} ${CL_SRCS} >
+                           ${CMAKE_CURRENT_BINARY_DIR}/cl_extern.h
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                    DEPENDS ${CL_SRCS})
-add_custom_command(OUTPUT common/extern.h
-                   COMMAND ${extract_protos} ${COMMON_SRCS} > common/extern.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/common_extern.h
+                   COMMAND ${extract_protos} ${COMMON_SRCS} >
+                           ${CMAKE_CURRENT_BINARY_DIR}/common_extern.h
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                    DEPENDS ${COMMON_SRCS})
-add_custom_command(OUTPUT ex/extern.h
-                   COMMAND ${extract_protos} ${EX_SRCS} > ex/extern.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ex_extern.h
+                   COMMAND ${extract_protos} ${EX_SRCS} >
+                           ${CMAKE_CURRENT_BINARY_DIR}/ex_extern.h
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                    DEPENDS ${EX_SRCS})
-add_custom_command(OUTPUT vi/extern.h
-                   COMMAND ${extract_protos} ${VI_SRCS} > vi/extern.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/vi_extern.h
+                   COMMAND ${extract_protos} ${VI_SRCS} >
+                           ${CMAKE_CURRENT_BINARY_DIR}/vi_extern.h
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                    DEPENDS ${VI_SRCS})
+
 add_custom_command(OUTPUT common/options_def.h
                    COMMAND awk -f common/options.awk
                            common/options.c > common/options_def.h
@@ -118,7 +128,7 @@ add_custom_command(OUTPUT ex/version.h
 
 add_executable(nvi)
 target_sources(nvi PRIVATE ${MAIN_PROTOS} ${CL_SRCS} ${COMMON_SRCS}
-                           ${EX_SRCS} ${VI_SRCS})
+                           ${EX_SRCS} ${VI_SRCS} ${EXTERN_HDRS})
 target_compile_definitions(nvi PRIVATE $<$<CONFIG:Debug>:DEBUG>
                                        $<$<CONFIG:Debug>:COMLOG>)
 
