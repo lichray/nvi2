@@ -92,4 +92,4 @@ typedef enum { SEQ_ABBREV, SEQ_COMMAND, SEQ_INPUT } seq_t;
 #include "log.h"
 #include "mem.h"
 
-#include "extern.h"
+#include "common_extern.h"
