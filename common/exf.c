@@ -764,7 +764,7 @@ file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 	/* Can't write files marked read-only, unless forced. */
 	if (!LF_ISSET(FS_FORCE) && noname && O_ISSET(sp, O_READONLY)) {
 		msgq(sp, M_ERR, LF_ISSET(FS_POSSIBLE) ?
-		    "244|Read-only file, not written; use ! to override" :
+		    "244|Read-only file, not written; append ! to override" :
 		    "245|Read-only file, not written");
 		return (1);
 	}
@@ -776,7 +776,7 @@ file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 		    !stat(name, &sb)) {
 			msgq_str(sp, M_ERR, name,
 			    LF_ISSET(FS_POSSIBLE) ?
-			    "246|%s exists, not written; use ! to override" :
+			    "246|%s exists, not written; append ! to override" :
 			    "247|%s exists, not written");
 			return (1);
 		}
@@ -787,7 +787,7 @@ file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 		 */
 		if (!LF_ISSET(FS_ALL) && noname && !stat(name, &sb)) {
 			msgq(sp, M_ERR, LF_ISSET(FS_POSSIBLE) ?
-			    "248|Partial file, not written; use ! to override" :
+			    "248|Partial file, not written; append ! to override" :
 			    "249|Partial file, not written");
 			return (1);
 		}
@@ -818,7 +818,7 @@ file_write(SCR *sp, MARK *fm, MARK *tm, char *name, int flags)
 		    sb.st_mtime != ep->mtim.tv_sec)) {
 #endif
 			msgq_str(sp, M_ERR, name, LF_ISSET(FS_POSSIBLE) ?
-"250|%s: file modified more recently than this copy; use ! to override" :
+"250|%s: file modified more recently than this copy; append ! to override" :
 "251|%s: file modified more recently than this copy");
 			return (1);
 		}
@@ -1325,7 +1325,7 @@ file_m1(SCR *sp, int force, int flags)
 				return (1);
 		} else if (ep->refcnt <= 1 && !force) {
 			msgq(sp, M_ERR, LF_ISSET(FS_POSSIBLE) ?
-"262|File modified since last complete write; write or use ! to override" :
+"262|File modified since last complete write; write or append ! to override" :
 "263|File modified since last complete write; write or use :edit! to override");
 			return (1);
 		}
@@ -1358,7 +1358,7 @@ file_m2(SCR *sp, int force)
 	 */
 	if (F_ISSET(ep, F_MODIFIED) && ep->refcnt <= 1 && !force) {
 		msgq(sp, M_ERR,
-"264|File modified since last complete write; write or use ! to override");
+"264|File modified since last complete write; write or append ! to override");
 		return (1);
 	}
 
