@@ -68,6 +68,10 @@ v_put(SCR *sp, VICMD *vp)
 	 * !!!
 	 * Historic vi did not support a count with the 'p' and 'P'
 	 * commands.  It's useful, so we do.
+	 *
+	 * The cursor placement of an individual 'p' and 'P' used to
+	 * affect the content when a count is presented.  Now we let
+	 * the command implementation be count-aware instead.
 	 */
 	cnt = F_ISSET(vp, VC_C1SET) ? vp->count : 1;
 	if (put(sp, NULL,
