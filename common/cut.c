@@ -64,7 +64,7 @@ int
 cut(SCR *sp, CHAR_T *namep, MARK *fm, MARK *tm, int flags)
 {
 	CB *cbp;
-	CHAR_T name = '\0';
+	CHAR_T name = L('\0');
 	recno_t lno;
 	int append, copy_one, copy_def;
 
@@ -98,10 +98,10 @@ cut(SCR *sp, CHAR_T *namep, MARK *fm, MARK *tm, int flags)
 			copy_one = 1;
 			cb_rotate(sp);
 		}
-		if ((append = isupper(name))) {
+		if ((append = ISUPPER(name))) {
 			if (!copy_one)
 				copy_def = 1;
-			name = tolower(name);
+			name = TOLOWER(name);
 		}
 namecb:		CBNAME(sp, cbp, name);
 	} else if (LF_ISSET(CUT_NUMREQ) || (LF_ISSET(CUT_NUMOPT) &&

@@ -123,13 +123,13 @@ v_increment(SCR *sp, VICMD *vp)
 		base = 10;
 		end = beg + 1;
 		ntype = fmt[SDEC];
-		if (!isdigit(p[end]))
+		if (!ISDIGIT(p[end]))
 			goto nonum;
 	} else {
 decimal:	base = 10;
 		end = beg;
 		ntype = fmt[DEC];
-		if (!isdigit(p[end])) {
+		if (!ISDIGIT(p[end])) {
 nonum:			msgq(sp, M_ERR, "181|Cursor not in a number");
 			return (1);
 		}
@@ -148,7 +148,7 @@ nonum:			msgq(sp, M_ERR, "181|Cursor not in a number");
 			}
 			break;
 		case 10:
-			if (isdigit(p[end]))
+			if (ISDIGIT(p[end]))
 				continue;
 			break;
 		case 16:

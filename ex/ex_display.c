@@ -90,7 +90,7 @@ bdisplay(SCR *sp)
 
 	/* Display regular cut buffers. */
 	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
-		if (isdigit(cbp->name))
+		if (ISDIGIT(cbp->name))
 			continue;
 		if (!TAILQ_EMPTY(cbp->textq))
 			db(sp, cbp, NULL);
@@ -99,7 +99,7 @@ bdisplay(SCR *sp)
 	}
 	/* Display numbered buffers. */
 	SLIST_FOREACH(cbp, sp->gp->cutq, q) {
-		if (!isdigit(cbp->name))
+		if (!ISDIGIT(cbp->name))
 			continue;
 		if (!TAILQ_EMPTY(cbp->textq))
 			db(sp, cbp, NULL);
