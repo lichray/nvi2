@@ -317,12 +317,13 @@ opts_init(SCR *sp, int *oargs)
 	argv[1] = &b;
 
 	/* Set numeric and string default values. */
-#define OI(indx, ...)	do {						\
-	a.len = SPRINTF(b2, SIZE(b2), __VA_ARGS__);			\
-	if (a.len < 0 || a.len >= SIZE(b2) || opts_set(sp, argv, NULL)) {\
+#define	OI(indx, ...) do {						\
+	size_t len = SPRINTF(b2, SIZE(b2), __VA_ARGS__);		\
+	if (len < 0 || len >= SIZE(b2) || opts_set(sp, argv, NULL)) {	\
 		optindx = indx;						\
 		goto err;						\
 	}								\
+	a.len = len;							\
 } while (0)
 	/*
 	 * Indirect global options to global space.  Specifically, set up
