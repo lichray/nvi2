@@ -179,6 +179,9 @@ ex_aci(SCR *sp, EXCMD *cmdp, enum which cmd)
 		if (len != 0)
 			cmdp->save_cmd = t;
 		cmdp->save_cmdlen = len;
+	} else if (cmdp->trailing) {
+		if (db_append(sp, 1, lno++, NULL, 0))
+			return 1;
 	}
 
 	if (F_ISSET(sp, SC_EX_GLOBAL)) {
