@@ -233,12 +233,8 @@ cl_vi_init(SCR *sp)
 	 */
 	(void)del_curterm(cur_term);
 
-	/*
-	 * We never have more than one SCREEN at a time, so set_term(NULL) will
-	 * give us the last SCREEN.
-	 */
 	errno = 0;
-	if (newterm(ttype, stdout, stdin) == NULL) {
+	if ((clp->screen = newterm(ttype, stdout, stdin)) == NULL) {
 		if (errno)
 			msgq(sp, M_SYSERR, "%s", ttype);
 		else
@@ -406,7 +402,10 @@ cl_vi_end(GS *gp)
 	(void)endwin();
 
 	/* Free the SCREEN created by newterm(3X). */
-	delscreen(set_term(NULL));
+	if (clp->screen != NULL) {
+		delscreen(clp->screen);
+		clp->screen = NULL;
+	}
 
 	/*
 	 * XXX

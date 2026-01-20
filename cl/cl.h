@@ -35,6 +35,7 @@ typedef struct _cl_private {
 	char	*smcup, *rmcup;	/* Terminal start/stop strings. */
 
 	char	*oname;		/* Original screen window name. */
+	SCREEN	*screen;	/* Current curses SCREEN. */
 
 	SCR	*focus;		/* Screen that has the "focus". */
 
