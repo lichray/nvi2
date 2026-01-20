@@ -384,7 +384,7 @@ argv_fexp(SCR *sp, EXCMD *excp, CHAR_T *cmd, size_t cmdlen, CHAR_T *p, size_t *l
 			F_SET(excp, E_MODIFY);
 			break;
 		case '%':
-			if ((t = sp->frp->name) == NULL) {
+			if (sp->frp && (t = sp->frp->name) == NULL) {
 				msgq(sp, M_ERR,
 				    "116|No filename to substitute for %%");
 				return (1);
