@@ -17,6 +17,7 @@ include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
+include(GNUInstallDirs)
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
@@ -244,3 +245,64 @@ endif()
 
 configure_file(files/pathnames.h.in pathnames.h)
 configure_file(files/recover.in recover @ONLY)
+
+install(TARGETS nvi
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/vi.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/recover
+        DESTINATION ${CMAKE_INSTALL_SBINDIR}
+        RENAME vi.recover)
+
+install(CODE "
+  if(IS_ABSOLUTE \"${CMAKE_INSTALL_BINDIR}\")
+    set(_install_bindir \"\$ENV{DESTDIR}${CMAKE_INSTALL_BINDIR}\")
+  else()
+    set(_install_bindir \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\")
+  endif()
+
+  foreach(name nex nview)
+    if(NOT EXISTS \"\${_install_bindir}/\${name}\" AND
+       NOT IS_SYMLINK \"\${_install_bindir}/\${name}\")
+      execute_process(
+        COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+                nvi
+                \"\${_install_bindir}/\${name}\"
+      )
+    endif()
+  endforeach()
+
+  if(IS_ABSOLUTE \"${CMAKE_INSTALL_MANDIR}\")
+    set(_install_mandir \"\$ENV{DESTDIR}${CMAKE_INSTALL_MANDIR}/man1\")
+  else()
+    set(_install_mandir \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_MANDIR}/man1\")
+  endif()
+
+  foreach(name nvi nex nview)
+    if(NOT EXISTS \"\${_install_mandir}/\${name}.1\" AND
+       NOT IS_SYMLINK \"\${_install_mandir}/\${name}.1\")
+      execute_process(
+        COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+                vi.1
+                \"\${_install_mandir}/\${name}.1\"
+      )
+    endif()
+  endforeach()
+
+  set(_recover_dir \"${vi_cv_path_preserve}\")
+  string(REGEX REPLACE \"/+$\" \"\" _recover_dir \"\${_recover_dir}\")
+  if(IS_ABSOLUTE \"\${_recover_dir}\")
+    set(_recover_path \"\$ENV{DESTDIR}\${_recover_dir}\")
+  else()
+    set(_recover_path \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/\${_recover_dir}\")
+  endif()
+  execute_process(
+    COMMAND \"${CMAKE_COMMAND}\" -E make_directory
+            \"\${_recover_path}\"
+  )
+  execute_process(
+    COMMAND chmod 1777 \"\${_recover_path}\"
+  )
+")
