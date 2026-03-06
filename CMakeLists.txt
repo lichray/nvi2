@@ -238,13 +238,10 @@ configure_file(files/config.h.in config.h)
 
 set(vi_cv_path_preserve /var/tmp/vi.recover/)
 if(APPLE)
-    set(_default_vi_cv_path_msgcat /usr/local/share/vi/catalog/)
+    set(vi_cv_path_msgcat /usr/local/share/vi/catalog/)
 else()
-    set(_default_vi_cv_path_msgcat /usr/share/vi/catalog/)
+    set(vi_cv_path_msgcat /usr/share/vi/catalog/)
 endif()
-set(vi_cv_path_msgcat "${_default_vi_cv_path_msgcat}" CACHE STRING
-    "Default path for nvi message catalogs")
-unset(_default_vi_cv_path_msgcat)
 
 configure_file(files/pathnames.h.in pathnames.h)
 configure_file(files/recover.in recover @ONLY)
