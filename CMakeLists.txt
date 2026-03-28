@@ -17,6 +17,7 @@ include(CheckSymbolExists)
 include(CheckStructHasMember)
 include(CheckCSourceCompiles)
 include(CheckCCompilerFlag)
+include(GNUInstallDirs)
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
@@ -244,3 +245,9 @@ endif()
 
 configure_file(files/pathnames.h.in pathnames.h)
 configure_file(files/recover.in recover @ONLY)
+
+install(TARGETS nvi
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/vi.1
+        DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
