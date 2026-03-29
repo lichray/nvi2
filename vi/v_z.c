@@ -70,6 +70,7 @@ v_z(SCR *sp, VICMD *vp)
 			return (1);
 		break;
 	case '.':		/* Put the line in the middle. */
+	case 'z':
 		if (vs_sm_fill(sp, lno, P_MIDDLE))
 			return (1);
 		break;
