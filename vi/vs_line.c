@@ -47,6 +47,8 @@ vs_line(SCR *sp, SMAP *smp, size_t *yp, size_t *xp)
 	CHAR_T *p;
 	CHAR_T *cbp, *ecbp, cbuf[128];
 	ARG_CHAR_T ch = '\0';
+	size_t offset_in_char_orig, partial_wrap_count;
+	SMAP *ttsmp;
 
 #if defined(DEBUG) && 0
 	TRACE(sp, "vs_line: row %u: line: %u off: %u\n",
@@ -216,6 +218,7 @@ empty:					(void)gp->scr_addstr(sp,
 	if (skip_cols == 0) {
 		smp->c_sboff = offset_in_line = 0;
 		smp->c_scoff = offset_in_char = 0;
+		partial_wrap_count = 0;
 		p = &p[offset_in_line];
 		goto display;
 	}
@@ -224,6 +227,7 @@ empty:					(void)gp->scr_addstr(sp,
 	if (is_cached) {
 		offset_in_line = smp->c_sboff;
 		offset_in_char = smp->c_scoff;
+		partial_wrap_count = 0;
 		p = &p[offset_in_line];
 
 		/* Set cols_per_screen to 2nd and later line length. */
@@ -242,6 +246,15 @@ empty:					(void)gp->scr_addstr(sp,
 			offset_in_line = tsmp->c_eboff + 1;
 			offset_in_char = 0;
 		}
+		if (tsmp != HMAP &&
+			SMAP_CACHE(ttsmp = tsmp - 1) && ttsmp->lno == tsmp->lno) {
+			if (ttsmp->c_eclen != ttsmp->c_ecsize) {
+				if (partial_wrap_count > 0) {
+					offset_in_line--;
+					partial_wrap_count--;
+				}
+			}
+		}
 
 		/* Put starting info for this line in the cache. */
 		smp->c_sboff = offset_in_line;
@@ -257,6 +270,7 @@ empty:					(void)gp->scr_addstr(sp,
 	scno = 0;
 	offset_in_line = 0;
 	offset_in_char = 0;
+	partial_wrap_count = 0;
 
 	/* Do it the hard way, for leftright scrolling screens. */
 	if (O_ISSET(sp, O_LEFTRIGHT)) {
@@ -309,6 +323,7 @@ empty:					(void)gp->scr_addstr(sp,
 		if (scno != 0) {
 			smp->c_sboff = offset_in_line;
 			smp->c_scoff = offset_in_char = chlen - scno;
+			partial_wrap_count++;
 			--p;
 		} else {
 			smp->c_sboff = ++offset_in_line;
@@ -336,6 +351,7 @@ display:
 
 	/* This is the loop that actually displays characters. */
 	ecbp = (cbp = cbuf) + SIZE(cbuf) - 1;
+	offset_in_char_orig = offset_in_char;
 	for (is_partial = 0, scno = 0;
 	    offset_in_line < len; ++offset_in_line, offset_in_char = 0) {
 		if ((ch = *p++) == '\t' && !list_tab) {
@@ -354,18 +370,20 @@ display:
 		 * characters to display on the next screen, its lno/off won't
 		 * match up in that case.
 		 */
-		if (scno >= cols_per_screen) {
+		if (scno >= cols_per_screen + offset_in_char_orig) {
 			if (is_tab == 1) {
-				chlen -= scno - cols_per_screen;
+				chlen -= scno - cols_per_screen - offset_in_char_orig;
 				smp->c_ecsize = smp->c_eclen = chlen;
 				scno = cols_per_screen;
 			} else {
 				smp->c_ecsize = chlen;
-				chlen -= scno - cols_per_screen;
+				chlen -= scno - cols_per_screen - offset_in_char_orig;
 				smp->c_eclen = chlen;
 
-				if (scno > cols_per_screen)
+				if (scno > cols_per_screen + offset_in_char_orig) {
 					is_partial = 1;
+					partial_wrap_count++;
+				}
 			}
 			smp->c_eboff = offset_in_line;
 
